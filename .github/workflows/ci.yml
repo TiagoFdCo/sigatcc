@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: sigatcc_test
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Instalar dependencias
+        run: pip install -r backend/requirements.txt
+
+      - name: Lint (ruff)
+        run: ruff check backend/
+
+      - name: Testes com cobertura
+        run: |
+          cd backend
+          pytest --cov=. --cov-fail-under=70
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/sigatcc_test
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: cd frontend && npm ci
+
+      - name: Lint
+        run: cd frontend && npm run lint
+
+      - name: Type check
+        run: cd frontend && npx tsc --noEmit
+
+      - name: Testes
+        run: cd frontend && npm test -- --watchAll=false
+
+  docker-build-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build da imagem do backend
+        run: docker build -t sigatcc-backend ./backend
+      - name: Build da imagem do frontend
+        run: docker build -t sigatcc-frontend ./frontend

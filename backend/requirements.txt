@@ -1,0 +1,15 @@
+Django>=5.0,<6.0
+djangorestframework>=3.15,<4.0
+djangorestframework-simplejwt>=5.3,<6.0
+django-cors-headers>=4.4,<5.0
+django-simple-history>=3.7,<4.0
+psycopg2-binary>=2.9,<3.0
+gunicorn>=22.0,<23.0
+python-dotenv>=1.0,<2.0
+requests>=2.32,<3.0
+
+# --- Dev / testes / lint (instalados tambem no CI) ---
+pytest>=8.2,<9.0
+pytest-django>=4.8,<5.0
+pytest-cov>=5.0,<6.0
+ruff>=0.6,<1.0
