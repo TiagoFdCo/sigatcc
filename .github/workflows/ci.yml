@@ -22,6 +22,10 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/sigatcc_test
+      DJANGO_SECRET_KEY: chave-somente-para-ci
+      DJANGO_DEBUG: "True"
     steps:
       - uses: actions/checkout@v4
 
@@ -37,12 +41,15 @@ jobs:
       - name: Lint (ruff)
         run: ruff check backend/
 
+      - name: Migrations em dia com os models
+        run: |
+          cd backend
+          python manage.py makemigrations --check --dry-run
+
       - name: Testes com cobertura
         run: |
           cd backend
           pytest --cov=. --cov-fail-under=70
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/sigatcc_test
 
   frontend:
     runs-on: ubuntu-latest
@@ -50,22 +57,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Verificar se o frontend ja foi criado
+        id: front
+        run: |
+          if [ -f frontend/package-lock.json ]; then
+            echo "existe=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "existe=false" >> "$GITHUB_OUTPUT"
+            echo "Frontend ainda nao criado; etapas puladas."
+          fi
+
+      - if: steps.front.outputs.existe == 'true'
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
           cache-dependency-path: frontend/package-lock.json
 
-      - run: cd frontend && npm ci
+      - if: steps.front.outputs.existe == 'true'
+        run: cd frontend && npm ci
 
       - name: Lint
-        run: cd frontend && npm run lint
+        if: steps.front.outputs.existe == 'true'
+        run: cd frontend && npm run lint --if-present
 
       - name: Type check
+        if: steps.front.outputs.existe == 'true'
         run: cd frontend && npx tsc --noEmit
 
-      - name: Testes
-        run: cd frontend && npm test -- --watchAll=false
+      - name: Testes (defina o script "test" como "vitest run")
+        if: steps.front.outputs.existe == 'true'
+        run: cd frontend && npm test --if-present
 
   docker-build-check:
     runs-on: ubuntu-latest
@@ -74,5 +96,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build da imagem do backend
         run: docker build -t sigatcc-backend ./backend
-      - name: Build da imagem do frontend
-        run: docker build -t sigatcc-frontend ./frontend
+      - name: Build da imagem do frontend (se existir)
+        run: |
+          if [ -f frontend/package.json ]; then
+            docker build -t sigatcc-frontend ./frontend
+          else
+            echo "Frontend ainda nao criado; build pulado."
+          fi

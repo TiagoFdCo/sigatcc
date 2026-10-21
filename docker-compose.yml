@@ -1,50 +1,29 @@
+# Base (producao): sem banco local. O backend usa o PostgreSQL gerenciado da
+# DigitalOcean, informado em DATABASE_URL no .env.
+# Em desenvolvimento, o docker-compose.override.yml e carregado automaticamente
+# e acrescenta o PostgreSQL local, o runserver e o hot-reload.
 services:
-  db:
-    image: postgres:16
-    restart: unless-stopped
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   backend:
     build: ./backend
     restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      DJANGO_DEBUG: ${DJANGO_DEBUG}
-      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
-      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
-      RESEND_API_KEY: ${RESEND_API_KEY}
-    volumes:
-      - ./backend:/app # hot-reload em dev; remover em producao se preferir imagem imutavel
-    ports:
-      - "8000:8000"
+    env_file: .env
+    command: gunicorn sigatcc.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    expose:
+      - "8000"
 
   frontend:
     build: ./frontend
     restart: unless-stopped
+    profiles: ["frontend"] # so existe depois que o projeto React for criado
     depends_on:
       - backend
-    ports:
-      - "5173:80"
+    expose:
+      - "80"
 
   nginx:
     image: nginx:alpine
     restart: unless-stopped
-    profiles: ["prod"] # so sobe com `docker compose --profile prod up`
+    profiles: ["prod"]
     ports:
       - "80:80"
       - "443:443"
@@ -52,7 +31,3 @@ services:
       - ./nginx/prod.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - backend
-      - frontend
-
-volumes:
-  pgdata:

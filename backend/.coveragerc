@@ -1,0 +1,10 @@
+[run]
+source = .
+omit =
+    */migrations/*
+    */migrations_extra/*
+    */tests/*
+    manage.py
+    conftest.py
+    sigatcc/wsgi.py
+    sigatcc/asgi.py
