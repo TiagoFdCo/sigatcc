@@ -1,0 +1,4 @@
+﻿extend-exclude = ["*/migrations/*", "*/migrations_extra/*"]
+
+[lint]
+ignore = ["RUF012"]

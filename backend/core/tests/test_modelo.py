@@ -6,15 +6,15 @@ from django.db import DatabaseError, IntegrityError, transaction
 from django.utils import timezone
 
 from core.models import (
-    AreaConhecimento,
+    TCC,
     Aluno,
+    AreaConhecimento,
     Banca,
     Curso,
     Docente,
     LogAcesso,
     MembroExterno,
     ParticipacaoBanca,
-    TCC,
     TokenAcesso,
     Usuario,
 )
@@ -56,14 +56,14 @@ def novo_aluno():
 
 def novo_tcc(aluno, orientador, **extra):
     area, _ = AreaConhecimento.objects.get_or_create(nome="Inteligencia Artificial")
-    dados = dict(
-        titulo="Um TCC",
-        curso=aluno.curso,
-        area_conhecimento=area,
-        modalidade="DEFESA_EM_BANCA",
-        autor=aluno,
-        orientador=orientador,
-    )
+    dados = {
+        "titulo":"Um TCC",
+        "curso":aluno.curso,
+        "area_conhecimento":area,
+        "modalidade":"DEFESA_EM_BANCA",
+        "autor":aluno,
+        "orientador":orientador,
+    }
     dados.update(extra)
     return TCC.objects.create(**dados)
 
