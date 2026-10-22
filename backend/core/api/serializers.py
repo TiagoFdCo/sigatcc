@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.models import TCC
+from core.models import TCC, MotivoNaoApresentacao, StatusTCC
 
 
 # ------------------------------------------------------------------ TCC
@@ -24,7 +24,7 @@ class TCCSerializer(serializers.ModelSerializer):
             "orientador",
             "coorientador",
         ]
-        # status so muda pela rota de situacao (B7b); curso vem do aluno
+        # status so muda pela rota /situacao/ (B7b); curso vem do aluno
         read_only_fields = [
             "id",
             "curso",
@@ -34,3 +34,16 @@ class TCCSerializer(serializers.ModelSerializer):
             "ativo",
             "data_cadastro",
         ]
+
+
+class MudarSituacaoSerializer(serializers.Serializer):
+    status = serializers.ChoiceField(choices=StatusTCC.choices)
+    motivo_nao_apresentacao = serializers.ChoiceField(
+        choices=MotivoNaoApresentacao.choices, required=False, allow_null=True
+    )
+    motivo_outro = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True
+    )
+    justificativa = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True
+    )
