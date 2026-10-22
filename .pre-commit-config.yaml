@@ -8,11 +8,14 @@ repos:
       - id: ruff-format
         files: ^backend/
 
+  # Os testes rodam pelo Docker (precisam do banco) e no CI. Este hook nao bloqueia
+  # o commit; para usa-lo: pre-commit run pytest-docker --hook-stage manual
   - repo: local
     hooks:
-      - id: pytest-check
-        name: Testes rapidos do backend antes do commit
-        entry: bash -c 'cd backend && pytest -m "not slow"'
+      - id: pytest-docker
+        name: Testes do backend via Docker
+        entry: docker compose run --rm backend pytest -m "not slow"
         language: system
         pass_filenames: false
         files: ^backend/
+        stages: [manual]
