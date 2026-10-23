@@ -71,9 +71,11 @@ def test_tcc_inativo_nao_impede_novo_cadastro(tcc, dados_tcc, orientador):
 
 
 def test_falha_na_auditoria_desfaz_o_cadastro(dados_tcc, orientador):
-    with mock.patch.object(servico, "registrar", side_effect=RuntimeError("log fora")):
-        with pytest.raises(RuntimeError):
-            servico.cadastrar_tcc(dados=dados_tcc, usuario=orientador.usuario)
+    with (
+        mock.patch.object(servico, "registrar", side_effect=RuntimeError("log fora")),
+        pytest.raises(RuntimeError),
+    ):
+        servico.cadastrar_tcc(dados=dados_tcc, usuario=orientador.usuario)
     assert TCC.objects.count() == 0
     assert HistoricoStatus.objects.count() == 0
 
