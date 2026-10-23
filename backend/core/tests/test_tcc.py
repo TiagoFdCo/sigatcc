@@ -71,9 +71,11 @@ def test_tcc_inativo_nao_impede_novo_cadastro(tcc, dados_tcc, orientador):
 
 
 def test_falha_na_auditoria_desfaz_o_cadastro(dados_tcc, orientador):
-    with mock.patch.object(servico, "registrar", side_effect=RuntimeError("log fora")):
-        with pytest.raises(RuntimeError):
-            servico.cadastrar_tcc(dados=dados_tcc, usuario=orientador.usuario)
+    with (
+        mock.patch.object(servico, "registrar", side_effect=RuntimeError("log fora")),
+        pytest.raises(RuntimeError),
+    ):
+        servico.cadastrar_tcc(dados=dados_tcc, usuario=orientador.usuario)
     assert TCC.objects.count() == 0
     assert HistoricoStatus.objects.count() == 0
 
@@ -89,7 +91,9 @@ def test_edicao_grava_um_log_por_campo_alterado(tcc, orientador):
     assert tcc.titulo == "Novo titulo"
     logs = LogAuditoria.objects.filter(registro_id=tcc.id, campo="titulo")
     assert logs.count() == 1
-    assert not LogAuditoria.objects.filter(registro_id=tcc.id, campo="subtitulo").exists()
+    assert not LogAuditoria.objects.filter(
+        registro_id=tcc.id, campo="subtitulo"
+    ).exists()
 
 
 def test_edicao_nao_troca_o_autor(tcc, orientador, criar_aluno):
@@ -102,7 +106,9 @@ def test_edicao_nao_troca_o_autor(tcc, orientador, criar_aluno):
 def test_edicao_aplica_regra_do_coorientador(tcc, orientador):
     with pytest.raises(ValidationError, match="diferente do orientador"):
         servico.atualizar_tcc(
-            tcc_id=tcc.pk, dados={"coorientador": orientador}, usuario=orientador.usuario
+            tcc_id=tcc.pk,
+            dados={"coorientador": orientador},
+            usuario=orientador.usuario,
         )
 
 

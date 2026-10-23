@@ -189,7 +189,10 @@ class Aluno(models.Model):
 
 class MembroExterno(models.Model):
     usuario = models.OneToOneField(
-        Usuario, primary_key=True, on_delete=models.CASCADE, related_name="membro_externo"
+        Usuario,
+        primary_key=True,
+        on_delete=models.CASCADE,
+        related_name="membro_externo",
     )
     instituicao_origem = models.CharField(max_length=200)
 
@@ -286,7 +289,9 @@ class TCC(UUIDModel):
 
 
 class HistoricoStatus(UUIDModel):
-    tcc = models.ForeignKey(TCC, on_delete=models.CASCADE, related_name="historico_status")
+    tcc = models.ForeignKey(
+        TCC, on_delete=models.CASCADE, related_name="historico_status"
+    )
     status = models.CharField(max_length=25, choices=StatusTCC.choices)
     data_alteracao = models.DateTimeField(auto_now_add=True)
     justificativa = models.TextField(null=True, blank=True)
@@ -331,7 +336,9 @@ class Banca(UUIDModel):
 
 
 class ParticipacaoBanca(UUIDModel):
-    banca = models.ForeignKey(Banca, on_delete=models.CASCADE, related_name="participacoes")
+    banca = models.ForeignKey(
+        Banca, on_delete=models.CASCADE, related_name="participacoes"
+    )
     usuario = models.ForeignKey(
         Usuario, on_delete=models.PROTECT, related_name="participacoes_banca"
     )
@@ -370,7 +377,9 @@ class Avaliacao(UUIDModel):
 
 class Convite(UUIDModel):
     banca = models.ForeignKey(Banca, on_delete=models.CASCADE, related_name="convites")
-    usuario = models.ForeignKey(Usuario, on_delete=models.PROTECT, related_name="convites")
+    usuario = models.ForeignKey(
+        Usuario, on_delete=models.PROTECT, related_name="convites"
+    )
     tipo = models.CharField(max_length=10, choices=TipoConvite.choices)
     status = models.CharField(
         max_length=10, choices=StatusConvite.choices, default=StatusConvite.PENDENTE
@@ -409,13 +418,17 @@ class TokenAcesso(UUIDModel):
 
 # ------------------------------------------------------ Orientacao academica
 class SolicitacaoOrientacao(UUIDModel):
-    aluno = models.ForeignKey(Aluno, on_delete=models.PROTECT, related_name="solicitacoes")
+    aluno = models.ForeignKey(
+        Aluno, on_delete=models.PROTECT, related_name="solicitacoes"
+    )
     docente = models.ForeignKey(
         Docente, on_delete=models.PROTECT, related_name="solicitacoes_recebidas"
     )
     mensagem = models.TextField()
     status = models.CharField(
-        max_length=10, choices=StatusSolicitacao.choices, default=StatusSolicitacao.PENDENTE
+        max_length=10,
+        choices=StatusSolicitacao.choices,
+        default=StatusSolicitacao.PENDENTE,
     )
     motivo_recusa = models.TextField(null=True, blank=True)
 
@@ -446,7 +459,9 @@ class ReuniaoAlinhamento(UUIDModel):
 
 # ------------------------------------------------------------ Auditoria
 class LogAuditoria(UUIDModel):
-    responsavel = models.ForeignKey(Usuario, on_delete=models.PROTECT, related_name="logs_auditoria")
+    responsavel = models.ForeignKey(
+        Usuario, on_delete=models.PROTECT, related_name="logs_auditoria"
+    )
     data_hora = models.DateTimeField(auto_now_add=True)
     entidade = models.CharField(max_length=60)
     registro_id = models.UUIDField()
@@ -460,7 +475,9 @@ class LogAuditoria(UUIDModel):
 
 
 class LogAcesso(UUIDModel):
-    usuario = models.ForeignKey(Usuario, on_delete=models.PROTECT, related_name="logs_acesso")
+    usuario = models.ForeignKey(
+        Usuario, on_delete=models.PROTECT, related_name="logs_acesso"
+    )
     data_hora = models.DateTimeField(auto_now_add=True)
     ip = models.GenericIPAddressField()
 
