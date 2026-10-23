@@ -132,11 +132,13 @@ def test_tcc_inexistente_da_404(orientador):
 
 
 def test_falha_na_auditoria_desfaz_a_mudanca(tcc, orientador):
-    with mock.patch.object(servico, "registrar", side_effect=RuntimeError("log fora")):
-        with pytest.raises(RuntimeError):
-            servico.mudar_situacao(
-                tcc_id=tcc.pk, status="APRESENTADO", usuario=orientador.usuario
-            )
+    with (
+        mock.patch.object(servico, "registrar", side_effect=RuntimeError("log fora")),
+        pytest.raises(RuntimeError),
+    ):
+        servico.mudar_situacao(
+            tcc_id=tcc.pk, status="APRESENTADO", usuario=orientador.usuario
+        )
     tcc.refresh_from_db()
     assert tcc.status == StatusTCC.EM_DESENVOLVIMENTO
     assert HistoricoStatus.objects.filter(tcc=tcc).count() == 1
