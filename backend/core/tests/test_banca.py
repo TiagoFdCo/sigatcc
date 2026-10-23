@@ -152,9 +152,11 @@ def test_tcc_fora_de_desenvolvimento_nao_recebe_banca(dados_banca, orientador, t
 
 
 def test_falha_na_auditoria_desfaz_a_banca(dados_banca, orientador):
-    with mock.patch.object(servico, "registrar", side_effect=RuntimeError("log fora")):
-        with pytest.raises(RuntimeError):
-            _cadastrar(dados_banca, orientador.usuario)
+    with (
+        mock.patch.object(servico, "registrar", side_effect=RuntimeError("log fora")),
+        pytest.raises(RuntimeError),
+    ):
+        _cadastrar(dados_banca, orientador.usuario)
     assert Banca.objects.count() == 0
     assert ParticipacaoBanca.objects.count() == 0
     assert Convite.objects.count() == 0
