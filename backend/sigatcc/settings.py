@@ -7,15 +7,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 def _lista(nome, padrao=""):
-    return [item.strip() for item in os.environ.get(nome, padrao).split(",") if item.strip()]
+    return [
+        item.strip() for item in os.environ.get(nome, padrao).split(",") if item.strip()
+    ]
 
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
 
 # Em producao a chave e obrigatoria; so em DEBUG existe uma chave de desenvolvimento.
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or ("chave-insegura-so-para-dev" if DEBUG else None)
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or (
+    "chave-insegura-so-para-dev" if DEBUG else None
+)
 if not SECRET_KEY:
-    raise RuntimeError("Defina DJANGO_SECRET_KEY (ou DJANGO_DEBUG=True em desenvolvimento).")
+    raise RuntimeError(
+        "Defina DJANGO_SECRET_KEY (ou DJANGO_DEBUG=True em desenvolvimento)."
+    )
 
 ALLOWED_HOSTS = _lista("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
 

@@ -133,7 +133,9 @@ def mudar_situacao(
                 {"motivo_nao_apresentacao": "Obrigatório para NAO_APRESENTADO."}
             )
         if motivo_nao_apresentacao == MotivoNaoApresentacao.OUTRO and not motivo_outro:
-            raise ValidationError({"motivo_outro": "Descreva o motivo quando for OUTRO."})
+            raise ValidationError(
+                {"motivo_outro": "Descreva o motivo quando for OUTRO."}
+            )
         tcc.motivo_nao_apresentacao = motivo_nao_apresentacao
         tcc.motivo_outro = motivo_outro or None
 
