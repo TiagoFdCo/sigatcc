@@ -4,6 +4,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+# O Vite grava o endereco da API dentro do JavaScript no momento do build
+ARG VITE_API_URL=http://localhost:8000/api
+ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
 # --- Etapa 2: imagem final, so com os arquivos estaticos ---

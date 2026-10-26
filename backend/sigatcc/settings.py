@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 
 import dj_database_url
@@ -32,6 +33,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "core",
 ]
@@ -70,9 +72,14 @@ DATABASES = {"default": dj_database_url.config(env="DATABASE_URL", conn_max_age=
 
 AUTH_USER_MODEL = "core.Usuario"
 
+# RBN29: minimo de 8 caracteres, com maiuscula, numero e caractere especial
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 8},
+    },
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "core.validators.SenhaForteValidator"},
 ]
 
 LANGUAGE_CODE = "pt-br"
@@ -88,6 +95,54 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # SPA em outra origem (decisao do plano): so os dominios listados chamam a API
 CORS_ALLOWED_ORIGINS = _lista("CORS_ALLOWED_ORIGINS", "http://localhost:5173")
 
-# A configuracao de JWT (djangorestframework-simplejwt) entra no B5 (login).
-# A chave ja vem do ambiente: JWT_SIGNING_KEY.
+# --- API e autenticacao (B5) ---
 JWT_SIGNING_KEY = os.environ.get("JWT_SIGNING_KEY", SECRET_KEY)
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+}
+
+# RNF02: sessao de 30 min. O access dura 15 min e o refresh 30 min; como o refresh
+# e trocado a cada uso, a sessao so expira apos 30 min sem atividade.
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=30),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "SIGNING_KEY": JWT_SIGNING_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+}
+
+# --- Producao e homologacao (B11) ---
+# O TLS termina no proxy (Caddy/nginx); ele avisa o Django pelo X-Forwarded-Proto.
+CSRF_TRUSTED_ORIGINS = _lista("CSRF_TRUSTED_ORIGINS")
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = (
+        os.environ.get("DJANGO_SSL_REDIRECT", "True").lower() == "true"
+    )
+    SECURE_REDIRECT_EXEMPT = [r"^saude/$"]  # o healthcheck interno usa HTTP
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_HSTS_SECONDS", "0"))
+    X_FRAME_OPTIONS = "DENY"
+    # Sem DEBUG a API fala so JSON (a pagina navegavel do DRF precisa de estaticos)
+    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
+        "rest_framework.renderers.JSONRenderer"
+    ]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "root": {
+        "handlers": ["console"],
+        "level": os.environ.get("DJANGO_LOG_LEVEL", "INFO"),
+    },
+}

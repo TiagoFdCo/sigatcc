@@ -12,7 +12,11 @@ services:
       - "8000"
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        # endereco da API gravado no JavaScript durante o build (Vite)
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api}
     restart: unless-stopped
     profiles: ["frontend"] # so existe depois que o projeto React for criado
     depends_on:

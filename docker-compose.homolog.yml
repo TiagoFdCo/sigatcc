@@ -1,0 +1,58 @@
+# Homologacao (B11): o mesmo desenho da producao, num droplet so.
+# Uso (no servidor):
+#   docker compose -f docker-compose.yml -f docker-compose.homolog.yml --profile frontend up -d --build
+# ou simplesmente: ./scripts/deploy-homologacao.sh
+#
+# Diferencas para a producao:
+# - banco PostgreSQL em container (com volume), em vez do gerenciado da DigitalOcean;
+# - Caddy no lugar do nginx: emite e renova o certificado TLS sozinho (RNF02).
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    volumes:
+      - pgdata_homolog:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/saude/')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      API_HOST: ${API_HOST}
+      APP_HOST: ${APP_HOST}
+      ACME_EMAIL: ${ACME_EMAIL}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  pgdata_homolog:
+  caddy_data:
+  caddy_config:
