@@ -5,6 +5,7 @@ from core.models import (
     Aluno,
     AreaConhecimento,
     Banca,
+    Convite,
     Curso,
     Departamento,
     Docente,
@@ -82,9 +83,14 @@ class TCCDetalheSerializer(TCCSerializer):
     historico = HistoricoStatusSerializer(
         source="historico_status", many=True, read_only=True
     )
+    banca = serializers.SerializerMethodField()
 
     class Meta(TCCSerializer.Meta):
-        fields = [*TCCSerializer.Meta.fields, "historico"]
+        fields = [*TCCSerializer.Meta.fields, "historico", "banca"]
+
+    def get_banca(self, obj):
+        banca = getattr(obj, "banca", None)
+        return BancaSerializer(banca).data if banca else None
 
 
 class MudarSituacaoSerializer(serializers.Serializer):
@@ -115,17 +121,38 @@ class CadastrarBancaSerializer(serializers.Serializer):
 
 
 class ParticipacaoSerializer(serializers.ModelSerializer):
+    # B9c: nome e perfil de quem compoe a banca, para a tela
+    usuario_nome = serializers.CharField(source="usuario.nome_completo", read_only=True)
+    tipo_usuario = serializers.CharField(source="usuario.tipo_usuario", read_only=True)
+
     class Meta:
         model = ParticipacaoBanca
-        fields = ["usuario", "tipo_membro", "presente"]
+        fields = ["usuario", "usuario_nome", "tipo_usuario", "tipo_membro", "presente"]
+
+
+class ConviteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Convite
+        fields = ["usuario", "tipo", "status"]
 
 
 class BancaSerializer(serializers.ModelSerializer):
     participacoes = ParticipacaoSerializer(many=True, read_only=True)
+    convites = ConviteSerializer(many=True, read_only=True)
+    tcc_titulo = serializers.CharField(source="tcc.titulo", read_only=True)
 
     class Meta:
         model = Banca
-        fields = ["id", "tcc", "data_hora", "tipo_local", "local", "participacoes"]
+        fields = [
+            "id",
+            "tcc",
+            "tcc_titulo",
+            "data_hora",
+            "tipo_local",
+            "local",
+            "participacoes",
+            "convites",
+        ]
 
 
 # -------------------------------------------------------------- Docentes

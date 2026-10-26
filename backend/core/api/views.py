@@ -101,7 +101,11 @@ class TCCViewSet(viewsets.ModelViewSet):
 class BancaViewSet(viewsets.ReadOnlyModelViewSet):
     """/api/bancas/ (B8): listar, detalhar e cadastrar."""
 
-    queryset = Banca.objects.prefetch_related("participacoes").order_by("data_hora")
+    queryset = (
+        Banca.objects.select_related("tcc")
+        .prefetch_related("participacoes__usuario", "convites")
+        .order_by("data_hora")
+    )
     serializer_class = BancaSerializer
     permission_classes = [LeituraOuGestao]
 

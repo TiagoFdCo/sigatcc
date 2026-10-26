@@ -71,3 +71,9 @@ export function opcoesDeSituacao(status: StatusTcc, modalidade: Modalidade) {
     },
   ];
 }
+
+export const STATUS_CONVITE: Record<string, string> = {
+  PENDENTE: "Convite pendente",
+  ACEITO: "Convite aceito",
+  RECUSADO: "Convite recusado",
+};

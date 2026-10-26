@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ProvedorAuth } from "./auth/AuthContext";
 import { RotaProtegida } from "./auth/RotaProtegida";
 import { Layout } from "./componentes/Layout";
+import { BancaFormulario } from "./paginas/BancaFormulario";
 import { Login } from "./paginas/Login";
 import { NaoEncontrada } from "./paginas/NaoEncontrada";
 import { TccDetalhe } from "./paginas/TccDetalhe";
@@ -22,6 +23,7 @@ export function App() {
               <Route path="/tccs/novo" element={<TccFormulario />} />
               <Route path="/tccs/:id" element={<TccDetalhe />} />
               <Route path="/tccs/:id/editar" element={<TccFormulario />} />
+              <Route path="/tccs/:id/banca/nova" element={<BancaFormulario />} />
               <Route path="*" element={<NaoEncontrada />} />
             </Route>
           </Route>

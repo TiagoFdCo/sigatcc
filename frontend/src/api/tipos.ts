@@ -52,7 +52,35 @@ export type HistoricoStatus = {
   justificativa: string | null;
 };
 
-export type TccDetalhe = Tcc & { historico: HistoricoStatus[] };
+export type TccDetalhe = Tcc & { historico: HistoricoStatus[]; banca: Banca | null };
+
+// ---------------------------------------------------------------- Banca
+export type TipoLocal = "PRESENCIAL" | "REMOTO";
+
+export type ParticipacaoBanca = {
+  usuario: string;
+  usuario_nome: string;
+  tipo_usuario: TipoUsuario;
+  tipo_membro: "TITULAR" | "SUPLENTE";
+  presente: boolean | null;
+};
+
+export type Convite = {
+  usuario: string;
+  tipo: "BANCA" | "AUDIENCIA";
+  status: "PENDENTE" | "ACEITO" | "RECUSADO";
+};
+
+export type Banca = {
+  id: string;
+  tcc: string;
+  tcc_titulo: string;
+  data_hora: string;
+  tipo_local: TipoLocal;
+  local: string;
+  participacoes: ParticipacaoBanca[];
+  convites: Convite[];
+};
 
 // ------------------------------------------------------- pessoas e catalogos
 export type Docente = {
@@ -74,6 +102,15 @@ export type Aluno = {
   curso: string;
   curso_nome: string;
   ativo: boolean;
+};
+
+export type UsuarioGeral = {
+  id: string;
+  nome_completo: string;
+  email: string;
+  tipo_usuario: TipoUsuario;
+  ativo: boolean;
+  instituicao_origem: string | null;
 };
 
 export type Curso = { id: string; nome: string; rotulo: string };

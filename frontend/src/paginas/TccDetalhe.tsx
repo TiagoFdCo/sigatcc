@@ -5,12 +5,13 @@ import { api } from "../api/cliente";
 import type { TccDetalhe as Detalhe } from "../api/tipos";
 import { useAuth } from "../auth/AuthContext";
 import { Alerta } from "../componentes/Alerta";
+import { CartaoBanca } from "../componentes/CartaoBanca";
 import { PainelSituacao } from "../componentes/PainelSituacao";
 import { SeloSituacao } from "../componentes/SeloSituacao";
 import { useCarregar } from "../hooks/useCarregar";
 import { MODALIDADES, MOTIVOS, STATUS, VISIBILIDADES, formatarData, formatarDataHora, nomeDoCurso } from "../util/rotulos";
 
-/** B9b: detalhe do TCC, historico de situacao e mudanca de situacao (B7b). */
+/** B9b: detalhe do TCC, historico e mudanca de situacao (B7b); B9c: banca. */
 export function TccDetalhe() {
   const { id = "" } = useParams<{ id: string }>();
   const { podeEditar } = useAuth();
@@ -104,6 +105,7 @@ export function TccDetalhe() {
               ))}
             </dl>
           </section>
+          <CartaoBanca tcc={tcc} podeEditar={podeEditar} />
         </div>
 
         <aside className="cartao coluna-lateral">

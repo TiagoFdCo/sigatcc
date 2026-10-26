@@ -602,6 +602,153 @@ legend {
   max-width: 420px;
 }
 
+/* ------------------------------------------------------------ banca (B9c) */
+.vazio {
+  padding: 20px;
+  border: 1px dashed #b8c0c9;
+  border-radius: var(--raio);
+  color: var(--tinta-suave);
+  font-size: 15px;
+}
+
+.membros {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.membros li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 12px 0;
+  border-top: 1px solid #e6e9ed;
+}
+
+.selo-convite-pendente {
+  background: var(--aviso-fundo);
+  color: var(--aviso-texto);
+}
+
+.selo-convite-aceito {
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+}
+
+.selo-convite-recusado {
+  background: var(--erro-fundo);
+  color: var(--erro-texto);
+}
+
+.resumo-tcc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  padding: 18px 20px;
+  border-radius: var(--raio-grande);
+  background: var(--verde-claro);
+  font-size: 15px;
+}
+
+.resumo-tcc strong {
+  flex: 1 1 100%;
+}
+
+.texto-rotulo {
+  color: #2f4a44;
+}
+
+.membro-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.membro-fixo {
+  padding: 12px 14px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  background: var(--fundo);
+}
+
+.numero {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--verde);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.numero-claro {
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+}
+
+.campo-flex {
+  flex: 1 1 280px;
+}
+
+.so-leitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.botao-icone {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  background: var(--superficie);
+  color: var(--tinta-suave);
+  cursor: pointer;
+}
+
+.segmentado {
+  display: inline-flex;
+  border: 1px solid var(--borda-forte);
+  border-radius: var(--raio);
+  overflow: hidden;
+}
+
+.segmentado button {
+  min-height: 42px;
+  padding: 0 18px;
+  border: none;
+  background: var(--superficie);
+  color: var(--tinta);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.segmentado button + button {
+  border-left: 1px solid var(--borda-forte);
+}
+
+.segmentado button[aria-pressed="true"] {
+  background: var(--verde);
+  color: #ffffff;
+}
+
 /* ------------------------------------------------------------ login */
 .login {
   min-height: 100vh;
