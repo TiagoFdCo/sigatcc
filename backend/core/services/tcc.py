@@ -1,11 +1,32 @@
-"""B7a (cadastro e edicao de TCC)."""
+"""B7a (cadastro de TCC) e B7b (situacao do TCC)."""
 
 from django.db import transaction
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 
-from core.models import TCC, HistoricoStatus, StatusTCC
+from core.models import (
+    TCC,
+    HistoricoStatus,
+    ModalidadeConclusao,
+    MotivoNaoApresentacao,
+    StatusTCC,
+)
 from core.services.auditoria import registrar
+
+# Para onde cada status pode ir. Status fora do dicionario sao finais.
+TRANSICOES = {
+    StatusTCC.EM_DESENVOLVIMENTO: {
+        StatusTCC.APRESENTADO,
+        StatusTCC.NAO_APRESENTADO,
+        StatusTCC.APROVADO_POR_PUBLICACAO,
+    },
+}
+
+# Status que so fazem sentido para uma modalidade de conclusao.
+MODALIDADE_EXIGIDA = {
+    StatusTCC.APRESENTADO: ModalidadeConclusao.DEFESA_EM_BANCA,
+    StatusTCC.APROVADO_POR_PUBLICACAO: ModalidadeConclusao.PUBLICACAO_APROVADA,
+}
 
 # Campos que o PATCH pode alterar. Autor, curso e status ficam de fora.
 CAMPOS_EDITAVEIS = (
@@ -78,4 +99,52 @@ def atualizar_tcc(*, tcc_id, dados, usuario):
         registrar(usuario, "TCC", tcc.id, campo, anterior, novo)
     if alterados:
         tcc.save(update_fields=alterados)
+    return tcc
+
+
+@transaction.atomic
+def mudar_situacao(
+    *,
+    tcc_id,
+    status,
+    usuario,
+    motivo_nao_apresentacao=None,
+    motivo_outro=None,
+    justificativa=None,
+):
+    """Muda o status do TCC se a transicao for permitida; grava historico e log."""
+    tcc = get_object_or_404(TCC.objects.select_for_update(), pk=tcc_id)
+    anterior = tcc.status
+
+    if not tcc.ativo:
+        raise ValidationError("TCC inativo não muda de situação.")
+    if status not in TRANSICOES.get(anterior, set()):
+        raise ValidationError(
+            {"status": f"Transição {anterior} → {status} não permitida."}
+        )
+    exigida = MODALIDADE_EXIGIDA.get(status)
+    if exigida and tcc.modalidade != exigida:
+        raise ValidationError(
+            {"status": f"{status} só vale para TCC na modalidade {exigida}."}
+        )
+    if status == StatusTCC.NAO_APRESENTADO:  # RD11
+        if not motivo_nao_apresentacao:
+            raise ValidationError(
+                {"motivo_nao_apresentacao": "Obrigatório para NAO_APRESENTADO."}
+            )
+        if motivo_nao_apresentacao == MotivoNaoApresentacao.OUTRO and not motivo_outro:
+            raise ValidationError(
+                {"motivo_outro": "Descreva o motivo quando for OUTRO."}
+            )
+        tcc.motivo_nao_apresentacao = motivo_nao_apresentacao
+        tcc.motivo_outro = motivo_outro or None
+
+    tcc.status = status
+    tcc.save(update_fields=["status", "motivo_nao_apresentacao", "motivo_outro"])
+    HistoricoStatus.objects.create(
+        tcc=tcc,
+        status=status,
+        justificativa=justificativa or motivo_outro or motivo_nao_apresentacao,
+    )
+    registrar(usuario, "TCC", tcc.id, "status", anterior, status)
     return tcc
