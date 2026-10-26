@@ -3,19 +3,30 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from core.api.permissions import LeituraOuAdministrador, LeituraOuGestao
+from core.api.permissions import (
+    GestaoDePessoas,
+    LeituraOuAdministrador,
+    LeituraOuGestao,
+)
 from core.api.serializers import (
+    AlunoEntradaSerializer,
+    AlunoSerializer,
+    AreaConhecimentoSerializer,
     BancaSerializer,
     CadastrarBancaSerializer,
+    CursoSerializer,
     DocenteEntradaSerializer,
     DocenteSerializer,
     MudarSituacaoSerializer,
     TCCSerializer,
+    UsuarioEntradaSerializer,
+    UsuarioSerializer,
 )
-from core.models import TCC, Banca, Docente
+from core.models import TCC, Aluno, AreaConhecimento, Banca, Curso, Docente, Usuario
 from core.services import banca as servico_banca
 from core.services import contas as servico_contas
 from core.services import docente as servico_docente
+from core.services import pessoas as servico_pessoas
 from core.services import tcc as servico_tcc
 
 
@@ -146,3 +157,142 @@ class DocenteViewSet(viewsets.ReadOnlyModelViewSet):
             usuario_id=pk, ativo=True, usuario=request.user, entidade="DOCENTE"
         )
         return Response(self._saida(conta.pk))
+
+
+class AlunoViewSet(viewsets.ReadOnlyModelViewSet):
+    """/api/alunos/ (B14): o administrador cadastra; docentes consultam."""
+
+    serializer_class = AlunoSerializer
+    permission_classes = [GestaoDePessoas]
+
+    def get_queryset(self):
+        qs = Aluno.objects.select_related("usuario", "curso").order_by(
+            "usuario__nome_completo"
+        )
+        qs = filtro_ativo(qs, self.request, "usuario__ativo")
+        busca = self.request.query_params.get("busca")
+        if busca:
+            qs = qs.filter(
+                Q(usuario__nome_completo__icontains=busca) | Q(matricula__icontains=busca)
+            )
+        curso = self.request.query_params.get("curso")
+        if curso:
+            qs = qs.filter(curso_id=curso)
+        return qs
+
+    def _saida(self, pk):
+        return AlunoSerializer(self.get_queryset().get(pk=pk)).data
+
+    def create(self, request):
+        entrada = AlunoEntradaSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        aluno = servico_pessoas.cadastrar_aluno(
+            dados=entrada.validated_data, usuario=request.user
+        )
+        return Response(self._saida(aluno.pk), status=status.HTTP_201_CREATED)
+
+    def partial_update(self, request, pk=None):
+        entrada = AlunoEntradaSerializer(data=request.data, partial=True)
+        entrada.is_valid(raise_exception=True)
+        aluno = servico_pessoas.atualizar_aluno(
+            aluno_id=pk, dados=entrada.validated_data, usuario=request.user
+        )
+        return Response(self._saida(aluno.pk))
+
+    @action(detail=True, methods=["post"])
+    def desativar(self, request, pk=None):
+        self.get_object()
+        servico_contas.alterar_ativo(
+            usuario_id=pk, ativo=False, usuario=request.user, entidade="ALUNO"
+        )
+        return Response(self._saida(pk))
+
+    @action(detail=True, methods=["post"])
+    def reativar(self, request, pk=None):
+        self.get_object()
+        servico_contas.alterar_ativo(
+            usuario_id=pk, ativo=True, usuario=request.user, entidade="ALUNO"
+        )
+        return Response(self._saida(pk))
+
+
+class UsuarioViewSet(viewsets.ReadOnlyModelViewSet):
+    """/api/usuarios/ (B14): secretaria, administrador e membro externo.
+
+    ?tipo=MEMBRO_EXTERNO lista quem pode compor banca alem dos docentes.
+    """
+
+    serializer_class = UsuarioSerializer
+    permission_classes = [GestaoDePessoas]
+
+    def get_queryset(self):
+        qs = (
+            Usuario.objects.filter(tipo_usuario__in=servico_pessoas.TIPOS_GERAIS)
+            .select_related("membro_externo")
+            .order_by("nome_completo")
+        )
+        qs = filtro_ativo(qs, self.request, "ativo")
+        tipo = self.request.query_params.get("tipo")
+        if tipo:
+            qs = qs.filter(tipo_usuario=tipo)
+        return qs
+
+    def _saida(self, pk):
+        return UsuarioSerializer(self.get_queryset().get(pk=pk)).data
+
+    def create(self, request):
+        entrada = UsuarioEntradaSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        conta = servico_pessoas.cadastrar_usuario(
+            dados=entrada.validated_data, usuario=request.user
+        )
+        return Response(self._saida(conta.pk), status=status.HTTP_201_CREATED)
+
+    def partial_update(self, request, pk=None):
+        entrada = UsuarioEntradaSerializer(data=request.data, partial=True)
+        entrada.is_valid(raise_exception=True)
+        conta = servico_pessoas.atualizar_usuario(
+            usuario_id=pk, dados=entrada.validated_data, usuario=request.user
+        )
+        return Response(self._saida(conta.pk))
+
+    @action(detail=True, methods=["post"])
+    def desativar(self, request, pk=None):
+        conta = self.get_object()
+        servico_contas.alterar_ativo(
+            usuario_id=pk, ativo=False, usuario=request.user, entidade=conta.tipo_usuario
+        )
+        return Response(self._saida(pk))
+
+    @action(detail=True, methods=["post"])
+    def reativar(self, request, pk=None):
+        conta = self.get_object()
+        servico_contas.alterar_ativo(
+            usuario_id=pk, ativo=True, usuario=request.user, entidade=conta.tipo_usuario
+        )
+        return Response(self._saida(pk))
+
+
+class CursoViewSet(viewsets.ReadOnlyModelViewSet):
+    """/api/cursos/: os tres cursos do NUCOMP (semeados pela migration 0002)."""
+
+    queryset = Curso.objects.order_by("nome")
+    serializer_class = CursoSerializer
+
+
+class AreaConhecimentoViewSet(viewsets.ReadOnlyModelViewSet):
+    """/api/areas/: lista para todos; so o administrador cadastra."""
+
+    queryset = AreaConhecimento.objects.order_by("nome")
+    serializer_class = AreaConhecimentoSerializer
+    permission_classes = [LeituraOuAdministrador]
+
+    def create(self, request):
+        entrada = AreaConhecimentoSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        area = servico_pessoas.cadastrar_area(
+            nome=entrada.validated_data["nome"], usuario=request.user
+        )
+        return Response(
+            AreaConhecimentoSerializer(area).data, status=status.HTTP_201_CREATED
+        )

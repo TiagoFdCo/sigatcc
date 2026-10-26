@@ -2,8 +2,10 @@ from rest_framework import serializers
 
 from core.models import (
     TCC,
+    Aluno,
     AreaConhecimento,
     Banca,
+    Curso,
     Departamento,
     Docente,
     MotivoNaoApresentacao,
@@ -12,6 +14,7 @@ from core.models import (
     TipoLocal,
     Usuario,
 )
+from core.services.pessoas import TIPOS_GERAIS
 from core.validators import cpf_valido, mascarar_cpf, so_digitos
 
 
@@ -146,3 +149,86 @@ class DocenteEntradaSerializer(serializers.Serializer):
     senha_inicial = serializers.CharField(
         required=False, write_only=True, trim_whitespace=False
     )
+
+
+# ------------------------------------------------------- Alunos (B14)
+class AlunoSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(source="pk", read_only=True)
+    nome_completo = serializers.CharField(source="usuario.nome_completo")
+    email = serializers.EmailField(source="usuario.email")
+    ativo = serializers.BooleanField(source="usuario.ativo")
+    curso_nome = serializers.CharField(source="curso.nome", read_only=True)
+    cpf = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Aluno
+        fields = [
+            "id",
+            "nome_completo",
+            "email",
+            "matricula",
+            "cpf",
+            "curso",
+            "curso_nome",
+            "cadastro_confirmado",
+            "ativo",
+        ]
+
+    def get_cpf(self, obj):
+        return mascarar_cpf(obj.cpf)
+
+
+class AlunoEntradaSerializer(serializers.Serializer):
+    nome_completo = serializers.CharField(max_length=200)
+    email = serializers.EmailField()
+    matricula = serializers.CharField(max_length=30)
+    cpf = CpfField(max_length=14)
+    curso = serializers.PrimaryKeyRelatedField(queryset=Curso.objects.all())
+    senha_inicial = serializers.CharField(
+        required=False, write_only=True, trim_whitespace=False
+    )
+
+
+# --------------------------- Secretaria, administrador e membro externo (B14)
+class UsuarioSerializer(serializers.ModelSerializer):
+    instituicao_origem = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Usuario
+        fields = [
+            "id",
+            "nome_completo",
+            "email",
+            "tipo_usuario",
+            "ativo",
+            "instituicao_origem",
+        ]
+
+    def get_instituicao_origem(self, obj):
+        externo = getattr(obj, "membro_externo", None)
+        return externo.instituicao_origem if externo else None
+
+
+class UsuarioEntradaSerializer(serializers.Serializer):
+    nome_completo = serializers.CharField(max_length=200)
+    email = serializers.EmailField()
+    tipo_usuario = serializers.ChoiceField(choices=[(t, t) for t in TIPOS_GERAIS])
+    instituicao_origem = serializers.CharField(max_length=200, required=False)
+    senha_inicial = serializers.CharField(
+        required=False, write_only=True, trim_whitespace=False
+    )
+
+
+# ------------------------------------------------------ Catalogos (B14)
+class CursoSerializer(serializers.ModelSerializer):
+    rotulo = serializers.CharField(source="get_nome_display", read_only=True)
+
+    class Meta:
+        model = Curso
+        fields = ["id", "nome", "rotulo"]
+
+
+class AreaConhecimentoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AreaConhecimento
+        fields = ["id", "nome"]
