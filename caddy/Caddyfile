@@ -1,0 +1,18 @@
+# Proxy de homologacao (B11). O Caddy pede o certificado TLS ao Let's Encrypt
+# assim que o DNS de API_HOST e APP_HOST apontar para o droplet.
+{
+	email {$ACME_EMAIL}
+}
+
+{$API_HOST} {
+	encode gzip
+	reverse_proxy backend:8000 {
+		# o Django grava este IP no LOG_ACESSO (core/api/auth.py)
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+{$APP_HOST} {
+	encode gzip
+	reverse_proxy frontend:80
+}

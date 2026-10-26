@@ -16,7 +16,10 @@ sigatcc/
 │   ├── sigatcc/                    # settings, urls (/saude/), wsgi, asgi
 │   ├── manage.py, pytest.ini, .coveragerc, conftest.py
 │   ├── Dockerfile, requirements.txt
-├── frontend/                       # React (Vite): ainda a criar
+├── frontend/                       # React + TypeScript (Vite): telas do B9
+├── caddy/Caddyfile                 # proxy com HTTPS da homologacao (B11)
+├── docker-compose.homolog.yml      # homologacao: banco em container + Caddy
+├── scripts/deploy-homologacao.sh   # publica em homologacao
 ├── nginx/prod.conf                 # proxy reverso de producao
 ├── scripts/nova-branch.sh          # branch no padrao feature/<ID>-<descricao>
 ├── scripts/b4-migrations.sh        # gera e aplica as migrations do B4
@@ -139,16 +142,31 @@ pre-commit install
 O hook de testes precisa de um PostgreSQL acessivel e das variaveis do `.env` no ambiente da maquina.
 Se atrapalhar, comente o hook `pytest-check` no `.pre-commit-config.yaml` e deixe os testes para o CI.
 
-### 10. Criar o frontend (quando for a hora)
+### 10. Frontend (B9)
+
+O frontend (React + TypeScript, Vite) fica em `frontend/`. Detalhes em `frontend/README.md`.
 
 ```bash
-npm create vite@latest frontend -- --template react-ts
-cd frontend && npm install
+docker compose --profile frontend up -d --build   # http://localhost:5173
 ```
 
-Defina no `package.json` o script `"test": "vitest run"` (instale o `vitest`) e o script `"lint"`.
-O CI pula as etapas do frontend enquanto nao houver `frontend/package-lock.json`.
-Para subir o frontend pelo Docker: `docker compose --profile frontend up -d --build`.
+Para criar dados de teste (docentes, alunos, TCCs e uma banca) e entrar no sistema:
+
+```bash
+docker compose exec backend python manage.py popular_demo
+```
+
+O comando mostra os logins criados. A senha padrao e `Demo#2026`.
+
+### 11. Rotas da API
+
+| Rota | Quem usa | Atividade |
+| --- | --- | --- |
+| `POST /api/auth/login/`, `refresh/`, `logout/`, `GET me/` | todos | B5 |
+| `/api/docentes/` (+ `desativar/`, `reativar/`) | leitura: todos; escrita: administrador | B6 |
+| `/api/alunos/`, `/api/usuarios/`, `/api/cursos/`, `/api/areas/` | leitura: docente, secretaria, admin; escrita: admin | B14 |
+| `/api/tccs/` e `/api/tccs/{id}/situacao/` | leitura: todos; escrita: docente e admin | B7a, B7b |
+| `/api/bancas/` | leitura: todos; escrita: docente e admin | B8 |
 
 ## Configurar o GitHub (uma vez, por quem administra o repositorio)
 
@@ -165,6 +183,26 @@ Quando o deploy for automatizado, acrescente `RESEND_API_KEY`, `DJANGO_SECRET_KE
 - Require branches to be up to date before merging
 
 Isso aplica o RNF11 (cobertura >= 70% e 100% dos PRs revisados) como regra tecnica.
+
+## Homologacao (B11)
+
+Homologacao roda num droplet com tudo em containers: PostgreSQL, API, frontend e o Caddy,
+que cuida do HTTPS sozinho (emite e renova o certificado do Let's Encrypt).
+
+1. Aponte dois dominios para o IP do droplet (registro A), por exemplo
+   `api-homolog.sigatcc.com.br` e `homolog.sigatcc.com.br`.
+2. No droplet, instale Docker e Git, clone o repositorio e crie o `.env` a partir do
+   `.env.example`, preenchendo a parte "Homologacao" (dominios, `DJANGO_DEBUG=False`,
+   `VITE_API_URL` com https e chaves novas, diferentes das de desenvolvimento).
+3. Publique:
+   ```bash
+   ./scripts/deploy-homologacao.sh main --demo
+   ```
+   O script atualiza o codigo, faz o build, aplica as migrations, cria os dados de
+   demonstracao (`--demo`, so na primeira vez), sobe tudo e confere a API.
+4. Crie o administrador real: `docker compose -f docker-compose.yml -f docker-compose.homolog.yml exec backend python manage.py createsuperuser`.
+
+Para publicar de novo depois de um merge na `main`, rode so `./scripts/deploy-homologacao.sh`.
 
 ## Producao (droplet DigitalOcean)
 

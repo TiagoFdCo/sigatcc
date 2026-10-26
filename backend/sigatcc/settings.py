@@ -117,3 +117,32 @@ SIMPLE_JWT = {
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
 }
+
+# --- Producao e homologacao (B11) ---
+# O TLS termina no proxy (Caddy/nginx); ele avisa o Django pelo X-Forwarded-Proto.
+CSRF_TRUSTED_ORIGINS = _lista("CSRF_TRUSTED_ORIGINS")
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = (
+        os.environ.get("DJANGO_SSL_REDIRECT", "True").lower() == "true"
+    )
+    SECURE_REDIRECT_EXEMPT = [r"^saude/$"]  # o healthcheck interno usa HTTP
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_HSTS_SECONDS", "0"))
+    X_FRAME_OPTIONS = "DENY"
+    # Sem DEBUG a API fala so JSON (a pagina navegavel do DRF precisa de estaticos)
+    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
+        "rest_framework.renderers.JSONRenderer"
+    ]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "root": {
+        "handlers": ["console"],
+        "level": os.environ.get("DJANGO_LOG_LEVEL", "INFO"),
+    },
+}
