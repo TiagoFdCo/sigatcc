@@ -1,11 +1,13 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { ProvedorAuth } from "./auth/AuthContext";
 import { RotaProtegida } from "./auth/RotaProtegida";
 import { Layout } from "./componentes/Layout";
-import { Inicio } from "./paginas/Inicio";
 import { Login } from "./paginas/Login";
 import { NaoEncontrada } from "./paginas/NaoEncontrada";
+import { TccDetalhe } from "./paginas/TccDetalhe";
+import { TccFormulario } from "./paginas/TccFormulario";
+import { TccLista } from "./paginas/TccLista";
 
 export function App() {
   return (
@@ -15,7 +17,11 @@ export function App() {
           <Route path="/login" element={<Login />} />
           <Route element={<RotaProtegida />}>
             <Route element={<Layout />}>
-              <Route index element={<Inicio />} />
+              <Route index element={<Navigate to="/tccs" replace />} />
+              <Route path="/tccs" element={<TccLista />} />
+              <Route path="/tccs/novo" element={<TccFormulario />} />
+              <Route path="/tccs/:id" element={<TccDetalhe />} />
+              <Route path="/tccs/:id/editar" element={<TccFormulario />} />
               <Route path="*" element={<NaoEncontrada />} />
             </Route>
           </Route>

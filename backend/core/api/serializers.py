@@ -8,6 +8,7 @@ from core.models import (
     Curso,
     Departamento,
     Docente,
+    HistoricoStatus,
     MotivoNaoApresentacao,
     ParticipacaoBanca,
     StatusTCC,
@@ -20,6 +21,18 @@ from core.validators import cpf_valido, mascarar_cpf, so_digitos
 
 # ------------------------------------------------------------------ TCC
 class TCCSerializer(serializers.ModelSerializer):
+    # B9b: nomes prontos para as telas (as FKs continuam vindo como id)
+    autor_nome = serializers.CharField(source="autor.usuario.nome_completo", read_only=True)
+    autor_matricula = serializers.CharField(source="autor.matricula", read_only=True)
+    orientador_nome = serializers.CharField(
+        source="orientador.usuario.nome_completo", read_only=True
+    )
+    coorientador_nome = serializers.CharField(
+        source="coorientador.usuario.nome_completo", read_only=True, allow_null=True
+    )
+    curso_nome = serializers.CharField(source="curso.nome", read_only=True)
+    area_nome = serializers.CharField(source="area_conhecimento.nome", read_only=True)
+
     class Meta:
         model = TCC
         fields = [
@@ -27,7 +40,9 @@ class TCCSerializer(serializers.ModelSerializer):
             "titulo",
             "subtitulo",
             "curso",
+            "curso_nome",
             "area_conhecimento",
+            "area_nome",
             "modalidade",
             "visibilidade",
             "status",
@@ -36,8 +51,12 @@ class TCCSerializer(serializers.ModelSerializer):
             "ativo",
             "data_cadastro",
             "autor",
+            "autor_nome",
+            "autor_matricula",
             "orientador",
+            "orientador_nome",
             "coorientador",
+            "coorientador_nome",
         ]
         # status so muda pela rota /situacao/ (B7b); curso vem do aluno
         read_only_fields = [
@@ -49,6 +68,23 @@ class TCCSerializer(serializers.ModelSerializer):
             "ativo",
             "data_cadastro",
         ]
+
+
+class HistoricoStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HistoricoStatus
+        fields = ["status", "data_alteracao", "justificativa"]
+
+
+class TCCDetalheSerializer(TCCSerializer):
+    """Detalhe do TCC: inclui o historico de situacao, do mais novo ao mais antigo."""
+
+    historico = HistoricoStatusSerializer(
+        source="historico_status", many=True, read_only=True
+    )
+
+    class Meta(TCCSerializer.Meta):
+        fields = [*TCCSerializer.Meta.fields, "historico"]
 
 
 class MudarSituacaoSerializer(serializers.Serializer):

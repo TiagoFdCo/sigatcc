@@ -1,3 +1,5 @@
+import uuid
+
 from django.db.models import Count, Q
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -18,6 +20,7 @@ from core.api.serializers import (
     DocenteEntradaSerializer,
     DocenteSerializer,
     MudarSituacaoSerializer,
+    TCCDetalheSerializer,
     TCCSerializer,
     UsuarioEntradaSerializer,
     UsuarioSerializer,
@@ -31,15 +34,47 @@ from core.services import tcc as servico_tcc
 
 
 class TCCViewSet(viewsets.ModelViewSet):
-    """/api/tccs/ (B7a) e /api/tccs/{id}/situacao/ (B7b)."""
+    """/api/tccs/ (B7a) e /api/tccs/{id}/situacao/ (B7b).
 
-    queryset = TCC.objects.select_related(
-        "curso", "area_conhecimento", "autor", "orientador", "coorientador"
-    ).order_by("-data_cadastro")
+    Filtros da listagem (B9b): ?busca= (titulo, autor, orientador), ?curso=<id>,
+    ?status=, ?modalidade= e ?ativo=true|false.
+    """
+
     serializer_class = TCCSerializer
     permission_classes = [LeituraOuGestao]
     # Sem DELETE: TCC nao se apaga, e inativado com motivo (RD13)
     http_method_names = ["get", "post", "patch", "head", "options"]
+
+    def get_queryset(self):
+        qs = TCC.objects.select_related(
+            "curso",
+            "area_conhecimento",
+            "autor__usuario",
+            "orientador__usuario",
+            "coorientador__usuario",
+        ).order_by("-data_cadastro")
+        if self.action == "retrieve":
+            qs = qs.prefetch_related("historico_status")
+        params = self.request.query_params
+        qs = filtro_ativo(qs, self.request, "ativo")
+        busca = params.get("busca")
+        if busca:
+            qs = qs.filter(
+                Q(titulo__icontains=busca)
+                | Q(autor__usuario__nome_completo__icontains=busca)
+                | Q(orientador__usuario__nome_completo__icontains=busca)
+            )
+        for campo in ("status", "modalidade"):
+            if params.get(campo):
+                qs = qs.filter(**{campo: params[campo]})
+        if params.get("curso"):
+            qs = filtro_uuid(qs, "curso_id", params["curso"])
+        return qs
+
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return TCCDetalheSerializer
+        return TCCSerializer
 
     def perform_create(self, serializer):
         serializer.instance = servico_tcc.cadastrar_tcc(
@@ -60,7 +95,7 @@ class TCCViewSet(viewsets.ModelViewSet):
         tcc = servico_tcc.mudar_situacao(
             tcc_id=pk, usuario=request.user, **entrada.validated_data
         )
-        return Response(TCCSerializer(tcc).data)
+        return Response(TCCDetalheSerializer(tcc).data)
 
 
 class BancaViewSet(viewsets.ReadOnlyModelViewSet):
@@ -77,6 +112,14 @@ class BancaViewSet(viewsets.ReadOnlyModelViewSet):
             usuario=request.user, **entrada.validated_data
         )
         return Response(BancaSerializer(banca).data, status=status.HTTP_201_CREATED)
+
+
+def filtro_uuid(queryset, campo, valor):
+    """Filtra por id; um id mal formado devolve lista vazia em vez de erro 500."""
+    try:
+        return queryset.filter(**{campo: uuid.UUID(str(valor))})
+    except ValueError:
+        return queryset.none()
 
 
 def filtro_ativo(queryset, request, campo):
@@ -177,7 +220,7 @@ class AlunoViewSet(viewsets.ReadOnlyModelViewSet):
             )
         curso = self.request.query_params.get("curso")
         if curso:
-            qs = qs.filter(curso_id=curso)
+            qs = filtro_uuid(qs, "curso_id", curso)
         return qs
 
     def _saida(self, pk):
