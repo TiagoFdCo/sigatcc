@@ -1,8 +1,10 @@
-"""Fixtures compartilhadas pelos testes de TCC (B7)."""
+"""Fixtures compartilhadas pelos testes de TCC (B7) e banca (B8)."""
 
 import itertools
+from datetime import timedelta
 
 import pytest
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from core.models import (
@@ -10,6 +12,7 @@ from core.models import (
     AreaConhecimento,
     Curso,
     Docente,
+    MembroExterno,
     TipoUsuario,
     Usuario,
 )
@@ -62,6 +65,13 @@ def criar_aluno(criar_usuario):
 
 
 @pytest.fixture
+def membro_externo(criar_usuario):
+    return MembroExterno.objects.create(
+        usuario=criar_usuario(TipoUsuario.MEMBRO_EXTERNO), instituicao_origem="UFAM"
+    )
+
+
+@pytest.fixture
 def orientador(criar_docente):
     return criar_docente()
 
@@ -96,6 +106,23 @@ def dados_tcc(aluno, orientador, area):
 @pytest.fixture
 def tcc(dados_tcc, orientador):
     return servico_tcc.cadastrar_tcc(dados=dados_tcc, usuario=orientador.usuario)
+
+
+@pytest.fixture
+def dados_banca(tcc, orientador, outros_docentes):
+    """Uma banca valida: orientador + 2 docentes titulares, 1 suplente, daqui a 7 dias."""
+    return {
+        "tcc": tcc,
+        "titulares": [
+            orientador.usuario,
+            outros_docentes[0].usuario,
+            outros_docentes[1].usuario,
+        ],
+        "suplentes": [outros_docentes[2].usuario],
+        "data_hora": timezone.now() + timedelta(days=7),
+        "tipo_local": "PRESENCIAL",
+        "local": "Sala 10, NUCOMP",
+    }
 
 
 @pytest.fixture

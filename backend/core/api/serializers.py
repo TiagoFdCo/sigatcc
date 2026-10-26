@@ -1,6 +1,14 @@
 from rest_framework import serializers
 
-from core.models import TCC, MotivoNaoApresentacao, StatusTCC
+from core.models import (
+    TCC,
+    Banca,
+    MotivoNaoApresentacao,
+    ParticipacaoBanca,
+    StatusTCC,
+    TipoLocal,
+    Usuario,
+)
 
 
 # ------------------------------------------------------------------ TCC
@@ -47,3 +55,31 @@ class MudarSituacaoSerializer(serializers.Serializer):
     justificativa = serializers.CharField(
         required=False, allow_blank=True, allow_null=True
     )
+
+
+# ---------------------------------------------------------------- Banca
+class CadastrarBancaSerializer(serializers.Serializer):
+    tcc = serializers.PrimaryKeyRelatedField(queryset=TCC.objects.all())
+    titulares = serializers.PrimaryKeyRelatedField(
+        queryset=Usuario.objects.all(), many=True
+    )
+    suplentes = serializers.PrimaryKeyRelatedField(
+        queryset=Usuario.objects.all(), many=True, required=False
+    )
+    data_hora = serializers.DateTimeField()
+    tipo_local = serializers.ChoiceField(choices=TipoLocal.choices)
+    local = serializers.CharField(max_length=300)
+
+
+class ParticipacaoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ParticipacaoBanca
+        fields = ["usuario", "tipo_membro", "presente"]
+
+
+class BancaSerializer(serializers.ModelSerializer):
+    participacoes = ParticipacaoSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Banca
+        fields = ["id", "tcc", "data_hora", "tipo_local", "local", "participacoes"]
