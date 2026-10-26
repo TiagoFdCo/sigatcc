@@ -57,12 +57,12 @@ def novo_aluno():
 def novo_tcc(aluno, orientador, **extra):
     area, _ = AreaConhecimento.objects.get_or_create(nome="Inteligencia Artificial")
     dados = {
-        "titulo":"Um TCC",
-        "curso":aluno.curso,
-        "area_conhecimento":area,
-        "modalidade":"DEFESA_EM_BANCA",
-        "autor":aluno,
-        "orientador":orientador,
+        "titulo": "Um TCC",
+        "curso": aluno.curso,
+        "area_conhecimento": area,
+        "modalidade": "DEFESA_EM_BANCA",
+        "autor": aluno,
+        "orientador": orientador,
     }
     dados.update(extra)
     return TCC.objects.create(**dados)
@@ -121,7 +121,10 @@ def test_nao_apresentado_exige_motivo():
     with pytest.raises(IntegrityError), transaction.atomic():
         novo_tcc(aluno, orientador, status="NAO_APRESENTADO")
     novo_tcc(
-        aluno, orientador, status="NAO_APRESENTADO", motivo_nao_apresentacao="DESISTENCIA"
+        aluno,
+        orientador,
+        status="NAO_APRESENTADO",
+        motivo_nao_apresentacao="DESISTENCIA",
     )
 
 
@@ -158,7 +161,9 @@ def test_uma_banca_por_tcc():
 def test_mesma_pessoa_nao_repete_na_banca():
     banca = nova_banca(novo_tcc(novo_aluno(), novo_docente()))
     docente = novo_docente()
-    ParticipacaoBanca.objects.create(banca=banca, usuario=docente.usuario, tipo_membro="TITULAR")
+    ParticipacaoBanca.objects.create(
+        banca=banca, usuario=docente.usuario, tipo_membro="TITULAR"
+    )
     with pytest.raises(IntegrityError), transaction.atomic():
         ParticipacaoBanca.objects.create(
             banca=banca, usuario=docente.usuario, tipo_membro="SUPLENTE"

@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.urls import path
+from django.urls import include, path
 
 
 def saude(request):
@@ -9,4 +9,5 @@ def saude(request):
 
 urlpatterns = [
     path("saude/", saude),
+    path("api/", include("core.api.urls")),
 ]
