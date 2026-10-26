@@ -27,3 +27,25 @@ class SenhaForteValidator:
             "A senha precisa ter ao menos uma letra maiúscula, um número "
             "e um caractere especial."
         )
+
+
+def so_digitos(valor):
+    return re.sub(r"\D", "", valor or "")
+
+
+def cpf_valido(cpf):
+    """Confere os dois digitos verificadores do CPF (11 digitos, sem mascara)."""
+    if len(cpf) != 11 or not cpf.isdigit() or cpf == cpf[0] * 11:
+        return False
+    for n in (9, 10):
+        soma = sum(int(cpf[i]) * (n + 1 - i) for i in range(n))
+        if (soma * 10) % 11 % 10 != int(cpf[n]):
+            return False
+    return True
+
+
+def mascarar_cpf(cpf):
+    """RNF12: o CPF completo nunca sai pela API; so os digitos do meio."""
+    if not cpf or len(cpf) != 11:
+        return None
+    return f"***.{cpf[3:6]}.{cpf[6:9]}-**"

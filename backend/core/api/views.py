@@ -1,16 +1,21 @@
+from django.db.models import Count, Q
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from core.api.permissions import LeituraOuGestao
+from core.api.permissions import LeituraOuAdministrador, LeituraOuGestao
 from core.api.serializers import (
     BancaSerializer,
     CadastrarBancaSerializer,
+    DocenteEntradaSerializer,
+    DocenteSerializer,
     MudarSituacaoSerializer,
     TCCSerializer,
 )
-from core.models import TCC, Banca
+from core.models import TCC, Banca, Docente
 from core.services import banca as servico_banca
+from core.services import contas as servico_contas
+from core.services import docente as servico_docente
 from core.services import tcc as servico_tcc
 
 
@@ -61,3 +66,83 @@ class BancaViewSet(viewsets.ReadOnlyModelViewSet):
             usuario=request.user, **entrada.validated_data
         )
         return Response(BancaSerializer(banca).data, status=status.HTTP_201_CREATED)
+
+
+def filtro_ativo(queryset, request, campo):
+    """?ativo=true|false filtra pela conta; sem o parametro, traz todos."""
+    valor = request.query_params.get("ativo")
+    if valor in ("true", "false"):
+        return queryset.filter(**{campo: valor == "true"})
+    return queryset
+
+
+class DocenteViewSet(viewsets.ReadOnlyModelViewSet):
+    """/api/docentes/ (B6): todos leem; so o administrador cadastra e edita."""
+
+    serializer_class = DocenteSerializer
+    permission_classes = [LeituraOuAdministrador]
+
+    def get_queryset(self):
+        qs = (
+            Docente.objects.select_related("usuario")
+            .prefetch_related("areas_interesse")
+            .annotate(
+                # RBN15: orientacoes e coorientacoes de TCC ativos
+                qtd_orientacoes=Count(
+                    "tccs_orientados",
+                    filter=Q(tccs_orientados__ativo=True),
+                    distinct=True,
+                )
+                + Count(
+                    "tccs_coorientados",
+                    filter=Q(tccs_coorientados__ativo=True),
+                    distinct=True,
+                ),
+                # RBN16: bancas como titular ou suplente
+                qtd_bancas=Count("usuario__participacoes_banca", distinct=True),
+            )
+            .order_by("usuario__nome_completo")
+        )
+        qs = filtro_ativo(qs, self.request, "usuario__ativo")
+        busca = self.request.query_params.get("busca")
+        if busca:
+            qs = qs.filter(
+                Q(usuario__nome_completo__icontains=busca)
+                | Q(matricula_institucional__icontains=busca)
+            )
+        return qs
+
+    def _saida(self, pk):
+        return DocenteSerializer(self.get_queryset().get(pk=pk)).data
+
+    def create(self, request):
+        entrada = DocenteEntradaSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        docente = servico_docente.cadastrar_docente(
+            dados=entrada.validated_data, usuario=request.user
+        )
+        return Response(self._saida(docente.pk), status=status.HTTP_201_CREATED)
+
+    def partial_update(self, request, pk=None):
+        entrada = DocenteEntradaSerializer(data=request.data, partial=True)
+        entrada.is_valid(raise_exception=True)
+        docente = servico_docente.atualizar_docente(
+            docente_id=pk, dados=entrada.validated_data, usuario=request.user
+        )
+        return Response(self._saida(docente.pk))
+
+    @action(detail=True, methods=["post"])
+    def desativar(self, request, pk=None):
+        self.get_object()  # 404 se o id nao for de um docente
+        conta = servico_contas.alterar_ativo(
+            usuario_id=pk, ativo=False, usuario=request.user, entidade="DOCENTE"
+        )
+        return Response(self._saida(conta.pk))
+
+    @action(detail=True, methods=["post"])
+    def reativar(self, request, pk=None):
+        self.get_object()  # 404 se o id nao for de um docente
+        conta = servico_contas.alterar_ativo(
+            usuario_id=pk, ativo=True, usuario=request.user, entidade="DOCENTE"
+        )
+        return Response(self._saida(conta.pk))

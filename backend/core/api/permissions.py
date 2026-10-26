@@ -18,3 +18,18 @@ class LeituraOuGestao(BasePermission):
         if request.method in SAFE_METHODS:
             return True
         return usuario.tipo_usuario in self.PODEM_ESCREVER
+
+
+class LeituraOuAdministrador(BasePermission):
+    """Leitura para qualquer usuario logado; escrita so para o administrador.
+
+    Usada nos cadastros de pessoas (B6, B14): RBN57.
+    """
+
+    def has_permission(self, request, view):
+        usuario = request.user
+        if not (usuario and usuario.is_authenticated):
+            return False
+        if request.method in SAFE_METHODS:
+            return True
+        return usuario.tipo_usuario == TipoUsuario.ADMINISTRADOR
