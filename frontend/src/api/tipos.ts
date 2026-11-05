@@ -52,7 +52,16 @@ export type HistoricoStatus = {
   justificativa: string | null;
 };
 
-export type TccDetalhe = Tcc & { historico: HistoricoStatus[]; banca: Banca | null };
+/** C1: publicacao que aprovou o TCC (data_publicacao vem como AAAA-MM-DD). */
+export type Publicacao = {
+  periodico: string;
+  issn_doi: string;
+  data_publicacao: string;
+  comprovante_arquivo_path: string;
+  link_artigo: string | null;
+};
+
+export type TccDetalhe = Tcc & { historico: HistoricoStatus[]; banca: Banca | null; publicacao: Publicacao | null };
 
 // ---------------------------------------------------------------- Banca
 export type TipoLocal = "PRESENCIAL" | "REMOTO";

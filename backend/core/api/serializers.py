@@ -12,6 +12,7 @@ from core.models import (
     HistoricoStatus,
     MotivoNaoApresentacao,
     ParticipacaoBanca,
+    Publicacao,
     StatusTCC,
     TipoLocal,
     Usuario,
@@ -23,7 +24,9 @@ from core.validators import cpf_valido, mascarar_cpf, so_digitos
 # ------------------------------------------------------------------ TCC
 class TCCSerializer(serializers.ModelSerializer):
     # B9b: nomes prontos para as telas (as FKs continuam vindo como id)
-    autor_nome = serializers.CharField(source="autor.usuario.nome_completo", read_only=True)
+    autor_nome = serializers.CharField(
+        source="autor.usuario.nome_completo", read_only=True
+    )
     autor_matricula = serializers.CharField(source="autor.matricula", read_only=True)
     orientador_nome = serializers.CharField(
         source="orientador.usuario.nome_completo", read_only=True
@@ -77,20 +80,39 @@ class HistoricoStatusSerializer(serializers.ModelSerializer):
         fields = ["status", "data_alteracao", "justificativa"]
 
 
+class PublicacaoSerializer(serializers.ModelSerializer):
+    """C1: dados da publicacao que aprovou o TCC."""
+
+    class Meta:
+        model = Publicacao
+        fields = [
+            "periodico",
+            "issn_doi",
+            "data_publicacao",
+            "comprovante_arquivo_path",
+            "link_artigo",
+        ]
+
+
 class TCCDetalheSerializer(TCCSerializer):
-    """Detalhe do TCC: inclui o historico de situacao, do mais novo ao mais antigo."""
+    """Detalhe do TCC: historico de situacao (do mais novo ao mais antigo), banca e publicacao."""
 
     historico = HistoricoStatusSerializer(
         source="historico_status", many=True, read_only=True
     )
     banca = serializers.SerializerMethodField()
+    publicacao = serializers.SerializerMethodField()
 
     class Meta(TCCSerializer.Meta):
-        fields = [*TCCSerializer.Meta.fields, "historico", "banca"]
+        fields = [*TCCSerializer.Meta.fields, "historico", "banca", "publicacao"]
 
     def get_banca(self, obj):
         banca = getattr(obj, "banca", None)
         return BancaSerializer(banca).data if banca else None
+
+    def get_publicacao(self, obj):
+        publicacao = getattr(obj, "publicacao", None)
+        return PublicacaoSerializer(publicacao).data if publicacao else None
 
 
 class MudarSituacaoSerializer(serializers.Serializer):
@@ -103,6 +125,18 @@ class MudarSituacaoSerializer(serializers.Serializer):
     )
     justificativa = serializers.CharField(
         required=False, allow_blank=True, allow_null=True
+    )
+
+
+class RegistrarPublicacaoSerializer(serializers.Serializer):
+    """Entrada de POST /api/tccs/{id}/publicacao/ (C1)."""
+
+    periodico = serializers.CharField(max_length=300)
+    issn_doi = serializers.CharField(max_length=100)
+    data_publicacao = serializers.DateField()
+    comprovante_arquivo_path = serializers.CharField(max_length=500)
+    link_artigo = serializers.URLField(
+        required=False, allow_null=True, allow_blank=True
     )
 
 

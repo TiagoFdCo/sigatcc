@@ -41,6 +41,16 @@ export function formatarData(iso: string | null | undefined): string {
   return new Date(iso).toLocaleDateString("pt-BR");
 }
 
+/**
+ * Data pura (AAAA-MM-DD), sem fuso. `new Date("2026-10-01")` vale meia-noite em UTC
+ * e, em Manaus (UTC-4), apareceria como 30/09; aqui o texto e so reorganizado.
+ */
+export function formatarDataPura(data: string | null | undefined): string {
+  if (!data) return "";
+  const [ano, mes, dia] = data.split("-");
+  return `${dia}/${mes}/${ano}`;
+}
+
 export function formatarDataHora(iso: string | null | undefined): string {
   if (!iso) return "";
   return new Date(iso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
@@ -65,9 +75,13 @@ export function opcoesDeSituacao(status: StatusTcc, modalidade: Modalidade) {
       dica: "Exige o motivo: desistência, trancamento, transferência ou outro.",
     },
     {
+      // C1: a aprovacao por publicacao tem tela propria ("Registrar publicacao"),
+      // porque exige periodico, ISSN/DOI, data e comprovante.
       valor: "APROVADO_POR_PUBLICACAO" as const,
-      permitido: !defesa,
-      dica: defesa ? "Só para TCC na modalidade Publicação aprovada." : "Conclusão por artigo publicado, sem banca.",
+      permitido: false,
+      dica: defesa
+        ? "Só para TCC na modalidade Publicação aprovada."
+        : "Use “Registrar publicação”: ela pede periódico, ISSN/DOI, data e comprovante.",
     },
   ];
 }
