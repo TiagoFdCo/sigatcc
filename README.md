@@ -166,6 +166,7 @@ O comando mostra os logins criados. A senha padrao e `Demo#2026`.
 | `/api/docentes/` (+ `desativar/`, `reativar/`) | leitura: todos; escrita: administrador | B6 |
 | `/api/alunos/`, `/api/usuarios/`, `/api/cursos/`, `/api/areas/` | leitura: docente, secretaria, admin; escrita: admin | B14 |
 | `/api/tccs/` e `/api/tccs/{id}/situacao/` | leitura: todos; escrita: docente e admin | B7a, B7b |
+| `POST /api/tccs/{id}/publicacao/` | docente e admin | C1 |
 | `/api/bancas/` | leitura: todos; escrita: docente e admin | B8 |
 
 ## Configurar o GitHub (uma vez, por quem administra o repositorio)

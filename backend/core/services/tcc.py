@@ -6,9 +6,11 @@ from rest_framework.generics import get_object_or_404
 
 from core.models import (
     TCC,
+    Banca,
     HistoricoStatus,
     ModalidadeConclusao,
     MotivoNaoApresentacao,
+    Publicacao,
     StatusTCC,
 )
 from core.services.auditoria import registrar
@@ -86,6 +88,17 @@ def atualizar_tcc(*, tcc_id, dados, usuario):
             dados.get("orientador", tcc.orientador),
             dados.get("coorientador", tcc.coorientador),
         )
+    # RD07 e RD08: banca e publicacao nunca coexistem; trocar de modalidade
+    # com uma delas ja registrada abriria essa brecha (C1)
+    if "modalidade" in dados and dados["modalidade"] != tcc.modalidade:
+        if Publicacao.objects.filter(tcc=tcc).exists():
+            raise ValidationError(
+                {"modalidade": "TCC com publicação registrada não muda de modalidade."}
+            )
+        if Banca.objects.filter(tcc=tcc).exists():
+            raise ValidationError(
+                {"modalidade": "TCC com banca cadastrada não muda de modalidade."}
+            )
 
     alterados = []
     for campo in CAMPOS_EDITAVEIS:
@@ -126,6 +139,16 @@ def mudar_situacao(
     if exigida and tcc.modalidade != exigida:
         raise ValidationError(
             {"status": f"{status} só vale para TCC na modalidade {exigida}."}
+        )
+    if (
+        status == StatusTCC.APROVADO_POR_PUBLICACAO
+        and not Publicacao.objects.filter(tcc=tcc).exists()
+    ):  # C1: a aprovacao exige a publicacao registrada
+        raise ValidationError(
+            {
+                "status": "Registre a publicação (periódico, ISSN/DOI, data e "
+                "comprovante) para aprovar o TCC por publicação."
+            }
         )
     if status == StatusTCC.NAO_APRESENTADO:  # RD11
         if not motivo_nao_apresentacao:

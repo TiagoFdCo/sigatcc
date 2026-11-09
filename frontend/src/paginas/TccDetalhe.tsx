@@ -6,17 +6,28 @@ import type { TccDetalhe as Detalhe } from "../api/tipos";
 import { useAuth } from "../auth/AuthContext";
 import { Alerta } from "../componentes/Alerta";
 import { CartaoBanca } from "../componentes/CartaoBanca";
+import { FormularioPublicacao } from "../componentes/FormularioPublicacao";
 import { PainelSituacao } from "../componentes/PainelSituacao";
 import { SeloSituacao } from "../componentes/SeloSituacao";
 import { useCarregar } from "../hooks/useCarregar";
-import { MODALIDADES, MOTIVOS, STATUS, VISIBILIDADES, formatarData, formatarDataHora, nomeDoCurso } from "../util/rotulos";
+import {
+  MODALIDADES,
+  MOTIVOS,
+  STATUS,
+  VISIBILIDADES,
+  formatarData,
+  formatarDataHora,
+  formatarDataPura,
+  nomeDoCurso,
+} from "../util/rotulos";
 
-/** B9b: detalhe do TCC, historico e mudanca de situacao (B7b); B9c: banca. */
+/** B9b: detalhe do TCC, historico e mudanca de situacao (B7b); B9c: banca; C1: publicacao. */
 export function TccDetalhe() {
   const { id = "" } = useParams<{ id: string }>();
   const { podeEditar } = useAuth();
   const { dados: tcc, setDados, erro, carregando } = useCarregar(() => api<Detalhe>(`/tccs/${id}/`), [id]);
   const [mudando, setMudando] = useState(false);
+  const [registrando, setRegistrando] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
 
   if (carregando) return <p className="carregando">Carregando…</p>;
@@ -34,6 +45,8 @@ export function TccDetalhe() {
   }
 
   const podeMudar = podeEditar && tcc.ativo && tcc.status === "EM_DESENVOLVIMENTO";
+  const podeRegistrarPublicacao = podeMudar && tcc.modalidade === "PUBLICACAO_APROVADA";
+  const publicacao = tcc.publicacao;
 
   const dadosTrabalho: [string, string][] = [
     ["Autor", `${tcc.autor_nome} · ${tcc.autor_matricula}`],
@@ -71,14 +84,45 @@ export function TccDetalhe() {
             <Link to={`/tccs/${tcc.id}/editar`} className="botao-secundario">
               Editar
             </Link>
+            {podeRegistrarPublicacao && !registrando && (
+              <button
+                type="button"
+                className="botao"
+                onClick={() => {
+                  setMudando(false);
+                  setRegistrando(true);
+                }}
+              >
+                Registrar publicação
+              </button>
+            )}
             {podeMudar && !mudando && (
-              <button type="button" className="botao" onClick={() => setMudando(true)}>
+              <button
+                type="button"
+                className={podeRegistrarPublicacao ? "botao-secundario" : "botao"}
+                onClick={() => {
+                  setRegistrando(false);
+                  setMudando(true);
+                }}
+              >
                 Mudar situação
               </button>
             )}
           </div>
         )}
       </div>
+
+      {registrando && (
+        <FormularioPublicacao
+          tcc={tcc}
+          aoCancelar={() => setRegistrando(false)}
+          aoConcluir={(atualizado) => {
+            setDados(atualizado);
+            setRegistrando(false);
+            setAviso("Publicação registrada. O TCC foi aprovado por publicação.");
+          }}
+        />
+      )}
 
       {mudando && (
         <PainelSituacao
@@ -105,6 +149,39 @@ export function TccDetalhe() {
               ))}
             </dl>
           </section>
+          {publicacao && (
+            <section className="cartao" aria-labelledby="titulo-publicacao">
+              <h2 id="titulo-publicacao">Publicação</h2>
+              <dl className="lista-dados">
+                <div>
+                  <dt>Periódico ou evento</dt>
+                  <dd>{publicacao.periodico}</dd>
+                </div>
+                <div>
+                  <dt>ISSN ou DOI</dt>
+                  <dd>{publicacao.issn_doi}</dd>
+                </div>
+                <div>
+                  <dt>Data de publicação</dt>
+                  <dd>{formatarDataPura(publicacao.data_publicacao)}</dd>
+                </div>
+                <div>
+                  <dt>Comprovante</dt>
+                  <dd>{publicacao.comprovante_arquivo_path}</dd>
+                </div>
+                {publicacao.link_artigo && (
+                  <div>
+                    <dt>Link do artigo</dt>
+                    <dd>
+                      <a href={publicacao.link_artigo} target="_blank" rel="noreferrer">
+                        {publicacao.link_artigo}
+                      </a>
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            </section>
+          )}
           <CartaoBanca tcc={tcc} podeEditar={podeEditar} />
         </div>
 

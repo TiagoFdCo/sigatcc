@@ -23,10 +23,11 @@ def _por_no_status(tcc, status):
 
 
 # ========================================================== B7b: situacao
+# APROVADO_POR_PUBLICACAO exige a publicacao registrada (C1): os testes dele
+# estao em test_publicacao.py.
 PERMITIDAS = [
     ("DEFESA_EM_BANCA", "APRESENTADO"),
     ("DEFESA_EM_BANCA", "NAO_APRESENTADO"),
-    ("PUBLICACAO_APROVADA", "APROVADO_POR_PUBLICACAO"),
     ("PUBLICACAO_APROVADA", "NAO_APRESENTADO"),
 ]
 

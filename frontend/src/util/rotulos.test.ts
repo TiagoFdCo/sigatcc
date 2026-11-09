@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { nomeDoCurso, opcoesDeSituacao } from "./rotulos";
+import { formatarDataPura, nomeDoCurso, opcoesDeSituacao } from "./rotulos";
 
 describe("opcoesDeSituacao", () => {
   it("só oferece mudança a partir de Em desenvolvimento", () => {
@@ -15,11 +15,23 @@ describe("opcoesDeSituacao", () => {
     expect(permitidos).toEqual(["APRESENTADO", "NAO_APRESENTADO"]);
   });
 
-  it("publicação permite Aprovado por publicação e Não apresentado", () => {
-    const permitidos = opcoesDeSituacao("EM_DESENVOLVIMENTO", "PUBLICACAO_APROVADA")
-      .filter((o) => o.permitido)
-      .map((o) => o.valor);
-    expect(permitidos).toEqual(["NAO_APRESENTADO", "APROVADO_POR_PUBLICACAO"]);
+  it("publicação permite só Não apresentado aqui; a aprovação tem tela própria", () => {
+    const opcoes = opcoesDeSituacao("EM_DESENVOLVIMENTO", "PUBLICACAO_APROVADA");
+    expect(opcoes.filter((o) => o.permitido).map((o) => o.valor)).toEqual(["NAO_APRESENTADO"]);
+    const aprovacao = opcoes.find((o) => o.valor === "APROVADO_POR_PUBLICACAO");
+    expect(aprovacao?.permitido).toBe(false);
+    expect(aprovacao?.dica).toContain("Registrar publicação");
+  });
+});
+
+describe("formatarDataPura", () => {
+  it("não desloca o dia por causa do fuso", () => {
+    expect(formatarDataPura("2026-10-01")).toBe("01/10/2026");
+  });
+
+  it("devolve vazio sem valor", () => {
+    expect(formatarDataPura(null)).toBe("");
+    expect(formatarDataPura(undefined)).toBe("");
   });
 });
 

@@ -20,6 +20,7 @@ from core.api.serializers import (
     DocenteEntradaSerializer,
     DocenteSerializer,
     MudarSituacaoSerializer,
+    RegistrarPublicacaoSerializer,
     TCCDetalheSerializer,
     TCCSerializer,
     UsuarioEntradaSerializer,
@@ -30,6 +31,7 @@ from core.services import banca as servico_banca
 from core.services import contas as servico_contas
 from core.services import docente as servico_docente
 from core.services import pessoas as servico_pessoas
+from core.services import publicacao as servico_publicacao
 from core.services import tcc as servico_tcc
 
 
@@ -96,6 +98,16 @@ class TCCViewSet(viewsets.ModelViewSet):
             tcc_id=pk, usuario=request.user, **entrada.validated_data
         )
         return Response(TCCDetalheSerializer(tcc).data)
+
+    @action(detail=True, methods=["post"])
+    def publicacao(self, request, pk=None):
+        """C1: registra a publicacao e aprova o TCC por publicacao, de uma vez."""
+        entrada = RegistrarPublicacaoSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        tcc = servico_publicacao.registrar_publicacao(
+            tcc_id=pk, dados=entrada.validated_data, usuario=request.user
+        )
+        return Response(TCCDetalheSerializer(tcc).data, status=status.HTTP_201_CREATED)
 
 
 class BancaViewSet(viewsets.ReadOnlyModelViewSet):
@@ -220,7 +232,8 @@ class AlunoViewSet(viewsets.ReadOnlyModelViewSet):
         busca = self.request.query_params.get("busca")
         if busca:
             qs = qs.filter(
-                Q(usuario__nome_completo__icontains=busca) | Q(matricula__icontains=busca)
+                Q(usuario__nome_completo__icontains=busca)
+                | Q(matricula__icontains=busca)
             )
         curso = self.request.query_params.get("curso")
         if curso:
@@ -307,7 +320,10 @@ class UsuarioViewSet(viewsets.ReadOnlyModelViewSet):
     def desativar(self, request, pk=None):
         conta = self.get_object()
         servico_contas.alterar_ativo(
-            usuario_id=pk, ativo=False, usuario=request.user, entidade=conta.tipo_usuario
+            usuario_id=pk,
+            ativo=False,
+            usuario=request.user,
+            entidade=conta.tipo_usuario,
         )
         return Response(self._saida(pk))
 
