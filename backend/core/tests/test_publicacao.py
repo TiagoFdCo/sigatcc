@@ -16,8 +16,10 @@ from core.models import (
     StatusTCC,
     TipoUsuario,
 )
+from core.services import banca as servico_banca
 from core.services import publicacao as servico
 from core.services import tcc as servico_tcc
+from core.validators import issn_valido, validar_issn_doi
 
 pytestmark = pytest.mark.django_db
 
@@ -383,3 +385,98 @@ def test_rota_de_situacao_nao_aprova_sem_publicacao(api_como, orientador, tcc_pu
     )
     assert resp.status_code == 400
     assert "Registre a publicação" in str(resp.data)
+
+
+# ============================================ ISSN/DOI (RBN34) e banca (RD07)
+@pytest.mark.parametrize(
+    "valor",
+    ["10.5753/rbie.2026.1234", "10.1000/xyz123", "0378-5955", "2049-3630", "0000-006X"],
+)
+def test_issn_doi_validos_sao_aceitos(tcc_pub, dados_pub, orientador, valor):
+    servico.registrar_publicacao(
+        tcc_id=tcc_pub.pk,
+        dados={**dados_pub, "issn_doi": valor},
+        usuario=orientador.usuario,
+    )
+    assert Publicacao.objects.get(tcc=tcc_pub).issn_doi == valor
+
+
+@pytest.mark.parametrize(
+    "valor",
+    [
+        "abc",
+        "12345",
+        "10.12/curto",  # prefixo do DOI com menos de 4 digitos
+        "10.5753/",  # sem sufixo
+        "10.5753/com espaco",
+        "0378-5956",  # digito verificador errado
+        "03785955",  # sem hifen
+        "0378-59555",
+        "https://example.org/artigo",
+    ],
+)
+def test_issn_doi_invalido_e_recusado(tcc_pub, dados_pub, orientador, valor):
+    with pytest.raises(ValidationError, match="issn_doi"):
+        servico.registrar_publicacao(
+            tcc_id=tcc_pub.pk,
+            dados={**dados_pub, "issn_doi": valor},
+            usuario=orientador.usuario,
+        )
+    _nada_mudou(tcc_pub)
+
+
+def test_issn_com_x_minusculo_e_normalizado():
+    assert validar_issn_doi("0000-006x") == "0000-006X"
+    assert issn_valido("0000-006X")
+
+
+def test_post_com_doi_invalido_devolve_400_no_campo(
+    api_como, orientador, tcc_pub, dados_pub
+):
+    resposta = api_como(orientador.usuario).post(
+        f"{URL}{tcc_pub.pk}/publicacao/",
+        {**_json(dados_pub), "issn_doi": "nao-e-doi"},
+        format="json",
+    )
+    assert resposta.status_code == 400
+    assert "issn_doi" in resposta.json()
+    _nada_mudou(tcc_pub)
+
+
+def test_tcc_com_banca_nao_recebe_publicacao(tcc, dados_banca, dados_pub, orientador):
+    """RD07: banca cadastrada e depois troca de modalidade nao abre a brecha."""
+    servico_banca.cadastrar_banca(**dados_banca, usuario=orientador.usuario)
+    TCC.objects.filter(pk=tcc.pk).update(modalidade="PUBLICACAO_APROVADA")
+    with pytest.raises(ValidationError, match="banca"):
+        servico.registrar_publicacao(
+            tcc_id=tcc.pk, dados=dados_pub, usuario=orientador.usuario
+        )
+    _nada_mudou(tcc)
+
+
+def test_modalidade_nao_muda_com_banca_cadastrada(tcc, dados_banca, orientador):
+    servico_banca.cadastrar_banca(**dados_banca, usuario=orientador.usuario)
+    with pytest.raises(ValidationError, match="modalidade"):
+        servico_tcc.atualizar_tcc(
+            tcc_id=tcc.pk,
+            dados={"modalidade": "PUBLICACAO_APROVADA"},
+            usuario=orientador.usuario,
+        )
+    tcc.refresh_from_db()
+    assert tcc.modalidade == "DEFESA_EM_BANCA"
+
+
+def test_patch_nao_troca_modalidade_de_tcc_com_banca_nem_permite_publicar(
+    api_como, tcc, dados_banca, dados_pub, orientador
+):
+    """O cenario do revisor, de ponta a ponta pela API."""
+    servico_banca.cadastrar_banca(**dados_banca, usuario=orientador.usuario)
+    cliente = api_como(orientador.usuario)
+    patch = cliente.patch(
+        f"{URL}{tcc.pk}/", {"modalidade": "PUBLICACAO_APROVADA"}, format="json"
+    )
+    assert patch.status_code == 400
+    assert "modalidade" in patch.json()
+    post = cliente.post(f"{URL}{tcc.pk}/publicacao/", _json(dados_pub), format="json")
+    assert post.status_code == 400
+    assert not Publicacao.objects.filter(tcc=tcc).exists()

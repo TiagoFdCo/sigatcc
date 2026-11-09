@@ -49,3 +49,31 @@ def mascarar_cpf(cpf):
     if not cpf or len(cpf) != 11:
         return None
     return f"***.{cpf[3:6]}.{cpf[6:9]}-**"
+
+
+_DOI = re.compile(r"^10\.\d{4,9}/\S+$")
+_ISSN = re.compile(r"^\d{4}-\d{3}[\dXx]$")
+
+
+def issn_valido(issn):
+    """ISSN no formato NNNN-NNNC, com o digito verificador (modulo 11) conferido."""
+    if not _ISSN.match(issn):
+        return False
+    digitos = issn.replace("-", "").upper()
+    soma = sum(int(d) * peso for d, peso in zip(digitos[:7], range(8, 1, -1)))
+    verificador = (11 - soma % 11) % 11
+    return digitos[7] == ("X" if verificador == 10 else str(verificador))
+
+
+def validar_issn_doi(valor):
+    """RBN34: aceita um DOI (10.xxxx/...) ou um ISSN valido; devolve o texto normalizado."""
+    valor = (valor or "").strip()
+    if _DOI.match(valor):
+        return valor
+    if issn_valido(valor):
+        return valor.upper()
+    raise ValidationError(
+        "Informe um DOI válido (ex.: 10.5753/rbie.2026.1234) "
+        "ou um ISSN válido (ex.: 0378-5955).",
+        code="issn_doi_invalido",
+    )

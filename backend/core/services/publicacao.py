@@ -1,13 +1,15 @@
 """C1 (aprovacao por publicacao): registra a publicacao e aprova o TCC."""
 
+from django.core.exceptions import ValidationError as ErroDjango
 from django.db import transaction
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 
-from core.models import TCC, ModalidadeConclusao, Publicacao, StatusTCC
+from core.models import TCC, Banca, ModalidadeConclusao, Publicacao, StatusTCC
 from core.services import tcc as servico_tcc
 from core.services.auditoria import registrar
+from core.validators import validar_issn_doi
 
 CAMPOS_OBRIGATORIOS = {
     "periodico": "Informe o periódico ou evento.",
@@ -27,6 +29,10 @@ def _limpar(dados):
     for campo, mensagem in CAMPOS_OBRIGATORIOS.items():
         if not limpos[campo]:
             raise ValidationError({campo: mensagem})
+    try:
+        limpos["issn_doi"] = validar_issn_doi(limpos["issn_doi"])
+    except ErroDjango as erro:
+        raise ValidationError({"issn_doi": erro.messages[0]}) from erro
     limpos["link_artigo"] = limpos["link_artigo"] or None
     return limpos
 
@@ -45,6 +51,12 @@ def _validar_tcc(tcc):
         )
     if Publicacao.objects.filter(tcc=tcc).exists():
         raise ValidationError({"tcc": "Este TCC já tem publicação registrada."})
+    if Banca.objects.filter(tcc=tcc).exists():
+        raise ValidationError(
+            {
+                "tcc": "TCC com banca cadastrada não recebe publicação (nunca pelas duas)."
+            }
+        )
 
 
 @transaction.atomic

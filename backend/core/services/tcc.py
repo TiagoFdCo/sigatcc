@@ -6,6 +6,7 @@ from rest_framework.generics import get_object_or_404
 
 from core.models import (
     TCC,
+    Banca,
     HistoricoStatus,
     ModalidadeConclusao,
     MotivoNaoApresentacao,
@@ -87,15 +88,17 @@ def atualizar_tcc(*, tcc_id, dados, usuario):
             dados.get("orientador", tcc.orientador),
             dados.get("coorientador", tcc.coorientador),
         )
-    # RD07 e RD08: a publicacao so existe na modalidade publicacao (C1)
-    if (
-        "modalidade" in dados
-        and dados["modalidade"] != tcc.modalidade
-        and Publicacao.objects.filter(tcc=tcc).exists()
-    ):
-        raise ValidationError(
-            {"modalidade": "TCC com publicação registrada não muda de modalidade."}
-        )
+    # RD07 e RD08: banca e publicacao nunca coexistem; trocar de modalidade
+    # com uma delas ja registrada abriria essa brecha (C1)
+    if "modalidade" in dados and dados["modalidade"] != tcc.modalidade:
+        if Publicacao.objects.filter(tcc=tcc).exists():
+            raise ValidationError(
+                {"modalidade": "TCC com publicação registrada não muda de modalidade."}
+            )
+        if Banca.objects.filter(tcc=tcc).exists():
+            raise ValidationError(
+                {"modalidade": "TCC com banca cadastrada não muda de modalidade."}
+            )
 
     alterados = []
     for campo in CAMPOS_EDITAVEIS:
