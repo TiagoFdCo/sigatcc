@@ -3,12 +3,14 @@ import uuid
 from django.db.models import Count, Q
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
 from core.api.permissions import (
     GestaoDePessoas,
     LeituraOuAdministrador,
     LeituraOuGestao,
+    SomenteAluno,
 )
 from core.api.serializers import (
     AlunoEntradaSerializer,
@@ -20,7 +22,10 @@ from core.api.serializers import (
     DocenteEntradaSerializer,
     DocenteSerializer,
     MudarSituacaoSerializer,
+    PerfilAlunoEntradaSerializer,
+    PerfilAlunoSerializer,
     RegistrarPublicacaoSerializer,
+    SenhaAlunoSerializer,
     TCCDetalheSerializer,
     TCCSerializer,
     UsuarioEntradaSerializer,
@@ -30,6 +35,7 @@ from core.models import TCC, Aluno, AreaConhecimento, Banca, Curso, Docente, Usu
 from core.services import banca as servico_banca
 from core.services import contas as servico_contas
 from core.services import docente as servico_docente
+from core.services import perfil_aluno as servico_perfil
 from core.services import pessoas as servico_pessoas
 from core.services import publicacao as servico_publicacao
 from core.services import tcc as servico_tcc
@@ -274,6 +280,40 @@ class AlunoViewSet(viewsets.ReadOnlyModelViewSet):
             usuario_id=pk, ativo=True, usuario=request.user, entidade="ALUNO"
         )
         return Response(self._saida(pk))
+
+    @action(detail=True, methods=["post"])
+    def senha(self, request, pk=None):
+        """C2a: o administrador define a senha para o aluno poder entrar."""
+        self.get_object()
+        entrada = SenhaAlunoSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        servico_pessoas.definir_senha_aluno(
+            aluno_id=pk, senha=entrada.validated_data["senha"], usuario=request.user
+        )
+        return Response(self._saida(pk))
+
+    @action(
+        detail=False,
+        methods=["get", "patch"],
+        url_path="meu-perfil",
+        permission_classes=[SomenteAluno],
+    )
+    def meu_perfil(self, request):
+        """C2a: o aluno ve os proprios dados e mantem as areas de interesse."""
+        consulta = Aluno.objects.select_related("usuario", "curso").prefetch_related(
+            "areas_interesse"
+        )
+        aluno = get_object_or_404(consulta, pk=request.user.pk)
+        if request.method == "PATCH":
+            entrada = PerfilAlunoEntradaSerializer(data=request.data)
+            entrada.is_valid(raise_exception=True)
+            servico_perfil.atualizar_areas_interesse(
+                aluno=aluno,
+                areas=entrada.validated_data["areas_interesse"],
+                usuario=request.user,
+            )
+            aluno = get_object_or_404(consulta, pk=request.user.pk)
+        return Response(PerfilAlunoSerializer(aluno).data)
 
 
 class UsuarioViewSet(viewsets.ReadOnlyModelViewSet):

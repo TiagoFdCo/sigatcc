@@ -75,6 +75,37 @@ def atualizar_aluno(*, aluno_id, dados, usuario):
     return aluno
 
 
+@transaction.atomic
+def definir_senha_aluno(*, aluno_id, senha, usuario):
+    """C2a: o administrador define (ou redefine) a senha do aluno, que passa a entrar.
+
+    Zera o bloqueio por tentativas, para a nova senha valer na hora. A senha
+    nunca vai para o log: ele guarda so "definida" ou "redefinida".
+    """
+    aluno = get_object_or_404(
+        Aluno.objects.select_for_update().select_related("usuario"), pk=aluno_id
+    )
+    conta = aluno.usuario
+    if not conta.ativo:
+        raise ValidationError({"aluno": "Aluno inativo não recebe senha."})
+    contas.validar_senha(senha, campo="senha")
+
+    tinha_senha = conta.has_usable_password()
+    conta.set_password(senha)
+    conta.tentativas_falhas = 0
+    conta.bloqueado_ate = None
+    conta.save(update_fields=["password", "tentativas_falhas", "bloqueado_ate"])
+    registrar(
+        usuario,
+        "ALUNO",
+        conta.pk,
+        "senha",
+        "definida" if tinha_senha else None,
+        "redefinida" if tinha_senha else "definida",
+    )
+    return aluno
+
+
 # ================================================= secretaria, admin, externo
 @transaction.atomic
 def cadastrar_usuario(*, dados, usuario):

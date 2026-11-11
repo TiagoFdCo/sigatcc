@@ -249,6 +249,12 @@ class DocenteEntradaSerializer(serializers.Serializer):
 
 
 # ------------------------------------------------------- Alunos (B14)
+class AreaConhecimentoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AreaConhecimento
+        fields = ["id", "nome"]
+
+
 class AlunoSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(source="pk", read_only=True)
     nome_completo = serializers.CharField(source="usuario.nome_completo")
@@ -283,6 +289,67 @@ class AlunoEntradaSerializer(serializers.Serializer):
     curso = serializers.PrimaryKeyRelatedField(queryset=Curso.objects.all())
     senha_inicial = serializers.CharField(
         required=False, write_only=True, trim_whitespace=False
+    )
+
+
+class SenhaAlunoSerializer(serializers.Serializer):
+    """C2a: senha que o administrador define para o aluno entrar."""
+
+    senha = serializers.CharField(
+        max_length=128, write_only=True, trim_whitespace=False
+    )
+
+
+class PerfilAlunoSerializer(serializers.ModelSerializer):
+    """C2a: o que o aluno ve em "Meu perfil" (so os proprios dados)."""
+
+    id = serializers.UUIDField(source="pk", read_only=True)
+    nome_completo = serializers.CharField(
+        source="usuario.nome_completo", read_only=True
+    )
+    email = serializers.EmailField(source="usuario.email", read_only=True)
+    curso_nome = serializers.CharField(source="curso.nome", read_only=True)
+    cpf = serializers.SerializerMethodField()
+    areas_interesse = AreaConhecimentoSerializer(many=True, read_only=True)
+    meu_tcc = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Aluno
+        fields = [
+            "id",
+            "nome_completo",
+            "email",
+            "matricula",
+            "cpf",
+            "curso",
+            "curso_nome",
+            "cadastro_confirmado",
+            "areas_interesse",
+            "meu_tcc",
+        ]
+
+    def get_cpf(self, obj):
+        return mascarar_cpf(obj.cpf)
+
+    def get_meu_tcc(self, obj):
+        tcc = (
+            TCC.objects.filter(autor=obj, ativo=True)
+            .select_related(
+                "curso",
+                "area_conhecimento",
+                "autor__usuario",
+                "orientador__usuario",
+                "coorientador__usuario",
+            )
+            .order_by("-data_cadastro")
+            .first()
+        )
+        return TCCSerializer(tcc).data if tcc else None
+
+
+class PerfilAlunoEntradaSerializer(serializers.Serializer):
+    areas_interesse = serializers.PrimaryKeyRelatedField(
+        queryset=AreaConhecimento.objects.all(), many=True
     )
 
 
@@ -323,9 +390,3 @@ class CursoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Curso
         fields = ["id", "nome", "rotulo"]
-
-
-class AreaConhecimentoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AreaConhecimento
-        fields = ["id", "nome"]

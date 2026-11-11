@@ -109,6 +109,7 @@ class Command(BaseCommand):
                         "matricula": matricula,
                         "cpf": gerar_cpf(222000000 + i * 6271),
                         "curso": Curso.objects.get(nome=curso),
+                        "senha_inicial": senha,
                     },
                     usuario=admin,
                 )
