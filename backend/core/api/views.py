@@ -1,11 +1,13 @@
 import uuid
 
-from django.db.models import Count, Prefetch, Q
+from django.db.models import Count, Exists, OuterRef, Prefetch, Q
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
 from core.api.permissions import (
+    EscopoDoTCC,
     GestaoDePessoas,
     LeituraOuAdministrador,
     LeituraOuGestao,
@@ -34,11 +36,13 @@ from core.models import (
     Curso,
     Docente,
     HistoricoStatus,
+    ParticipacaoBanca,
     Usuario,
 )
 from core.services import banca as servico_banca
 from core.services import contas as servico_contas
 from core.services import docente as servico_docente
+from core.services import escopo
 from core.services import pessoas as servico_pessoas
 from core.services import publicacao as servico_publicacao
 from core.services import tcc as servico_tcc
@@ -49,10 +53,13 @@ class TCCViewSet(viewsets.ModelViewSet):
 
     Filtros da listagem (B9b): ?busca= (titulo, autor, orientador), ?curso=<id>,
     ?status=, ?modalidade= e ?ativo=true|false.
+
+    Visao por perfil (C17): a listagem so traz os TCCs do escopo do usuario; abrir
+    ou alterar um TCC fora dele devolve 403 e fica registrado (EscopoDoTCC).
     """
 
     serializer_class = TCCSerializer
-    permission_classes = [LeituraOuGestao]
+    permission_classes = [LeituraOuGestao, EscopoDoTCC]
     # Sem DELETE: TCC nao se apaga, e inativado com motivo (RD13)
     http_method_names = ["get", "post", "patch", "head", "options"]
 
@@ -85,6 +92,10 @@ class TCCViewSet(viewsets.ModelViewSet):
                 qs = qs.filter(**{campo: params[campo]})
         if params.get("curso"):
             qs = filtro_uuid(qs, "curso_id", params["curso"])
+        if self.action == "list":
+            # No detalhe o TCC fora do escopo nao some (404): e recusado com 403
+            # e registrado pela EscopoDoTCC.
+            qs = escopo.filtrar_tccs_visiveis(self.request.user, qs)
         return qs
 
     def get_serializer_class(self):
@@ -93,6 +104,11 @@ class TCCViewSet(viewsets.ModelViewSet):
         return TCCSerializer
 
     def perform_create(self, serializer):
+        orientador = serializer.validated_data["orientador"]
+        if not escopo.pode_cadastrar_tcc_para(self.request.user, orientador):
+            raise PermissionDenied(
+                "Só o próprio orientador ou o Professor de TCC cadastra o TCC."
+            )
         serializer.instance = servico_tcc.cadastrar_tcc(
             dados=serializer.validated_data, usuario=self.request.user
         )
@@ -106,38 +122,63 @@ class TCCViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def situacao(self, request, pk=None):
+        self.get_object()  # 404 ou 403 (escopo) antes de validar a entrada
         entrada = MudarSituacaoSerializer(data=request.data)
         entrada.is_valid(raise_exception=True)
         tcc = servico_tcc.mudar_situacao(
             tcc_id=pk, usuario=request.user, **entrada.validated_data
         )
-        return Response(TCCDetalheSerializer(tcc).data)
+        return Response(
+            TCCDetalheSerializer(tcc, context=self.get_serializer_context()).data
+        )
 
     @action(detail=True, methods=["post"])
     def publicacao(self, request, pk=None):
         """C1: registra a publicacao e aprova o TCC por publicacao, de uma vez."""
+        self.get_object()  # 404 ou 403 (escopo) antes de validar a entrada
         entrada = RegistrarPublicacaoSerializer(data=request.data)
         entrada.is_valid(raise_exception=True)
         tcc = servico_publicacao.registrar_publicacao(
             tcc_id=pk, dados=entrada.validated_data, usuario=request.user
         )
-        return Response(TCCDetalheSerializer(tcc).data, status=status.HTTP_201_CREATED)
+        return Response(
+            TCCDetalheSerializer(tcc, context=self.get_serializer_context()).data,
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class BancaViewSet(viewsets.ReadOnlyModelViewSet):
-    """/api/bancas/ (B8): listar, detalhar e cadastrar (local pelo DER v2, C9)."""
+    """/api/bancas/ (B8): listar, detalhar e cadastrar (local pelo DER v2, C9).
 
-    queryset = (
-        Banca.objects.select_related("tcc")
-        .prefetch_related("participacoes__usuario", "convites")
-        .order_by("data_hora_inicio")
-    )
+    Visao por perfil (C17): cada um ve as bancas dos TCCs do seu escopo e as
+    bancas de que participa; so quem edita o TCC cadastra a banca dele.
+    """
+
     serializer_class = BancaSerializer
     permission_classes = [LeituraOuGestao]
+
+    def get_queryset(self):
+        usuario = self.request.user
+        visiveis = escopo.filtrar_tccs_visiveis(usuario, TCC.objects.all())
+        participa = ParticipacaoBanca.objects.filter(
+            banca=OuterRef("pk"), usuario=usuario
+        )
+        return (
+            Banca.objects.filter(
+                Q(tcc_id__in=visiveis.values("pk")) | Q(Exists(participa))
+            )
+            .select_related("tcc")
+            .prefetch_related("participacoes__usuario", "convites")
+            .order_by("data_hora_inicio")
+        )
 
     def create(self, request):
         entrada = CadastrarBancaSerializer(data=request.data)
         entrada.is_valid(raise_exception=True)
+        tcc = entrada.validated_data["tcc"]
+        if not escopo.pode_editar_tcc(request.user, tcc):
+            escopo.registrar_acesso_negado(request.user, tcc, "POST cadastrar banca")
+            raise PermissionDenied(EscopoDoTCC.message)
         banca = servico_banca.cadastrar_banca(
             usuario=request.user, **entrada.validated_data
         )
