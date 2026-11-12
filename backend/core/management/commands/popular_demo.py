@@ -187,9 +187,10 @@ class Command(BaseCommand):
                     docentes[2].usuario,
                 ],
                 suplentes=[docentes[3].usuario],
-                data_hora=timezone.now() + timedelta(days=14),
+                data_hora_inicio=timezone.now() + timedelta(days=14),
                 tipo_local="PRESENCIAL",
-                local="Sala 10, bloco NUCOMP",
+                bloco="NUCOMP",
+                sala="10",
                 usuario=docentes[1].usuario,
             )
 

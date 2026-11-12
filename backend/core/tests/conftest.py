@@ -110,7 +110,8 @@ def tcc(dados_tcc, orientador):
 
 @pytest.fixture
 def dados_banca(tcc, orientador, outros_docentes):
-    """Uma banca valida: orientador + 2 docentes titulares, 1 suplente, daqui a 7 dias."""
+    """Uma banca valida: orientador + 2 docentes titulares, 1 suplente, daqui a 7 dias,
+    presencial no bloco NUCOMP, sala 10 (DER v2)."""
     return {
         "tcc": tcc,
         "titulares": [
@@ -119,9 +120,10 @@ def dados_banca(tcc, orientador, outros_docentes):
             outros_docentes[1].usuario,
         ],
         "suplentes": [outros_docentes[2].usuario],
-        "data_hora": timezone.now() + timedelta(days=7),
+        "data_hora_inicio": timezone.now() + timedelta(days=7),
         "tipo_local": "PRESENCIAL",
-        "local": "Sala 10, NUCOMP",
+        "bloco": "NUCOMP",
+        "sala": "10",
     }
 
 

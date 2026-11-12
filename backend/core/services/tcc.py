@@ -71,7 +71,10 @@ def cadastrar_tcc(*, dados, usuario):
         **dados, curso=autor.curso, status=StatusTCC.EM_DESENVOLVIMENTO
     )
     HistoricoStatus.objects.create(
-        tcc=tcc, status=tcc.status, justificativa="Cadastro do TCC"
+        tcc=tcc,
+        status=tcc.status,
+        alterado_por=usuario,
+        justificativa="Cadastro do TCC",
     )
     registrar(usuario, "TCC", tcc.id, "status", None, tcc.status)
     return tcc
@@ -167,6 +170,7 @@ def mudar_situacao(
     HistoricoStatus.objects.create(
         tcc=tcc,
         status=status,
+        alterado_por=usuario,
         justificativa=justificativa or motivo_outro or motivo_nao_apresentacao,
     )
     registrar(usuario, "TCC", tcc.id, "status", anterior, status)

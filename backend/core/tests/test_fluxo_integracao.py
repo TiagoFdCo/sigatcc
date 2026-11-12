@@ -122,9 +122,9 @@ def test_fluxo_completo_da_e1(api):
             "tcc": tcc["id"],
             "titulares": [orientador["id"], docentes[1]["id"], externo["id"]],
             "suplentes": [docentes[2]["id"]],
-            "data_hora": (timezone.now() + timedelta(days=10)).isoformat(),
+            "data_hora_inicio": (timezone.now() + timedelta(days=10)).isoformat(),
             "tipo_local": "REMOTO",
-            "local": "https://meet.exemplo.com/defesa",
+            "link_remoto": "https://meet.exemplo.com/defesa",
         },
     )
     assert Convite.objects.filter(status="PENDENTE").count() == 3
@@ -140,6 +140,8 @@ def test_fluxo_completo_da_e1(api):
         "EM_DESENVOLVIMENTO",
     ]
     assert len(detalhe["banca"]["participacoes"]) == 4
+    assert detalhe["banca"]["link_remoto"] == "https://meet.exemplo.com/defesa"
+    assert {str(h["alterado_por"]) for h in detalhe["historico"]} == {orientador["id"]}
 
     # 5. Secretaria le tudo e nao altera nada (RBN55)
     api.credentials()

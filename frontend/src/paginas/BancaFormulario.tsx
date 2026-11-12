@@ -14,9 +14,11 @@ const ROTULOS: Record<string, string> = {
   titulares: "Titulares",
   suplentes: "Suplentes",
   membros: "Membros",
-  data_hora: "Data e horário",
+  data_hora_inicio: "Data e horário de início",
   tipo_local: "Tipo de local",
-  local: "Sala ou link",
+  bloco: "Bloco",
+  sala: "Sala",
+  link_remoto: "Link da sala virtual",
   tcc: "TCC",
 };
 
@@ -46,7 +48,9 @@ export function BancaFormulario() {
   const [data, setData] = useState("");
   const [hora, setHora] = useState("");
   const [tipoLocal, setTipoLocal] = useState<TipoLocal>("PRESENCIAL");
-  const [local, setLocal] = useState("");
+  const [bloco, setBloco] = useState("");
+  const [sala, setSala] = useState("");
+  const [link, setLink] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [erros, setErros] = useState<ErrosFormulario | null>(null);
 
@@ -55,7 +59,8 @@ export function BancaFormulario() {
   const disponiveis = (atual: string) =>
     (membros ?? []).filter((m) => m.id !== orientador && (m.id === atual || !escolhidos.has(m.id)));
 
-  const incompleto = !titular2 || !titular3 || !data || !hora || !local.trim() || suplentes.some((s) => !s);
+  const localIncompleto = tipoLocal === "PRESENCIAL" ? !bloco.trim() || !sala.trim() : !link.trim();
+  const incompleto = !titular2 || !titular3 || !data || !hora || localIncompleto || suplentes.some((s) => !s);
 
   async function salvar(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
@@ -70,9 +75,9 @@ export function BancaFormulario() {
           titulares: [orientador, titular2, titular3],
           suplentes,
           // data e hora digitadas no fuso do navegador, enviadas com fuso (ISO)
-          data_hora: new Date(`${data}T${hora}`).toISOString(),
+          data_hora_inicio: new Date(`${data}T${hora}`).toISOString(),
           tipo_local: tipoLocal,
-          local: local.trim(),
+          ...(tipoLocal === "PRESENCIAL" ? { bloco: bloco.trim(), sala: sala.trim() } : { link_remoto: link.trim() }),
         },
       });
       navegar(`/tccs/${tcc.id}`);
@@ -240,7 +245,7 @@ export function BancaFormulario() {
                 value={data}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => setData(e.target.value)}
               />
-              <span className="campo-ajuda">Precisa ser uma data futura.</span>
+              <span className="campo-ajuda">Precisa ser uma data futura. A defesa dura 2 horas.</span>
             </div>
             <div className="campo">
               <label htmlFor="hora">
@@ -261,7 +266,9 @@ export function BancaFormulario() {
                   aria-pressed={tipoLocal === t}
                   onClick={() => {
                     setTipoLocal(t);
-                    setLocal("");
+                    setBloco("");
+                    setSala("");
+                    setLink("");
                   }}
                 >
                   {t === "PRESENCIAL" ? "Presencial" : "Remoto"}
@@ -269,19 +276,51 @@ export function BancaFormulario() {
               ))}
             </div>
           </fieldset>
-          <div className="campo campo-medio">
-            <label htmlFor="local">
-              {tipoLocal === "PRESENCIAL" ? "Sala" : "Link da sala virtual"} <span className="obrigatorio">*</span>
-            </label>
-            <input
-              id="local"
-              type={tipoLocal === "PRESENCIAL" ? "text" : "url"}
-              placeholder={tipoLocal === "PRESENCIAL" ? "Ex.: Sala 10, bloco NUCOMP" : "https://"}
-              value={local}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setLocal(e.target.value)}
-            />
-            {tipoLocal === "REMOTO" && <span className="campo-ajuda">Endereço completo, começando com https://</span>}
-          </div>
+          {tipoLocal === "PRESENCIAL" ? (
+            <div className="grade">
+              <div className="campo">
+                <label htmlFor="bloco">
+                  Bloco <span className="obrigatorio">*</span>
+                </label>
+                <input
+                  id="bloco"
+                  type="text"
+                  maxLength={60}
+                  placeholder="Ex.: NUCOMP"
+                  value={bloco}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => setBloco(e.target.value)}
+                />
+              </div>
+              <div className="campo">
+                <label htmlFor="sala">
+                  Sala <span className="obrigatorio">*</span>
+                </label>
+                <input
+                  id="sala"
+                  type="text"
+                  maxLength={60}
+                  placeholder="Ex.: 10"
+                  value={sala}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => setSala(e.target.value)}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="campo campo-medio">
+              <label htmlFor="link_remoto">
+                Link da sala virtual <span className="obrigatorio">*</span>
+              </label>
+              <input
+                id="link_remoto"
+                type="url"
+                maxLength={300}
+                placeholder="https://"
+                value={link}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setLink(e.target.value)}
+              />
+              <span className="campo-ajuda">Endereço completo, começando com https://</span>
+            </div>
+          )}
         </section>
 
         <Alerta tom="info">
