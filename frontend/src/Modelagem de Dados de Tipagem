@@ -1,0 +1,39 @@
+export type PerfilUsuario = 
+  | 'ADMINISTRADOR'
+  | 'PROFESSOR_TCC'
+  | 'ORIENTADOR'
+  | 'SECRETARIA'
+  | 'ALUNO'
+  | 'MEMBRO_EXTERNO'
+  | 'PUBLICO';
+
+export type StatusTcc = 'EM_ANDAMENTO' | 'DEFENDIDO' | 'CANCELADO';
+
+export type VisibilidadeTcc = 'PUBLICO_TEXTO_COMPLETO' | 'PUBLICO_METADADOS' | 'RESTRITO';
+
+export interface TccItem {
+  id: string;
+  titulo: string;
+  aluno_nome: string;
+  aluno_cpf: string; // Ex: "***.456.789-**"
+  orientador_nome: string;
+  curso_nome: string;
+  status: StatusTcc;
+  visibilidade: VisibilidadeTcc;
+  data_defesa?: string;
+  link_pdf?: string;
+}
+
+export interface HistoricoStatus {
+  data: string;
+  status_anterior: string;
+  status_novo: string;
+  responsavel: string;
+}
+
+export interface TccDetalhes extends TccItem {
+  resumo: string;
+  coorientador_nome?: string;
+  membros_banca: string[];
+  historico: HistoricoStatus[];
+}
