@@ -17,6 +17,7 @@ from core.models import (
     TipoLocal,
     Usuario,
 )
+from core.services import escopo
 from core.services.pessoas import TIPOS_GERAIS
 from core.validators import cpf_valido, mascarar_cpf, so_digitos
 
@@ -36,6 +37,8 @@ class TCCSerializer(serializers.ModelSerializer):
     )
     curso_nome = serializers.CharField(source="curso.nome", read_only=True)
     area_nome = serializers.CharField(source="area_conhecimento.nome", read_only=True)
+    # C17: a tela so mostra editar, mudar situacao e banca para quem pode
+    pode_editar = serializers.SerializerMethodField()
 
     class Meta:
         model = TCC
@@ -61,6 +64,7 @@ class TCCSerializer(serializers.ModelSerializer):
             "orientador_nome",
             "coorientador",
             "coorientador_nome",
+            "pode_editar",
         ]
         # status so muda pela rota /situacao/ (B7b); curso vem do aluno
         read_only_fields = [
@@ -72,6 +76,13 @@ class TCCSerializer(serializers.ModelSerializer):
             "ativo",
             "data_cadastro",
         ]
+
+    def get_pode_editar(self, obj):
+        request = self.context.get("request")
+        usuario = getattr(request, "user", None)
+        if not (usuario and usuario.is_authenticated):
+            return False
+        return escopo.pode_editar_tcc(usuario, obj)
 
 
 class HistoricoStatusSerializer(serializers.ModelSerializer):

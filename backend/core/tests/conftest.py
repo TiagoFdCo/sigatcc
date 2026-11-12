@@ -77,6 +77,15 @@ def orientador(criar_docente):
 
 
 @pytest.fixture
+def professor_tcc(criar_docente):
+    """Docente com o papel de Professor de TCC: ve e edita todos os TCCs (RD29)."""
+    docente = criar_docente()
+    docente.professor_tcc = True
+    docente.save(update_fields=["professor_tcc"])
+    return docente
+
+
+@pytest.fixture
 def outros_docentes(criar_docente):
     return [criar_docente() for _ in range(4)]
 

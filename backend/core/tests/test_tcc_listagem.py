@@ -1,4 +1,7 @@
-"""Testes do que a interface de TCC (B9b) usa da API: nomes, filtros e historico."""
+"""Testes do que a interface de TCC (B9b) usa da API: nomes, filtros e historico.
+
+Os filtros sao exercitados pelo Professor de TCC, que ve todos os TCCs (C17).
+"""
 
 import pytest
 
@@ -51,13 +54,13 @@ def test_listagem_traz_nomes_para_a_tela(api_como, orientador, tcc):
         ),
     ],
 )
-def test_filtros_da_listagem(api_como, orientador, dois_tccs, params, esperado):
-    resp = api_como(orientador.usuario).get(URL, params)
+def test_filtros_da_listagem(api_como, professor_tcc, dois_tccs, params, esperado):
+    resp = api_como(professor_tcc.usuario).get(URL, params)
     assert [t["titulo"] for t in resp.data] == [esperado]
 
 
-def test_filtro_por_curso_e_id_invalido(api_como, orientador, dois_tccs):
-    cliente = api_como(orientador.usuario)
+def test_filtro_por_curso_e_id_invalido(api_como, professor_tcc, dois_tccs):
+    cliente = api_como(professor_tcc.usuario)
     curso = dois_tccs[0].curso
     outro_curso = Curso.objects.exclude(pk=curso.pk).first()
 
@@ -68,9 +71,9 @@ def test_filtro_por_curso_e_id_invalido(api_como, orientador, dois_tccs):
     assert resp.data == []
 
 
-def test_filtro_ativo(api_como, orientador, dois_tccs):
+def test_filtro_ativo(api_como, professor_tcc, dois_tccs):
     TCC.objects.filter(pk=dois_tccs[1].pk).update(ativo=False, motivo_inativacao="Erro")
-    resp = api_como(orientador.usuario).get(URL, {"ativo": "true"})
+    resp = api_como(professor_tcc.usuario).get(URL, {"ativo": "true"})
     assert [t["id"] for t in resp.data] == [str(dois_tccs[0].pk)]
 
 
