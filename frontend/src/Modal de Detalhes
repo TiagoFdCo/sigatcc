@@ -1,0 +1,87 @@
+import React from 'react';
+import { TccDetalhes } from '../../types/tcc';
+
+interface ModalProps {
+  tcc: TccDetalhes | null;
+  onClose: () => void;
+}
+
+export const TccDetailModal: React.FC<ModalProps> = ({ tcc, onClose }) => {
+  if (!tcc) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 overflow-y-auto max-h-[90vh]">
+        <div className="flex justify-between items-start border-b pb-3 mb-4">
+          <div>
+            <h2 className="text-xl font-bold text-gray-800">{tcc.titulo}</h2>
+            <span className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-800 font-semibold mt-1 inline-block">
+              Visibilidade: {tcc.visibilidade.replace(/_/g, ' ')}
+            </span>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 font-bold text-xl">
+            &times;
+          </button>
+        </div>
+
+        <div className="space-y-4 text-sm text-gray-700">
+          <div className="grid grid-cols-2 gap-4 bg-gray-50 p-3 rounded">
+            <div>
+              <p className="font-semibold text-gray-500">Aluno</p>
+              <p>{tcc.aluno_nome}</p>
+              <p className="text-xs text-gray-400">CPF: {tcc.aluno_cpf}</p>
+            </div>
+            <div>
+              <p className="font-semibold text-gray-500">Orientador</p>
+              <p>{tcc.orientador_nome}</p>
+              {tcc.coorientador_nome && <p className="text-xs text-gray-500">Co: {tcc.coorientador_nome}</p>}
+            </div>
+          </div>
+
+          <div>
+            <p className="font-semibold text-gray-500">Curso / Status</p>
+            <p>{tcc.curso_nome} — <span className="font-medium text-blue-600">{tcc.status}</span></p>
+          </div>
+
+          <div>
+            <p className="font-semibold text-gray-500">Resumo</p>
+            <p className="text-gray-600 text-justify mt-1">{tcc.resumo || 'Sem resumo cadastrado.'}</p>
+          </div>
+
+          {tcc.membros_banca.length > 0 && (
+            <div>
+              <p className="font-semibold text-gray-500">Membros da Banca (3 Titulares)</p>
+              <ul className="list-disc list-inside text-xs mt-1">
+                {tcc.membros_banca.map((membro, i) => (
+                  <li key={i}>{membro}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {tcc.link_pdf && (
+            <div className="pt-2">
+              <a 
+                href={tcc.link_pdf} 
+                target="_blank" 
+                rel="noreferrer"
+                className="inline-flex items-center text-blue-600 hover:underline font-medium"
+              >
+                📄 Visualizar PDF do TCC (Arquivo Final)
+              </a>
+            </div>
+          )}
+        </div>
+
+        <div className="mt-6 flex justify-end border-t pt-3">
+          <button 
+            onClick={onClose} 
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 font-medium"
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
