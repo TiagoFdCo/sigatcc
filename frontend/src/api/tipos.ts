@@ -49,6 +49,9 @@ export type Tcc = {
 export type HistoricoStatus = {
   status: StatusTcc;
   data_alteracao: string;
+  /** DER v2: quem mudou o status. */
+  alterado_por: string;
+  alterado_por_nome: string;
   justificativa: string | null;
 };
 
@@ -57,7 +60,7 @@ export type Publicacao = {
   periodico: string;
   issn_doi: string;
   data_publicacao: string;
-  comprovante_arquivo_path: string;
+  comprovante_arquivo_path: string | null;
   link_artigo: string | null;
 };
 
@@ -78,15 +81,21 @@ export type Convite = {
   usuario: string;
   tipo: "BANCA" | "AUDIENCIA";
   status: "PENDENTE" | "ACEITO" | "RECUSADO";
+  enviado_em: string;
+  respondido_em: string | null;
 };
 
+/** DER v2: a defesa dura 2 h (D5); presencial em bloco e sala, remota por link (D17). */
 export type Banca = {
   id: string;
   tcc: string;
   tcc_titulo: string;
-  data_hora: string;
+  data_hora_inicio: string;
+  data_hora_fim: string;
   tipo_local: TipoLocal;
-  local: string;
+  bloco: string | null;
+  sala: string | null;
+  link_remoto: string | null;
   participacoes: ParticipacaoBanca[];
   convites: Convite[];
 };

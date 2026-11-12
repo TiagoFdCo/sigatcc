@@ -71,9 +71,9 @@ def novo_tcc(aluno, orientador, **extra):
 def nova_banca(tcc):
     return Banca.objects.create(
         tcc=tcc,
-        data_hora=timezone.now() + timedelta(days=7),
+        data_hora_inicio=timezone.now() + timedelta(days=7),
         tipo_local="REMOTO",
-        local="https://meet.exemplo.com/abc",
+        link_remoto="https://meet.exemplo.com/abc",
     )
 
 
@@ -192,7 +192,7 @@ def test_um_token_por_membro_externo_e_banca():
     externo = MembroExterno.objects.create(
         usuario=novo_usuario("MEMBRO_EXTERNO"), instituicao_origem="UFAM"
     )
-    expira = banca.data_hora + timedelta(hours=48)
+    expira = banca.data_hora_inicio + timedelta(hours=48)
     TokenAcesso.objects.create(
         membro_externo=externo, banca=banca, token_hash="a" * 64, expira_em=expira
     )

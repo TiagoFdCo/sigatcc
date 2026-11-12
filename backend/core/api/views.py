@@ -1,6 +1,6 @@
 import uuid
 
-from django.db.models import Count, Q
+from django.db.models import Count, Prefetch, Q
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -26,7 +26,16 @@ from core.api.serializers import (
     UsuarioEntradaSerializer,
     UsuarioSerializer,
 )
-from core.models import TCC, Aluno, AreaConhecimento, Banca, Curso, Docente, Usuario
+from core.models import (
+    TCC,
+    Aluno,
+    AreaConhecimento,
+    Banca,
+    Curso,
+    Docente,
+    HistoricoStatus,
+    Usuario,
+)
 from core.services import banca as servico_banca
 from core.services import contas as servico_contas
 from core.services import docente as servico_docente
@@ -56,7 +65,12 @@ class TCCViewSet(viewsets.ModelViewSet):
             "coorientador__usuario",
         ).order_by("-data_cadastro")
         if self.action == "retrieve":
-            qs = qs.prefetch_related("historico_status")
+            qs = qs.prefetch_related(
+                Prefetch(
+                    "historico_status",
+                    queryset=HistoricoStatus.objects.select_related("alterado_por"),
+                )
+            )
         params = self.request.query_params
         qs = filtro_ativo(qs, self.request, "ativo")
         busca = params.get("busca")
@@ -111,12 +125,12 @@ class TCCViewSet(viewsets.ModelViewSet):
 
 
 class BancaViewSet(viewsets.ReadOnlyModelViewSet):
-    """/api/bancas/ (B8): listar, detalhar e cadastrar."""
+    """/api/bancas/ (B8): listar, detalhar e cadastrar (local pelo DER v2, C9)."""
 
     queryset = (
         Banca.objects.select_related("tcc")
         .prefetch_related("participacoes__usuario", "convites")
-        .order_by("data_hora")
+        .order_by("data_hora_inicio")
     )
     serializer_class = BancaSerializer
     permission_classes = [LeituraOuGestao]

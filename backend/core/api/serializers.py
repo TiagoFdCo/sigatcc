@@ -75,9 +75,20 @@ class TCCSerializer(serializers.ModelSerializer):
 
 
 class HistoricoStatusSerializer(serializers.ModelSerializer):
+    # DER v2: quem mudou o status
+    alterado_por_nome = serializers.CharField(
+        source="alterado_por.nome_completo", read_only=True
+    )
+
     class Meta:
         model = HistoricoStatus
-        fields = ["status", "data_alteracao", "justificativa"]
+        fields = [
+            "status",
+            "data_alteracao",
+            "alterado_por",
+            "alterado_por_nome",
+            "justificativa",
+        ]
 
 
 class PublicacaoSerializer(serializers.ModelSerializer):
@@ -149,9 +160,18 @@ class CadastrarBancaSerializer(serializers.Serializer):
     suplentes = serializers.PrimaryKeyRelatedField(
         queryset=Usuario.objects.all(), many=True, required=False
     )
-    data_hora = serializers.DateTimeField()
+    data_hora_inicio = serializers.DateTimeField()
     tipo_local = serializers.ChoiceField(choices=TipoLocal.choices)
-    local = serializers.CharField(max_length=300)
+    # D17: bloco e sala (presencial) ou link (remota); o servico confere qual
+    bloco = serializers.CharField(
+        max_length=60, required=False, allow_blank=True, allow_null=True
+    )
+    sala = serializers.CharField(
+        max_length=60, required=False, allow_blank=True, allow_null=True
+    )
+    link_remoto = serializers.CharField(
+        max_length=300, required=False, allow_blank=True, allow_null=True
+    )
 
 
 class ParticipacaoSerializer(serializers.ModelSerializer):
@@ -167,13 +187,15 @@ class ParticipacaoSerializer(serializers.ModelSerializer):
 class ConviteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Convite
-        fields = ["usuario", "tipo", "status"]
+        fields = ["usuario", "tipo", "status", "enviado_em", "respondido_em"]
 
 
 class BancaSerializer(serializers.ModelSerializer):
     participacoes = ParticipacaoSerializer(many=True, read_only=True)
     convites = ConviteSerializer(many=True, read_only=True)
     tcc_titulo = serializers.CharField(source="tcc.titulo", read_only=True)
+    # D5: termino calculado (inicio + 2 h), nunca guardado
+    data_hora_fim = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Banca
@@ -181,9 +203,12 @@ class BancaSerializer(serializers.ModelSerializer):
             "id",
             "tcc",
             "tcc_titulo",
-            "data_hora",
+            "data_hora_inicio",
+            "data_hora_fim",
             "tipo_local",
-            "local",
+            "bloco",
+            "sala",
+            "link_remoto",
             "participacoes",
             "convites",
         ]

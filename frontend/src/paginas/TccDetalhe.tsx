@@ -165,10 +165,12 @@ export function TccDetalhe() {
                   <dt>Data de publicação</dt>
                   <dd>{formatarDataPura(publicacao.data_publicacao)}</dd>
                 </div>
-                <div>
-                  <dt>Comprovante</dt>
-                  <dd>{publicacao.comprovante_arquivo_path}</dd>
-                </div>
+                {publicacao.comprovante_arquivo_path && (
+                  <div>
+                    <dt>Comprovante</dt>
+                    <dd>{publicacao.comprovante_arquivo_path}</dd>
+                  </div>
+                )}
                 {publicacao.link_artigo && (
                   <div>
                     <dt>Link do artigo</dt>
@@ -193,7 +195,9 @@ export function TccDetalhe() {
                 <span className="ponto" aria-hidden="true" />
                 <div className="pilha-pequena">
                   <strong>{STATUS[h.status]}</strong>
-                  <span className="campo-ajuda">{formatarDataHora(h.data_alteracao)}</span>
+                  <span className="campo-ajuda">
+                    {formatarDataHora(h.data_alteracao)} · {h.alterado_por_nome}
+                  </span>
                   {h.justificativa && <span>{MOTIVOS[h.justificativa as keyof typeof MOTIVOS] ?? h.justificativa}</span>}
                 </div>
               </li>

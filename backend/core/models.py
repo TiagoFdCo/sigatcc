@@ -1,8 +1,14 @@
 import uuid
+from datetime import timedelta
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
+from django.utils import timezone
+
+# RBN11 / D5: toda defesa dura 2 h; o termino e calculado, nao guardado.
+DURACAO_DEFESA = timedelta(hours=2)
 
 
 class UUIDModel(models.Model):
@@ -294,6 +300,10 @@ class HistoricoStatus(UUIDModel):
     )
     status = models.CharField(max_length=25, choices=StatusTCC.choices)
     data_alteracao = models.DateTimeField(auto_now_add=True)
+    # DER v2 (08/11): quem mudou o status (RD09, RD10, RD12)
+    alterado_por = models.ForeignKey(
+        Usuario, on_delete=models.PROTECT, related_name="alteracoes_status"
+    )
     justificativa = models.TextField(null=True, blank=True)
 
     class Meta:
@@ -312,19 +322,31 @@ class Publicacao(UUIDModel):
     periodico = models.CharField(max_length=300)
     issn_doi = models.CharField(max_length=100)
     data_publicacao = models.DateField()
-    comprovante_arquivo_path = models.CharField(max_length=500)
+    # D15: comprovante OU link (pelo menos um, RBN37)
+    comprovante_arquivo_path = models.CharField(max_length=500, null=True, blank=True)
     link_artigo = models.URLField(null=True, blank=True)
 
     class Meta:
         db_table = "publicacao"
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(comprovante_arquivo_path__isnull=False)
+                | Q(link_artigo__isnull=False),
+                name="ck_publicacao_comprovante_ou_link",
+            ),
+        ]
 
 
 # ------------------------------------------------------ Bancas e defesas
 class Banca(UUIDModel):
     tcc = models.OneToOneField(TCC, on_delete=models.CASCADE, related_name="banca")
-    data_hora = models.DateTimeField()
+    # D5: so o inicio e guardado; o termino e inicio + 2 h (data_hora_fim)
+    data_hora_inicio = models.DateTimeField()
     tipo_local = models.CharField(max_length=10, choices=TipoLocal.choices)
-    local = models.CharField(max_length=300)
+    # D17: presencial em bloco e sala; remoto por link (RBN12)
+    bloco = models.CharField(max_length=60, null=True, blank=True)
+    sala = models.CharField(max_length=60, null=True, blank=True)
+    link_remoto = models.URLField(max_length=300, null=True, blank=True)
 
     class Meta:
         db_table = "banca"
@@ -332,7 +354,20 @@ class Banca(UUIDModel):
             models.CheckConstraint(
                 condition=Q(tipo_local__in=TipoLocal.values), name="ck_banca_tipo_local"
             ),
+            models.CheckConstraint(
+                condition=~Q(tipo_local="PRESENCIAL")
+                | Q(bloco__isnull=False, sala__isnull=False),
+                name="ck_banca_presencial_bloco_sala",
+            ),
+            models.CheckConstraint(
+                condition=~Q(tipo_local="REMOTO") | Q(link_remoto__isnull=False),
+                name="ck_banca_remota_link",
+            ),
         ]
+
+    @property
+    def data_hora_fim(self):
+        return self.data_hora_inicio + DURACAO_DEFESA
 
 
 class ParticipacaoBanca(UUIDModel):
@@ -369,10 +404,22 @@ class Avaliacao(UUIDModel):
     participacao = models.OneToOneField(
         ParticipacaoBanca, on_delete=models.CASCADE, related_name="avaliacao"
     )
-    nota = models.DecimalField(max_digits=4, decimal_places=2)
+    # D4: nota de 0 a 10 (2 casas) com parecer; a nota final e a media
+    nota = models.DecimalField(
+        max_digits=4,
+        decimal_places=2,
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+    )
+    parecer = models.TextField()
+    lancada_em = models.DateTimeField(default=timezone.now)
 
     class Meta:
         db_table = "avaliacao"
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(nota__gte=0, nota__lte=10), name="ck_avaliacao_nota_0_10"
+            ),
+        ]
 
 
 class Convite(UUIDModel):
@@ -384,6 +431,9 @@ class Convite(UUIDModel):
     status = models.CharField(
         max_length=10, choices=StatusConvite.choices, default=StatusConvite.PENDENTE
     )
+    # D16: envio (ou ultimo reenvio) e resposta
+    enviado_em = models.DateTimeField(default=timezone.now)
+    respondido_em = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = "convite"
@@ -424,21 +474,21 @@ class SolicitacaoOrientacao(UUIDModel):
     docente = models.ForeignKey(
         Docente, on_delete=models.PROTECT, related_name="solicitacoes_recebidas"
     )
-    mensagem = models.TextField()
+    # D15: mensagem e motivo da recusa passam a ser opcionais
+    mensagem = models.TextField(null=True, blank=True)
     status = models.CharField(
         max_length=10,
         choices=StatusSolicitacao.choices,
         default=StatusSolicitacao.PENDENTE,
     )
     motivo_recusa = models.TextField(null=True, blank=True)
+    # D16: envio e resposta
+    enviada_em = models.DateTimeField(default=timezone.now)
+    respondida_em = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = "solicitacao_orientacao"
         constraints = [
-            models.CheckConstraint(
-                condition=~Q(status="RECUSADA") | Q(motivo_recusa__isnull=False),
-                name="ck_solicitacao_motivo_recusa",
-            ),
             models.CheckConstraint(
                 condition=Q(status__in=StatusSolicitacao.values),
                 name="ck_solicitacao_status",
@@ -451,10 +501,17 @@ class ReuniaoAlinhamento(UUIDModel):
         SolicitacaoOrientacao, on_delete=models.CASCADE, related_name="reuniao"
     )
     data_hora = models.DateTimeField()
+    tipo_local = models.CharField(max_length=10, choices=TipoLocal.choices)
     local = models.CharField(max_length=300)
 
     class Meta:
         db_table = "reuniao_alinhamento"
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(tipo_local__in=TipoLocal.values),
+                name="ck_reuniao_tipo_local",
+            ),
+        ]
 
 
 # ------------------------------------------------------------ Auditoria

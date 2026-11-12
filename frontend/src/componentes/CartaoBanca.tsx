@@ -26,8 +26,8 @@ export function CartaoBanca({ tcc, podeEditar }: { tcc: TccDetalhe; podeEditar: 
       )}
       {!banca && !porPublicacao && (
         <div className="vazio">
-          Nenhuma banca cadastrada. A banca precisa de 3 titulares, com o orientador entre eles, data futura e sala ou
-          link.
+          Nenhuma banca cadastrada. A banca precisa de 3 titulares, com o orientador entre eles, data futura e bloco e
+          sala ou link.
         </div>
       )}
 
@@ -35,18 +35,22 @@ export function CartaoBanca({ tcc, podeEditar }: { tcc: TccDetalhe; podeEditar: 
         <>
           <dl className="lista-dados">
             <div>
-              <dt>Data e horário</dt>
-              <dd>{formatarDataHora(banca.data_hora)}</dd>
+              <dt>Início</dt>
+              <dd>{formatarDataHora(banca.data_hora_inicio)}</dd>
             </div>
             <div>
-              <dt>{banca.tipo_local === "REMOTO" ? "Link (remota)" : "Sala (presencial)"}</dt>
+              <dt>Término (2 h de defesa)</dt>
+              <dd>{formatarDataHora(banca.data_hora_fim)}</dd>
+            </div>
+            <div>
+              <dt>{banca.tipo_local === "REMOTO" ? "Link (remota)" : "Local (presencial)"}</dt>
               <dd>
-                {banca.tipo_local === "REMOTO" ? (
-                  <a href={banca.local} target="_blank" rel="noreferrer">
-                    {banca.local}
+                {banca.tipo_local === "REMOTO" && banca.link_remoto ? (
+                  <a href={banca.link_remoto} target="_blank" rel="noreferrer">
+                    {banca.link_remoto}
                   </a>
                 ) : (
-                  banca.local
+                  `Bloco ${banca.bloco ?? "—"}, sala ${banca.sala ?? "—"}`
                 )}
               </dd>
             </div>

@@ -56,38 +56,64 @@ def _validar_membros(tcc, titulares, suplentes):
             )
 
 
-def _validar_data_e_local(data_hora, tipo_local, local):
-    if data_hora <= timezone.now():
-        raise ValidationError({"data_hora": "A data da banca deve ser futura."})
-    if not local:
-        raise ValidationError({"local": "Informe a sala ou o link."})
+def _texto(valor):
+    return (valor or "").strip() or None
+
+
+def _validar_data(data_hora_inicio):
+    if data_hora_inicio <= timezone.now():
+        raise ValidationError({"data_hora_inicio": "A data da banca deve ser futura."})
+
+
+def _local(tipo_local, bloco, sala, link_remoto):
+    """D17 / RBN12: presencial exige bloco e sala; remota, um link valido.
+
+    Devolve so os campos do tipo escolhido; os do outro tipo ficam nulos.
+    """
+    bloco, sala, link_remoto = _texto(bloco), _texto(sala), _texto(link_remoto)
     if tipo_local == TipoLocal.REMOTO:
         try:
-            URLValidator(schemes=["http", "https"])(local)
+            URLValidator(schemes=["http", "https"])(link_remoto or "")
         except DjangoValidationError:
             raise ValidationError(
-                {"local": "Banca remota precisa de um link válido."}
+                {"link_remoto": "Banca remota precisa de um link válido."}
             ) from None
+        return {"bloco": None, "sala": None, "link_remoto": link_remoto}
+    if not bloco:
+        raise ValidationError({"bloco": "Informe o bloco da defesa presencial."})
+    if not sala:
+        raise ValidationError({"sala": "Informe a sala da defesa presencial."})
+    return {"bloco": bloco, "sala": sala, "link_remoto": None}
 
 
 @transaction.atomic
 def cadastrar_banca(
-    *, tcc, titulares, data_hora, tipo_local, local, usuario, suplentes=()
+    *,
+    tcc,
+    titulares,
+    data_hora_inicio,
+    tipo_local,
+    usuario,
+    suplentes=(),
+    bloco=None,
+    sala=None,
+    link_remoto=None,
 ):
     """Grava BANCA, PARTICIPACAO_BANCA e os CONVITES pendentes, tudo ou nada.
 
-    O envio dos convites (C5/C6) e o conflito de horario (C4) ficam para a E2.
+    A defesa dura 2 h (D5): so o inicio e guardado. O conflito de horario (C4)
+    e o envio dos convites (C5/C6) ficam nos pacotes deles.
     """
     tcc = TCC.objects.select_for_update().get(pk=tcc.pk)  # trava contra banca dupla
     titulares, suplentes = list(titulares), list(suplentes)
-    local = (local or "").strip()
 
     _validar_tcc(tcc)
     _validar_membros(tcc, titulares, suplentes)
-    _validar_data_e_local(data_hora, tipo_local, local)
+    _validar_data(data_hora_inicio)
+    local = _local(tipo_local, bloco, sala, link_remoto)
 
     banca = Banca.objects.create(
-        tcc=tcc, data_hora=data_hora, tipo_local=tipo_local, local=local
+        tcc=tcc, data_hora_inicio=data_hora_inicio, tipo_local=tipo_local, **local
     )
     ParticipacaoBanca.objects.bulk_create(
         [
@@ -110,5 +136,7 @@ def cadastrar_banca(
             if u != tcc.orientador.usuario
         ]
     )
-    registrar(usuario, "BANCA", banca.id, "data_hora", None, banca.data_hora)
+    registrar(
+        usuario, "BANCA", banca.id, "data_hora_inicio", None, banca.data_hora_inicio
+    )
     return banca
