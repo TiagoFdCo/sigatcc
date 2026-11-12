@@ -12,7 +12,7 @@ function horaDoDesbloqueio(dados: unknown): string | null {
   return new Date(ate).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 }
 
-/** B9a: login do docente, secretaria e administrador (RBN29). */
+/** B9a: login do docente, secretaria e administrador (RBN29); C2a: tambem o aluno. */
 export function Login() {
   const { usuario, entrar } = useAuth();
   const navegar = useNavigate();
@@ -70,7 +70,7 @@ export function Login() {
         <form className="login-cartao" onSubmit={aoEnviar} noValidate>
           <div className="pilha-pequena">
             <h2>Entrar</h2>
-            <p className="texto-suave">Acesso para docentes, secretaria e administração.</p>
+            <p className="texto-suave">Acesso para alunos, docentes, secretaria e administração.</p>
           </div>
 
           {erro && <Alerta tom={erro.tom}>{erro.texto}</Alerta>}

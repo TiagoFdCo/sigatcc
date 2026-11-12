@@ -55,3 +55,15 @@ class GestaoDePessoas(BasePermission):
         if request.method in SAFE_METHODS:
             return usuario.tipo_usuario in self.PODEM_LER
         return usuario.tipo_usuario == TipoUsuario.ADMINISTRADOR
+
+
+class SomenteAluno(BasePermission):
+    """Rotas "meu perfil" (C2a): so o proprio aluno logado."""
+
+    def has_permission(self, request, view):
+        usuario = request.user
+        return bool(
+            usuario
+            and usuario.is_authenticated
+            and usuario.tipo_usuario == TipoUsuario.ALUNO
+        )

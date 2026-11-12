@@ -1,0 +1,78 @@
+import React, { useEffect, useState } from 'react';
+import { StatCards } from '../../components/dashboard/StatCards';
+import { SecretariaTccView } from '../secretaria/SecretariaTccView';
+import { PerfilUsuario } from '../../types/tcc';
+
+export const DashboardPage: React.FC = () => {
+  // Substituir pela busca real do perfil vinda do seu Contexto de Autenticação / AuthProvider
+  const [perfilUsuario, setPerfilUsuario] = useState<PerfilUsuario>('SECRETARIA'); 
+  
+  const [stats, setStats] = useState({
+    totalTccs: 0,
+    emAndamento: 0,
+    defendidos: 0,
+    bancasAgendadas: 0,
+  });
+
+  useEffect(() => {
+    // Exemplo de busca de métricas na API
+    // api.get('/api/dashboard/stats/').then(res => setStats(res.data));
+    setStats({
+      totalTccs: 24,
+      emAndamento: 14,
+      defendidos: 8,
+      bancasAgendadas: 2,
+    });
+  }, []);
+
+  return (
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
+      {/* Cabeçalho */}
+      <div className="flex justify-between items-center border-b pb-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Painel Principal — SIGATCC</h1>
+          <p className="text-sm text-gray-500">
+            Perfil ativo: <span className="font-semibold text-blue-600">{perfilUsuario}</span>
+          </p>
+        </div>
+      </div>
+
+      {/* Cards de Indicadores Básicos */}
+      <StatCards 
+        totalTccs={stats.totalTccs}
+        emAndamento={stats.emAndamento}
+        defendidos={stats.defendidos}
+        bancasAgendadas={stats.bancasAgendadas}
+      />
+
+      {/* Renderização Condicional de Conteúdo conforme o Perfil */}
+      <div className="mt-6">
+        {perfilUsuario === 'SECRETARIA' && (
+          <SecretariaTccView />
+        )}
+
+        {perfilUsuario === 'ALUNO' && (
+          <div className="bg-white p-6 rounded-lg border shadow-sm text-center">
+            <h2 className="text-lg font-bold text-gray-700">Meu TCC</h2>
+            <p className="text-sm text-gray-500 mt-1">Acompanhe o status da sua orientação e submissão.</p>
+            {/* O componente específico de visão do Aluno entra aqui na sequência */}
+          </div>
+        )}
+
+        {perfilUsuario === 'ORIENTADOR' && (
+          <div className="bg-white p-6 rounded-lg border shadow-sm">
+            <h2 className="text-lg font-bold text-gray-700">Meus Orientandos</h2>
+            <p className="text-sm text-gray-500 mt-1">Gerencie os TCCs sob sua orientação e faça o envio do PDF final.</p>
+          </div>
+        )}
+
+        {perfilUsuario === 'PROFESSOR_TCC' && (
+          <div className="bg-white p-6 rounded-lg border shadow-sm">
+            <h2 className="text-lg font-bold text-gray-700">Gestão Geral da Disciplina</h2>
+            <p className="text-sm text-gray-500 mt-1">Aprovação por publicação, agendamento de bancas e relatórios.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};

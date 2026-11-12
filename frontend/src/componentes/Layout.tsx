@@ -36,6 +36,11 @@ export function Layout() {
             <NavLink to="/tccs" className="menu-item">
               TCCs
             </NavLink>
+            {usuario?.tipo_usuario === "ALUNO" && (
+              <NavLink to="/meu-perfil" className="menu-item">
+                Meu perfil
+              </NavLink>
+            )}
           </nav>
           <div className="usuario">
             <span>
