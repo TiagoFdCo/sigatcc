@@ -1,0 +1,16 @@
+import api from './api';
+import { TccItem, TccDetalhes } from '../types/tcc';
+
+export const getTccsSecretaria = async (search?: string, status?: string): Promise<TccItem[]> => {
+  const params = new URLSearchParams();
+  if (search) params.append('search', search);
+  if (status) params.append('status', status);
+
+  const response = await api.get<TccItem[]>(`/api/tccs/?${params.toString()}`);
+  return response.data;
+};
+
+export const getTccDetalhes = async (id: string): Promise<TccDetalhes> => {
+  const response = await api.get<TccDetalhes>(`/api/tccs/${id}/`);
+  return response.data;
+};
