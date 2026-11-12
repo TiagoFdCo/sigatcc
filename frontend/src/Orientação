@@ -1,0 +1,26 @@
+export interface AreaInteresse {
+  id: string;
+  nome: string;
+}
+
+export interface DocenteItem {
+  id: string;
+  nome: string;
+  email: string;
+  departamento: string;
+  vagas_disponiveis: number;
+  areas_interesse: AreaInteresse[];
+}
+
+export type StatusSolicitacao = 'PENDENTE' | 'ACEITO' | 'RECUSADO' | 'CANCELADO';
+
+export interface SolicitacaoOrientacao {
+  id: string;
+  aluno_id: string;
+  docente_id: string;
+  titulo_proposta: string;
+  resumo_proposta: string;
+  status: StatusSolicitacao;
+  data_solicitacao: string;
+  justificativa_resposta?: string;
+}
