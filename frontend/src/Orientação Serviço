@@ -1,0 +1,28 @@
+import api from './api';
+import { DocenteItem, SolicitacaoOrientacao, AreaInteresse } from '../types/orientacao';
+
+// Busca lista de áreas de conhecimento cadastradas
+export const getAreasInteresse = async (): Promise<AreaInteresse[]> => {
+  const response = await api.get<AreaInteresse[]>('/api/areas-interesse/');
+  return response.data;
+};
+
+// Busca docentes filtrando por área de interesse ou nome (RAN18)
+export const buscarDocentes = async (areaId?: string, search?: string): Promise<DocenteItem[]> => {
+  const params = new URLSearchParams();
+  if (areaId) params.append('area', areaId);
+  if (search) params.append('search', search);
+
+  const response = await api.get<DocenteItem[]>(`/api/docentes/buscar-orientadores/?${params.toString()}`);
+  return response.data;
+};
+
+// Envia proposta de orientação para um docente (RAN19)
+export const solicitarOrientacao = async (docenteId: string, titulo: string, resumo: string): Promise<SolicitacaoOrientacao> => {
+  const response = await api.post<SolicitacaoOrientacao>('/api/solicitacoes-orientacao/', {
+    docente_id: docenteId,
+    titulo_proposta: titulo,
+    resumo_proposta: resumo,
+  });
+  return response.data;
+};
