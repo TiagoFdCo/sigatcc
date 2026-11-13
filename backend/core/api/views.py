@@ -5,6 +5,7 @@ from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from core.api.permissions import (
@@ -20,6 +21,9 @@ from core.api.serializers import (
     AreaConhecimentoSerializer,
     BancaSerializer,
     CadastrarBancaSerializer,
+    ConvidarAudienciaSerializer,
+    ConviteRecebidoSerializer,
+    ConviteSerializer,
     CursoSerializer,
     DocenteEntradaSerializer,
     DocenteSerializer,
@@ -27,6 +31,8 @@ from core.api.serializers import (
     MudarSituacaoSerializer,
     OrientadorSerializer,
     RegistrarPublicacaoSerializer,
+    ResponderConviteSerializer,
+    ResponderPorLinkSerializer,
     ResponderSolicitacaoSerializer,
     ReuniaoSerializer,
     SolicitacaoOrientacaoSerializer,
@@ -40,6 +46,7 @@ from core.models import (
     Aluno,
     AreaConhecimento,
     Banca,
+    Convite,
     Curso,
     Docente,
     HistoricoStatus,
@@ -50,6 +57,7 @@ from core.models import (
 )
 from core.services import banca as servico_banca
 from core.services import contas as servico_contas
+from core.services import convites as servico_convites
 from core.services import docente as servico_docente
 from core.services import escopo
 from core.services import pessoas as servico_pessoas
@@ -182,6 +190,18 @@ class BancaViewSet(viewsets.ReadOnlyModelViewSet):
             .prefetch_related("participacoes__usuario", "convites")
             .order_by("data_hora_inicio")
         )
+
+    @action(detail=True, methods=["post"])
+    def audiencia(self, request, pk=None):
+        """C6 (PF34): convida, por pessoa, docentes e alunos para assistir."""
+        banca = self.get_object()
+        entrada = ConvidarAudienciaSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        servico_convites.convidar_audiencia(
+            banca=banca, usuario=request.user, **entrada.validated_data
+        )
+        banca = self.get_queryset().get(pk=banca.pk)
+        return Response(BancaSerializer(banca).data, status=status.HTTP_201_CREATED)
 
     def create(self, request):
         entrada = CadastrarBancaSerializer(data=request.data)
@@ -538,3 +558,59 @@ class ReuniaoViewSet(viewsets.ReadOnlyModelViewSet):
         if self.request.query_params.get("futuras") == "true":
             qs = qs.filter(data_hora__gte=timezone.now())
         return qs
+
+
+# ---------------------------------------- C6: convites de banca e audiencia
+class ConviteViewSet(viewsets.ReadOnlyModelViewSet):
+    """/api/convites/ (PF62): convites recebidos por quem consulta.
+
+    /{id}/responder/ aceita ou recusa (PF35); /{id}/reenviar/ reenvia um
+    pendente (PF33, quem edita o TCC); /link/ e a rota publica do link do
+    e-mail, usada pelo membro externo (sem login).
+    """
+
+    serializer_class = ConviteRecebidoSerializer
+
+    def get_queryset(self):
+        qs = (
+            Convite.objects.filter(usuario=self.request.user)
+            .select_related(*servico_convites.RELACIONADOS)
+            .order_by("-enviado_em")
+        )
+        if self.request.query_params.get("status"):
+            qs = qs.filter(status=self.request.query_params["status"])
+        return qs
+
+    @action(detail=True, methods=["post"])
+    def responder(self, request, pk=None):
+        entrada = ResponderConviteSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        convite = servico_convites.responder_como_usuario(
+            convite_id=pk, usuario=request.user, **entrada.validated_data
+        )
+        return Response(ConviteRecebidoSerializer(convite).data)
+
+    @action(detail=True, methods=["post"])
+    def reenviar(self, request, pk=None):
+        convite = servico_convites.reenviar_convite(convite_id=pk, usuario=request.user)
+        return Response(ConviteSerializer(convite).data)
+
+    @action(
+        detail=False,
+        methods=["get", "post"],
+        permission_classes=[AllowAny],
+        authentication_classes=[],
+    )
+    def link(self, request):
+        if request.method == "GET":
+            convite = servico_convites.convite_por_assinatura(
+                request.query_params.get("c")
+            )
+            return Response(ConviteRecebidoSerializer(convite).data)
+        entrada = ResponderPorLinkSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        convite = servico_convites.responder_por_link(
+            valor_assinatura=entrada.validated_data["c"],
+            resposta=entrada.validated_data["resposta"],
+        )
+        return Response(ConviteRecebidoSerializer(convite).data)

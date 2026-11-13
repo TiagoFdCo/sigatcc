@@ -18,6 +18,7 @@ from core.models import (
     TipoMembroBanca,
     TipoUsuario,
 )
+from core.services import convites as servico_convites
 from core.services.auditoria import registrar
 
 TITULARES_POR_BANCA = 3
@@ -101,8 +102,8 @@ def cadastrar_banca(
 ):
     """Grava BANCA, PARTICIPACAO_BANCA e os CONVITES pendentes, tudo ou nada.
 
-    A defesa dura 2 h (D5): so o inicio e guardado. O conflito de horario (C4)
-    e o envio dos convites (C5/C6) ficam nos pacotes deles.
+    A defesa dura 2 h (D5): so o inicio e guardado. Os convites saem por e-mail
+    depois do commit (C6). O conflito de horario (C4) fica no pacote dele.
     """
     tcc = TCC.objects.select_for_update().get(pk=tcc.pk)  # trava contra banca dupla
     titulares, suplentes = list(titulares), list(suplentes)
@@ -139,4 +140,6 @@ def cadastrar_banca(
     registrar(
         usuario, "BANCA", banca.id, "data_hora_inicio", None, banca.data_hora_inicio
     )
+    # C6: os convites saem por e-mail depois do commit (RBN49, RBN51)
+    servico_convites.enviar_convites_da_banca(banca)
     return banca

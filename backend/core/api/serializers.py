@@ -19,6 +19,7 @@ from core.models import (
     TipoLocal,
     Usuario,
 )
+from core.services import convites as servico_convites
 from core.services import escopo
 from core.services.pessoas import TIPOS_GERAIS
 from core.services.solicitacao import RESPOSTAS
@@ -199,9 +200,22 @@ class ParticipacaoSerializer(serializers.ModelSerializer):
 
 
 class ConviteSerializer(serializers.ModelSerializer):
+    # C6: a tela da banca mostra quem foi convidado e reenvia pelo id
+    usuario_nome = serializers.CharField(source="usuario.nome_completo", read_only=True)
+    tipo_usuario = serializers.CharField(source="usuario.tipo_usuario", read_only=True)
+
     class Meta:
         model = Convite
-        fields = ["usuario", "tipo", "status", "enviado_em", "respondido_em"]
+        fields = [
+            "id",
+            "usuario",
+            "usuario_nome",
+            "tipo_usuario",
+            "tipo",
+            "status",
+            "enviado_em",
+            "respondido_em",
+        ]
 
 
 class BancaSerializer(serializers.ModelSerializer):
@@ -479,4 +493,73 @@ class ResponderSolicitacaoSerializer(serializers.Serializer):
     status = serializers.ChoiceField(choices=sorted(RESPOSTAS))
     motivo_recusa = serializers.CharField(
         max_length=2000, required=False, allow_blank=True, allow_null=True
+    )
+
+
+# ---------------------------------------- C6: convites de banca e audiencia
+class BancaResumoSerializer(serializers.ModelSerializer):
+    data_hora_fim = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = Banca
+        fields = [
+            "id",
+            "data_hora_inicio",
+            "data_hora_fim",
+            "tipo_local",
+            "bloco",
+            "sala",
+            "link_remoto",
+        ]
+
+
+class ConviteRecebidoSerializer(serializers.ModelSerializer):
+    """PF62: convite visto por quem o recebeu (tela e link do e-mail)."""
+
+    convidado_nome = serializers.CharField(
+        source="usuario.nome_completo", read_only=True
+    )
+    papel = serializers.SerializerMethodField()
+    tcc = serializers.UUIDField(source="banca.tcc_id", read_only=True)
+    tcc_titulo = serializers.CharField(source="banca.tcc.titulo", read_only=True)
+    autor_nome = serializers.CharField(
+        source="banca.tcc.autor.usuario.nome_completo", read_only=True
+    )
+    orientador_nome = serializers.CharField(
+        source="banca.tcc.orientador.usuario.nome_completo", read_only=True
+    )
+    banca = BancaResumoSerializer(read_only=True)
+
+    class Meta:
+        model = Convite
+        fields = [
+            "id",
+            "tipo",
+            "status",
+            "enviado_em",
+            "respondido_em",
+            "convidado_nome",
+            "papel",
+            "tcc",
+            "tcc_titulo",
+            "autor_nome",
+            "orientador_nome",
+            "banca",
+        ]
+
+    def get_papel(self, obj):
+        return servico_convites.papel_na_banca(obj)
+
+
+class ResponderConviteSerializer(serializers.Serializer):
+    resposta = serializers.ChoiceField(choices=sorted(servico_convites.RESPOSTAS))
+
+
+class ResponderPorLinkSerializer(ResponderConviteSerializer):
+    c = serializers.CharField(max_length=500)
+
+
+class ConvidarAudienciaSerializer(serializers.Serializer):
+    usuarios = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Usuario.objects.all()
     )
