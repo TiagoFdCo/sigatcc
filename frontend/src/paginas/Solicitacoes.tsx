@@ -2,9 +2,10 @@ import { useState, type ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 
 import { ErroApi, api } from "../api/cliente";
-import type { SolicitacaoOrientacao, StatusSolicitacao } from "../api/tipos";
+import type { Reuniao, SolicitacaoOrientacao, StatusSolicitacao } from "../api/tipos";
 import { useAuth } from "../auth/AuthContext";
 import { Alerta } from "../componentes/Alerta";
+import { FormularioReuniao } from "../componentes/FormularioReuniao";
 import { useCarregar } from "../hooks/useCarregar";
 import { STATUS_SOLICITACAO, formatarDataHora, nomeDoCurso } from "../util/rotulos";
 
@@ -31,6 +32,13 @@ export function Solicitacoes() {
   const [motivo, setMotivo] = useState("");
   const [enviando, setEnviando] = useState<string | null>(null);
   const [erroAcao, setErroAcao] = useState<string | null>(null);
+  // C3b: reuniao de alinhamento
+  const { dados: proximas, recarregar: recarregarReunioes } = useCarregar(
+    () => api<Reuniao[]>("/reunioes/", { params: { futuras: "true" } }),
+    [],
+  );
+  const [agendando, setAgendando] = useState<string | null>(null);
+  const [alertas, setAlertas] = useState<{ id: string; textos: string[] } | null>(null);
 
   async function responder(s: SolicitacaoOrientacao, status: "ACEITA" | "RECUSADA") {
     setEnviando(s.id);
@@ -68,6 +76,24 @@ export function Solicitacoes() {
         )}
       </div>
 
+      {proximas && proximas.length > 0 && (
+        <section className="cartao pilha-pequena" aria-labelledby="titulo-reunioes">
+          <h2 id="titulo-reunioes">Próximas reuniões de alinhamento</h2>
+          <ul className="membros">
+            {proximas.map((r) => (
+              <li key={r.id}>
+                <div className="pilha-pequena">
+                  <strong>{ehAluno ? r.docente_nome : r.aluno_nome}</strong>
+                  <span className="campo-ajuda">
+                    {formatarDataHora(r.data_hora)} · {r.tipo_local === "REMOTO" ? "Remota" : "Presencial"} · {r.local}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {erro && <Alerta>{erro.message}</Alerta>}
       {erroAcao && <Alerta>{erroAcao}</Alerta>}
       {carregando && <p className="carregando">Carregando…</p>}
@@ -80,6 +106,8 @@ export function Solicitacoes() {
       {(lista ?? []).map((s) => {
         const podeResponder = ehDocente && s.docente === usuario?.id && s.status === "PENDENTE";
         const podeCadastrarTcc = ehDocente && s.docente === usuario?.id && s.status === "ACEITA";
+        const participa = usuario?.id === s.aluno || usuario?.id === s.docente;
+        const podeAgendar = participa && s.status === "ACEITA";
         return (
           <article key={s.id} className="cartao pilha-pequena" aria-label={`Solicitação de ${s.aluno_nome}`}>
             <div className="cabecalho-pagina">
@@ -138,11 +166,48 @@ export function Solicitacoes() {
                 </div>
               </div>
             )}
-            {podeCadastrarTcc && (
+            {s.reuniao && (
+              <p>
+                <strong>Reunião de alinhamento:</strong> {formatarDataHora(s.reuniao.data_hora)} ·{" "}
+                {s.reuniao.tipo_local === "REMOTO" ? (
+                  <a href={s.reuniao.local} target="_blank" rel="noreferrer">
+                    {s.reuniao.local}
+                  </a>
+                ) : (
+                  s.reuniao.local
+                )}
+              </p>
+            )}
+            {alertas?.id === s.id && alertas.textos.length > 0 && (
+              <Alerta tom="aviso">
+                Reunião salva, mas atenção à agenda: {alertas.textos.join(" ")}
+              </Alerta>
+            )}
+            {podeAgendar && agendando === s.id && (
+              <FormularioReuniao
+                solicitacaoId={s.id}
+                atual={s.reuniao}
+                aoCancelar={() => setAgendando(null)}
+                aoSalvar={(reuniao, textos) => {
+                  setDados((atual) => (atual ?? []).map((x) => (x.id === s.id ? { ...x, reuniao } : x)));
+                  setAlertas({ id: s.id, textos });
+                  setAgendando(null);
+                  recarregarReunioes();
+                }}
+              />
+            )}
+            {(podeCadastrarTcc || (podeAgendar && agendando !== s.id)) && (
               <div className="acoes">
-                <Link to={`/tccs/novo?autor=${s.aluno}`} className="botao botao-contorno">
-                  Cadastrar o TCC deste aluno
-                </Link>
+                {podeAgendar && agendando !== s.id && (
+                  <button type="button" className="botao-secundario" onClick={() => setAgendando(s.id)}>
+                    {s.reuniao ? "Remarcar reunião" : "Agendar reunião de alinhamento"}
+                  </button>
+                )}
+                {podeCadastrarTcc && (
+                  <Link to={`/tccs/novo?autor=${s.aluno}`} className="botao botao-contorno">
+                    Cadastrar o TCC deste aluno
+                  </Link>
+                )}
               </div>
             )}
           </article>

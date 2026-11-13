@@ -15,11 +15,14 @@ from core.models import (
     MotivoNaoApresentacao,
     ParticipacaoBanca,
     Publicacao,
+    ReuniaoAlinhamento,
     SolicitacaoOrientacao,
     StatusTCC,
     TipoLocal,
+    TipoUsuario,
     Usuario,
 )
+from core.services import convites as servico_convites
 from core.services import escopo
 from core.services.pessoas import TIPOS_GERAIS
 from core.services.solicitacao import RESPOSTAS
@@ -200,9 +203,22 @@ class ParticipacaoSerializer(serializers.ModelSerializer):
 
 
 class ConviteSerializer(serializers.ModelSerializer):
+    # C6: a tela da banca mostra quem foi convidado e reenvia pelo id
+    usuario_nome = serializers.CharField(source="usuario.nome_completo", read_only=True)
+    tipo_usuario = serializers.CharField(source="usuario.tipo_usuario", read_only=True)
+
     class Meta:
         model = Convite
-        fields = ["usuario", "tipo", "status", "enviado_em", "respondido_em"]
+        fields = [
+            "id",
+            "usuario",
+            "usuario_nome",
+            "tipo_usuario",
+            "tipo",
+            "status",
+            "enviado_em",
+            "respondido_em",
+        ]
 
 
 class BancaSerializer(serializers.ModelSerializer):
@@ -394,6 +410,35 @@ class OrientadorSerializer(serializers.ModelSerializer):
         ]
 
 
+class ReuniaoSerializer(serializers.ModelSerializer):
+    """C3b (PF45): reuniao de alinhamento, com quem participa."""
+
+    aluno_nome = serializers.CharField(
+        source="solicitacao.aluno.usuario.nome_completo", read_only=True
+    )
+    docente_nome = serializers.CharField(
+        source="solicitacao.docente.usuario.nome_completo", read_only=True
+    )
+
+    class Meta:
+        model = ReuniaoAlinhamento
+        fields = [
+            "id",
+            "solicitacao",
+            "aluno_nome",
+            "docente_nome",
+            "data_hora",
+            "tipo_local",
+            "local",
+        ]
+
+
+class AgendarReuniaoSerializer(serializers.Serializer):
+    data_hora = serializers.DateTimeField()
+    tipo_local = serializers.ChoiceField(choices=TipoLocal.choices)
+    local = serializers.CharField(max_length=300)
+
+
 class SolicitacaoOrientacaoSerializer(serializers.ModelSerializer):
     aluno_nome = serializers.CharField(
         source="aluno.usuario.nome_completo", read_only=True
@@ -403,6 +448,8 @@ class SolicitacaoOrientacaoSerializer(serializers.ModelSerializer):
     docente_nome = serializers.CharField(
         source="docente.usuario.nome_completo", read_only=True
     )
+    # C3b: a reuniao agendada depois do aceite (ou null)
+    reuniao = serializers.SerializerMethodField()
 
     class Meta:
         model = SolicitacaoOrientacao
@@ -419,7 +466,21 @@ class SolicitacaoOrientacaoSerializer(serializers.ModelSerializer):
             "motivo_recusa",
             "enviada_em",
             "respondida_em",
+            "reuniao",
         ]
+
+    def get_reuniao(self, obj):
+        reuniao = getattr(obj, "reuniao", None)
+        if reuniao is None:
+            return None
+        return {
+            "id": str(reuniao.id),
+            "data_hora": serializers.DateTimeField().to_representation(
+                reuniao.data_hora
+            ),
+            "tipo_local": reuniao.tipo_local,
+            "local": reuniao.local,
+        }
 
 
 class EnviarSolicitacaoSerializer(serializers.Serializer):
@@ -436,6 +497,128 @@ class ResponderSolicitacaoSerializer(serializers.Serializer):
     motivo_recusa = serializers.CharField(
         max_length=2000, required=False, allow_blank=True, allow_null=True
     )
+
+
+# ---------------------------------------- C6: convites de banca e audiencia
+class BancaResumoSerializer(serializers.ModelSerializer):
+    data_hora_fim = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = Banca
+        fields = [
+            "id",
+            "data_hora_inicio",
+            "data_hora_fim",
+            "tipo_local",
+            "bloco",
+            "sala",
+            "link_remoto",
+        ]
+
+
+class ConviteRecebidoSerializer(serializers.ModelSerializer):
+    """PF62: convite visto por quem o recebeu (tela e link do e-mail)."""
+
+    convidado_nome = serializers.CharField(
+        source="usuario.nome_completo", read_only=True
+    )
+    papel = serializers.SerializerMethodField()
+    # C16: a pagina publica avisa o externo que o link de acesso vem por e-mail
+    convidado_externo = serializers.SerializerMethodField()
+    tcc = serializers.UUIDField(source="banca.tcc_id", read_only=True)
+    tcc_titulo = serializers.CharField(source="banca.tcc.titulo", read_only=True)
+    autor_nome = serializers.CharField(
+        source="banca.tcc.autor.usuario.nome_completo", read_only=True
+    )
+    orientador_nome = serializers.CharField(
+        source="banca.tcc.orientador.usuario.nome_completo", read_only=True
+    )
+    banca = BancaResumoSerializer(read_only=True)
+
+    class Meta:
+        model = Convite
+        fields = [
+            "id",
+            "tipo",
+            "status",
+            "enviado_em",
+            "respondido_em",
+            "convidado_nome",
+            "convidado_externo",
+            "papel",
+            "tcc",
+            "tcc_titulo",
+            "autor_nome",
+            "orientador_nome",
+            "banca",
+        ]
+
+    def get_papel(self, obj):
+        return servico_convites.papel_na_banca(obj)
+
+    def get_convidado_externo(self, obj):
+        return obj.usuario.tipo_usuario == TipoUsuario.MEMBRO_EXTERNO
+
+
+class ResponderConviteSerializer(serializers.Serializer):
+    resposta = serializers.ChoiceField(choices=sorted(servico_convites.RESPOSTAS))
+
+
+class ResponderPorLinkSerializer(ResponderConviteSerializer):
+    c = serializers.CharField(max_length=500)
+
+
+class ConvidarAudienciaSerializer(serializers.Serializer):
+    usuarios = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Usuario.objects.all()
+    )
+
+
+# ------------------------------------ C16: acesso temporario do externo (4.6)
+class MembroExternoEntradaSerializer(serializers.Serializer):
+    """PF60: cadastro do membro externo pelo Professor de TCC (sem senha)."""
+
+    nome_completo = serializers.CharField(max_length=200)
+    email = serializers.EmailField()
+    instituicao_origem = serializers.CharField(max_length=200)
+
+
+class AcessoExternoSerializer(serializers.Serializer):
+    """PF19: o que o externo ve pelo token (leitura do TCC e da banca)."""
+
+    def to_representation(self, token):
+        banca = token.banca
+        tcc = banca.tcc
+        return {
+            "membro_nome": token.membro_externo.usuario.nome_completo,
+            "expira_em": serializers.DateTimeField().to_representation(token.expira_em),
+            "tcc": {
+                "titulo": tcc.titulo,
+                "subtitulo": tcc.subtitulo,
+                "autor_nome": tcc.autor.usuario.nome_completo,
+                "orientador_nome": tcc.orientador.usuario.nome_completo,
+                "coorientador_nome": (
+                    tcc.coorientador.usuario.nome_completo if tcc.coorientador else None
+                ),
+                "curso_nome": tcc.curso.nome,
+                "area_nome": tcc.area_conhecimento.nome,
+                "modalidade": tcc.modalidade,
+                "link_externo": tcc.link_externo,
+                "arquivo_tcc_path": tcc.arquivo_tcc_path,
+            },
+            "banca": {
+                **BancaResumoSerializer(banca).data,
+                "membros": [
+                    {
+                        "nome": p.usuario.nome_completo,
+                        "tipo_membro": p.tipo_membro,
+                        "membro_externo": p.usuario.tipo_usuario
+                        == TipoUsuario.MEMBRO_EXTERNO,
+                    }
+                    for p in banca.participacoes.select_related("usuario")
+                ],
+            },
+        }
 
 
 # ------------------------------------------------- C7: consulta dos logs (8.3)

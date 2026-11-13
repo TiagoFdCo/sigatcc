@@ -80,7 +80,10 @@ export type ParticipacaoBanca = {
 };
 
 export type Convite = {
+  id: string;
   usuario: string;
+  usuario_nome: string;
+  tipo_usuario: TipoUsuario;
   tipo: "BANCA" | "AUDIENCIA";
   status: "PENDENTE" | "ACEITO" | "RECUSADO";
   enviado_em: string;
@@ -162,6 +165,68 @@ export type SolicitacaoOrientacao = {
   motivo_recusa: string | null;
   enviada_em: string;
   respondida_em: string | null;
+  /** C3b: reunião de alinhamento agendada depois do aceite. */
+  reuniao: ResumoReuniao | null;
+};
+
+/* C3b (7.3): reuniao de alinhamento */
+export type ResumoReuniao = { id: string; data_hora: string; tipo_local: TipoLocal; local: string };
+
+export type Reuniao = ResumoReuniao & {
+  solicitacao: string;
+  aluno_nome: string;
+  docente_nome: string;
+};
+
+export type RespostaReuniao = { reuniao: Reuniao; alertas: string[] };
+
+/* C6 (6.3): convites de banca e audiencia */
+export type BancaResumo = {
+  id: string;
+  data_hora_inicio: string;
+  data_hora_fim: string;
+  tipo_local: TipoLocal;
+  bloco: string | null;
+  sala: string | null;
+  link_remoto: string | null;
+};
+
+export type ConviteRecebido = {
+  id: string;
+  tipo: "BANCA" | "AUDIENCIA";
+  status: "PENDENTE" | "ACEITO" | "RECUSADO";
+  enviado_em: string;
+  respondido_em: string | null;
+  convidado_nome: string;
+  /** C16: o externo recebe o link de acesso ao TCC depois de aceitar. */
+  convidado_externo: boolean;
+  papel: "TITULAR" | "SUPLENTE" | null;
+  tcc: string;
+  tcc_titulo: string;
+  autor_nome: string;
+  orientador_nome: string;
+  banca: BancaResumo;
+};
+
+/* C16 (4.6): leitura do TCC pelo membro externo, via token */
+export type AcessoExterno = {
+  membro_nome: string;
+  expira_em: string;
+  tcc: {
+    titulo: string;
+    subtitulo: string | null;
+    autor_nome: string;
+    orientador_nome: string;
+    coorientador_nome: string | null;
+    curso_nome: string;
+    area_nome: string;
+    modalidade: Modalidade;
+    link_externo: string | null;
+    arquivo_tcc_path: string | null;
+  };
+  banca: BancaResumo & {
+    membros: { nome: string; tipo_membro: "TITULAR" | "SUPLENTE"; membro_externo: boolean }[];
+  };
 };
 
 /* C7 (8.3): consulta dos logs, so administrador */

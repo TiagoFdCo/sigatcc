@@ -1,36 +1,50 @@
 import uuid
 
 from django.db.models import Count, Exists, OuterRef, Prefetch, Q
+from django.utils import timezone
 from django.utils.dateparse import parse_date
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from core.api.auth import ip_da_requisicao
 from core.api.permissions import (
     EscopoDoTCC,
     GestaoDePessoas,
     LeituraOuAdministrador,
     LeituraOuGestao,
+    ProfessorTccOuAdministrador,
     SomenteAdministrador,
 )
 from core.api.serializers import (
+    AcessoExternoSerializer,
+    AgendarReuniaoSerializer,
     AlunoEntradaSerializer,
     AlunoSerializer,
     AreaConhecimentoSerializer,
     BancaSerializer,
     CadastrarBancaSerializer,
+    ConvidarAudienciaSerializer,
+    ConviteRecebidoSerializer,
+    ConviteSerializer,
     CursoSerializer,
     DocenteEntradaSerializer,
     DocenteSerializer,
     EnviarSolicitacaoSerializer,
     LogAcessoSerializer,
     LogAuditoriaSerializer,
+    MembroExternoEntradaSerializer,
     MudarSituacaoSerializer,
     OrientadorSerializer,
     RegistrarPublicacaoSerializer,
+    ResponderConviteSerializer,
+    ResponderPorLinkSerializer,
     ResponderSolicitacaoSerializer,
+    ReuniaoSerializer,
     SolicitacaoOrientacaoSerializer,
     TCCDetalheSerializer,
     TCCSerializer,
@@ -42,21 +56,27 @@ from core.models import (
     Aluno,
     AreaConhecimento,
     Banca,
+    Convite,
     Curso,
     Docente,
     HistoricoStatus,
     LogAcesso,
     LogAuditoria,
     ParticipacaoBanca,
+    ReuniaoAlinhamento,
     SolicitacaoOrientacao,
+    TipoUsuario,
     Usuario,
 )
+from core.services import acesso_externo as servico_acesso_externo
 from core.services import banca as servico_banca
 from core.services import contas as servico_contas
+from core.services import convites as servico_convites
 from core.services import docente as servico_docente
 from core.services import escopo
 from core.services import pessoas as servico_pessoas
 from core.services import publicacao as servico_publicacao
+from core.services import reuniao as servico_reuniao
 from core.services import solicitacao as servico_solicitacao
 from core.services import tcc as servico_tcc
 
@@ -184,6 +204,18 @@ class BancaViewSet(viewsets.ReadOnlyModelViewSet):
             .prefetch_related("participacoes__usuario", "convites")
             .order_by("data_hora_inicio")
         )
+
+    @action(detail=True, methods=["post"])
+    def audiencia(self, request, pk=None):
+        """C6 (PF34): convida, por pessoa, docentes e alunos para assistir."""
+        banca = self.get_object()
+        entrada = ConvidarAudienciaSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        servico_convites.convidar_audiencia(
+            banca=banca, usuario=request.user, **entrada.validated_data
+        )
+        banca = self.get_queryset().get(pk=banca.pk)
+        return Response(BancaSerializer(banca).data, status=status.HTTP_201_CREATED)
 
     def create(self, request):
         entrada = CadastrarBancaSerializer(data=request.data)
@@ -481,7 +513,7 @@ class SolicitacaoOrientacaoViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         qs = SolicitacaoOrientacao.objects.select_related(
-            "aluno__usuario", "aluno__curso", "docente__usuario"
+            "aluno__usuario", "aluno__curso", "docente__usuario", "reuniao"
         ).order_by("-enviada_em")
         qs = servico_solicitacao.filtrar_visiveis(self.request.user, qs)
         if self.request.query_params.get("status"):
@@ -509,6 +541,126 @@ class SolicitacaoOrientacaoViewSet(viewsets.ReadOnlyModelViewSet):
             solicitacao_id=pk, usuario=request.user, **entrada.validated_data
         )
         return Response(self.get_serializer(solicitacao).data)
+
+    @action(detail=True, methods=["post"])
+    def reuniao(self, request, pk=None):
+        """C3b (PF44): agenda ou remarca a reuniao; devolve os alertas de agenda."""
+        entrada = AgendarReuniaoSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        reuniao, criada, alertas = servico_reuniao.agendar_reuniao(
+            solicitacao_id=pk, usuario=request.user, **entrada.validated_data
+        )
+        return Response(
+            {"reuniao": ReuniaoSerializer(reuniao).data, "alertas": alertas},
+            status=status.HTTP_201_CREATED if criada else status.HTTP_200_OK,
+        )
+
+
+class ReuniaoViewSet(viewsets.ReadOnlyModelViewSet):
+    """/api/reunioes/ (C3b, PF45): reunioes de alinhamento de quem consulta.
+
+    ?futuras=true traz so as que ainda vao acontecer.
+    """
+
+    serializer_class = ReuniaoSerializer
+
+    def get_queryset(self):
+        qs = ReuniaoAlinhamento.objects.select_related(
+            "solicitacao__aluno__usuario", "solicitacao__docente__usuario"
+        ).order_by("data_hora")
+        qs = servico_reuniao.filtrar_reunioes_visiveis(self.request.user, qs)
+        if self.request.query_params.get("futuras") == "true":
+            qs = qs.filter(data_hora__gte=timezone.now())
+        return qs
+
+
+# ---------------------------------------- C6: convites de banca e audiencia
+class ConviteViewSet(viewsets.ReadOnlyModelViewSet):
+    """/api/convites/ (PF62): convites recebidos por quem consulta.
+
+    /{id}/responder/ aceita ou recusa (PF35); /{id}/reenviar/ reenvia um
+    pendente (PF33, quem edita o TCC); /link/ e a rota publica do link do
+    e-mail, usada pelo membro externo (sem login).
+    """
+
+    serializer_class = ConviteRecebidoSerializer
+
+    def get_queryset(self):
+        qs = (
+            Convite.objects.filter(usuario=self.request.user)
+            .select_related(*servico_convites.RELACIONADOS)
+            .order_by("-enviado_em")
+        )
+        if self.request.query_params.get("status"):
+            qs = qs.filter(status=self.request.query_params["status"])
+        return qs
+
+    @action(detail=True, methods=["post"])
+    def responder(self, request, pk=None):
+        entrada = ResponderConviteSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        convite = servico_convites.responder_como_usuario(
+            convite_id=pk, usuario=request.user, **entrada.validated_data
+        )
+        return Response(ConviteRecebidoSerializer(convite).data)
+
+    @action(detail=True, methods=["post"])
+    def reenviar(self, request, pk=None):
+        convite = servico_convites.reenviar_convite(convite_id=pk, usuario=request.user)
+        return Response(ConviteSerializer(convite).data)
+
+    @action(
+        detail=False,
+        methods=["get", "post"],
+        permission_classes=[AllowAny],
+        authentication_classes=[],
+    )
+    def link(self, request):
+        if request.method == "GET":
+            convite = servico_convites.convite_por_assinatura(
+                request.query_params.get("c")
+            )
+            return Response(ConviteRecebidoSerializer(convite).data)
+        entrada = ResponderPorLinkSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        convite = servico_convites.responder_por_link(
+            valor_assinatura=entrada.validated_data["c"],
+            resposta=entrada.validated_data["resposta"],
+        )
+        return Response(ConviteRecebidoSerializer(convite).data)
+
+
+# ------------------------------------ C16: acesso temporario do externo (4.6)
+class MembroExternoView(APIView):
+    """POST /api/membros-externos/ (PF60): Professor de TCC ou administrador
+    cadastra o membro externo, sem senha (ele entra so pelo token)."""
+
+    permission_classes = [ProfessorTccOuAdministrador]
+
+    def post(self, request):
+        entrada = MembroExternoEntradaSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        conta = servico_pessoas.cadastrar_usuario(
+            dados={
+                **entrada.validated_data,
+                "tipo_usuario": TipoUsuario.MEMBRO_EXTERNO,
+            },
+            usuario=request.user,
+        )
+        return Response(UsuarioSerializer(conta).data, status=status.HTTP_201_CREATED)
+
+
+class AcessoExternoView(APIView):
+    """GET /api/acesso-externo/<token>/ (PF19): leitura do TCC pelo membro
+    externo, sem login, ate 48 h depois da defesa (RD32)."""
+
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get(self, request, token):
+        acesso = servico_acesso_externo.validar_token(token)
+        servico_acesso_externo.registrar_acesso(acesso, ip_da_requisicao(request))
+        return Response(AcessoExternoSerializer(acesso).data)
 
 
 # ------------------------------------------- C7: consulta dos logs (8.3, RNF08)

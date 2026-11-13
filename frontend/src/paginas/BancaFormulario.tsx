@@ -4,7 +4,9 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { ErroApi, api } from "../api/cliente";
 import type { ErrosFormulario } from "../api/erros";
 import type { Docente, TccDetalhe, TipoLocal, UsuarioGeral } from "../api/tipos";
+import { useAuth } from "../auth/AuthContext";
 import { Alerta } from "../componentes/Alerta";
+import { CadastroMembroExterno } from "../componentes/CadastroMembroExterno";
 import { useCarregar } from "../hooks/useCarregar";
 import { nomeDoCurso } from "../util/rotulos";
 
@@ -22,13 +24,16 @@ const ROTULOS: Record<string, string> = {
   tcc: "TCC",
 };
 
-/** B9c: cadastro de banca (RBN09 a RBN12). O envio dos convites e da E2. */
+/** B9c: cadastro de banca (RBN09 a RBN12). Os convites saem por e-mail (C6). */
 export function BancaFormulario() {
   const { id = "" } = useParams<{ id: string }>();
   const navegar = useNavigate();
 
   const { dados: tcc, erro: erroTcc } = useCarregar(() => api<TccDetalhe>(`/tccs/${id}/`), [id]);
-  const { dados: membros, erro: erroMembros } = useCarregar<Membro[]>(async () => {
+  const { usuario } = useAuth();
+  // C16 (RBN58): so o Professor de TCC (ou o administrador) cadastra externo
+  const cadastraExterno = Boolean(usuario?.professor_tcc) || usuario?.tipo_usuario === "ADMINISTRADOR";
+  const { dados: membros, setDados: setMembros, erro: erroMembros } = useCarregar<Membro[]>(async () => {
     const [docentes, externos] = await Promise.all([
       api<Docente[]>("/docentes/", { params: { ativo: "true" } }),
       api<UsuarioGeral[]>("/usuarios/", { params: { tipo: "MEMBRO_EXTERNO", ativo: "true" } }),
@@ -144,6 +149,17 @@ export function BancaFormulario() {
         <Alerta tom="info">
           Este TCC já tem banca. <Link to={`/tccs/${tcc.id}`}>Ver no detalhe</Link>
         </Alerta>
+      )}
+
+      {cadastraExterno && (
+        <CadastroMembroExterno
+          aoCadastrar={(u) =>
+            setMembros((atual) => [
+              ...(atual ?? []),
+              { id: u.id, rotulo: `${u.nome_completo} · externo${u.instituicao_origem ? ` (${u.instituicao_origem})` : ""}` },
+            ])
+          }
+        />
       )}
 
       <form className="pilha" onSubmit={salvar} noValidate>
