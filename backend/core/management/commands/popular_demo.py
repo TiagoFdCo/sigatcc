@@ -99,6 +99,11 @@ class Command(BaseCommand):
             email = f"aluno{i}@uea.edu.br"
             existente = Usuario.objects.filter(email=email).first()
             if existente:
+                # C3a: o aluno entra para solicitar orientacao (bancos antigos
+                # de demonstracao criaram os alunos sem senha)
+                if not existente.has_usable_password():
+                    existente.set_password(senha)
+                    existente.save(update_fields=["password"])
                 alunos.append(existente.aluno)
                 continue
             alunos.append(
@@ -109,6 +114,7 @@ class Command(BaseCommand):
                         "matricula": matricula,
                         "cpf": gerar_cpf(222000000 + i * 6271),
                         "curso": Curso.objects.get(nome=curso),
+                        "senha_inicial": senha,
                     },
                     usuario=admin,
                 )
@@ -200,3 +206,4 @@ class Command(BaseCommand):
         self.stdout.write("Professora de TCC: helena.costa@uea.edu.br (ou DOC-001)")
         self.stdout.write("Orientador com banca: carlos.lima@uea.edu.br (ou DOC-002)")
         self.stdout.write("Secretaria: secretaria@uea.edu.br")
+        self.stdout.write("Aluno sem TCC (solicita orientação): aluno4@uea.edu.br")

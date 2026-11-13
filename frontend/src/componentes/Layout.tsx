@@ -36,6 +36,16 @@ export function Layout() {
             <NavLink to="/tccs" className="menu-item">
               TCCs
             </NavLink>
+            {usuario?.tipo_usuario === "ALUNO" && (
+              <NavLink to="/orientadores" className="menu-item">
+                Buscar orientador
+              </NavLink>
+            )}
+            {(usuario?.tipo_usuario === "ALUNO" || usuario?.tipo_usuario === "DOCENTE") && (
+              <NavLink to="/solicitacoes" className="menu-item">
+                Solicitações
+              </NavLink>
+            )}
           </nav>
           <div className="usuario">
             <span>

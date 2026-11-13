@@ -91,3 +91,16 @@ export const STATUS_CONVITE: Record<string, string> = {
   ACEITO: "Convite aceito",
   RECUSADO: "Convite recusado",
 };
+
+/* C3a: situacao da solicitacao de orientacao */
+export const STATUS_SOLICITACAO: Record<string, string> = {
+  PENDENTE: "Aguardando resposta",
+  ACEITA: "Aceita",
+  RECUSADA: "Recusada",
+};
+
+export const DEPARTAMENTOS: Record<string, string> = {
+  SI: "Sistemas de Informação",
+  ECP: "Engenharia de Computação",
+  LIC: "Licenciatura em Computação",
+};
