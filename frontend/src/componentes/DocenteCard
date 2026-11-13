@@ -1,0 +1,42 @@
+import React from 'react';
+import { DocenteItem } from '../../types/orientacao';
+
+interface DocenteCardProps {
+  docente: DocenteItem;
+  onSolicitar: (docente: DocenteItem) => void;
+}
+
+export const DocenteCard: React.FC<DocenteCardProps> = ({ docente, onSolicitar }) => {
+  return (
+    <div className="card-docente">
+      <div className="card-header">
+        <div>
+          <h3>{docente.nome}</h3>
+          <p className="subtext">{docente.departamento} — {docente.email}</p>
+        </div>
+        <span className={`badge ${docente.aceita_orientacoes ? 'badge-success' : 'badge-danger'}`}>
+          {docente.aceita_orientacoes ? `${docente.qtd_orientacoes} orientandos` : 'Não aceita orientandos'}
+        </span>
+      </div>
+
+      <div className="areas-container">
+        <p className="label">Áreas de Interesse:</p>
+        <div className="tags">
+          {docente.areas && docente.areas.map((area) => (
+            <span key={area.id} className="tag">{area.nome}</span>
+          ))}
+        </div>
+      </div>
+
+      <div className="card-actions">
+        <button
+          onClick={() => onSolicitar(docente)}
+          disabled={!docente.aceita_orientacoes}
+          className="btn-primary"
+        >
+          Solicitar Orientação
+        </button>
+      </div>
+    </div>
+  );
+};
