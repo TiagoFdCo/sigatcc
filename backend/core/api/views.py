@@ -21,8 +21,12 @@ from core.api.serializers import (
     CursoSerializer,
     DocenteEntradaSerializer,
     DocenteSerializer,
+    EnviarSolicitacaoSerializer,
     MudarSituacaoSerializer,
+    OrientadorSerializer,
     RegistrarPublicacaoSerializer,
+    ResponderSolicitacaoSerializer,
+    SolicitacaoOrientacaoSerializer,
     TCCDetalheSerializer,
     TCCSerializer,
     UsuarioEntradaSerializer,
@@ -37,6 +41,7 @@ from core.models import (
     Docente,
     HistoricoStatus,
     ParticipacaoBanca,
+    SolicitacaoOrientacao,
     Usuario,
 )
 from core.services import banca as servico_banca
@@ -45,6 +50,7 @@ from core.services import docente as servico_docente
 from core.services import escopo
 from core.services import pessoas as servico_pessoas
 from core.services import publicacao as servico_publicacao
+from core.services import solicitacao as servico_solicitacao
 from core.services import tcc as servico_tcc
 
 
@@ -414,3 +420,85 @@ class AreaConhecimentoViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(
             AreaConhecimentoSerializer(area).data, status=status.HTTP_201_CREATED
         )
+
+
+# ------------------------------------------- C3a: orientacao academica (7.2)
+def _docentes_com_carga():
+    """Docentes com a carga de orientacao (RD17) anotada em qtd_orientacoes."""
+    return Docente.objects.select_related("usuario").annotate(
+        qtd_orientacoes=Count(
+            "tccs_orientados",
+            filter=Q(tccs_orientados__ativo=True),
+            distinct=True,
+        )
+        + Count(
+            "tccs_coorientados",
+            filter=Q(tccs_coorientados__ativo=True),
+            distinct=True,
+        ),
+    )
+
+
+class OrientadorViewSet(viewsets.ReadOnlyModelViewSet):
+    """/api/orientadores/ (PF63): busca de orientador por area e nome.
+
+    Lista so docentes ativos, com as areas de interesse e o numero de
+    orientandos. Filtros: ?area=<id> e ?busca=<nome>.
+    """
+
+    serializer_class = OrientadorSerializer
+
+    def get_queryset(self):
+        qs = (
+            _docentes_com_carga()
+            .filter(usuario__ativo=True)
+            .prefetch_related("areas_interesse")
+            .order_by("-aceita_orientacoes", "usuario__nome_completo")
+        )
+        params = self.request.query_params
+        if params.get("area"):
+            qs = filtro_uuid(qs, "areas_interesse__id", params["area"]).distinct()
+        if params.get("busca"):
+            qs = qs.filter(usuario__nome_completo__icontains=params["busca"])
+        return qs
+
+
+class SolicitacaoOrientacaoViewSet(viewsets.ReadOnlyModelViewSet):
+    """/api/solicitacoes-orientacao/ (PF41 a PF43).
+
+    O aluno envia (POST) e ve as que enviou; o docente ve as que recebeu e
+    responde em /{id}/responder/. Filtro: ?status=.
+    """
+
+    serializer_class = SolicitacaoOrientacaoSerializer
+
+    def get_queryset(self):
+        qs = SolicitacaoOrientacao.objects.select_related(
+            "aluno__usuario", "aluno__curso", "docente__usuario"
+        ).order_by("-enviada_em")
+        qs = servico_solicitacao.filtrar_visiveis(self.request.user, qs)
+        if self.request.query_params.get("status"):
+            qs = qs.filter(status=self.request.query_params["status"])
+        return qs
+
+    def create(self, request):
+        aluno = getattr(request.user, "aluno", None)
+        if aluno is None:
+            raise PermissionDenied("Só o aluno solicita orientação.")
+        entrada = EnviarSolicitacaoSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        solicitacao = servico_solicitacao.enviar_solicitacao(
+            aluno=aluno, usuario=request.user, **entrada.validated_data
+        )
+        return Response(
+            self.get_serializer(solicitacao).data, status=status.HTTP_201_CREATED
+        )
+
+    @action(detail=True, methods=["post"])
+    def responder(self, request, pk=None):
+        entrada = ResponderSolicitacaoSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        solicitacao = servico_solicitacao.responder_solicitacao(
+            solicitacao_id=pk, usuario=request.user, **entrada.validated_data
+        )
+        return Response(self.get_serializer(solicitacao).data)

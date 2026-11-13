@@ -1,5 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import { ErroApi, api } from "../api/cliente";
 import type { ErrosFormulario } from "../api/erros";
@@ -49,6 +49,9 @@ export function TccFormulario() {
   const { id } = useParams<{ id: string }>();
   const edicao = Boolean(id);
   const navegar = useNavigate();
+  // C3a: vindo de uma solicitacao aceita, o aluno ja chega escolhido
+  const [params] = useSearchParams();
+  const autorSugerido = edicao ? "" : (params.get("autor") ?? "");
 
   const { usuario } = useAuth();
   // C17 / RD24: o orientador cadastra so TCC em que ele mesmo orienta; o
@@ -56,9 +59,11 @@ export function TccFormulario() {
   const orientadorFixo =
     !edicao && usuario?.tipo_usuario === "DOCENTE" && !usuario.professor_tcc ? usuario.id : null;
 
-  const [form, setForm] = useState<Formulario>(() =>
-    orientadorFixo ? { ...VAZIO, orientador: orientadorFixo } : VAZIO,
-  );
+  const [form, setForm] = useState<Formulario>(() => ({
+    ...VAZIO,
+    autor: autorSugerido,
+    orientador: orientadorFixo ?? VAZIO.orientador,
+  }));
   const [erros, setErros] = useState<ErrosFormulario | null>(null);
   const [enviando, setEnviando] = useState(false);
 

@@ -4,8 +4,10 @@ import { ProvedorAuth } from "./auth/AuthContext";
 import { RotaProtegida } from "./auth/RotaProtegida";
 import { Layout } from "./componentes/Layout";
 import { BancaFormulario } from "./paginas/BancaFormulario";
+import { BuscarOrientador } from "./paginas/BuscarOrientador";
 import { Login } from "./paginas/Login";
 import { NaoEncontrada } from "./paginas/NaoEncontrada";
+import { Solicitacoes } from "./paginas/Solicitacoes";
 import { TccDetalhe } from "./paginas/TccDetalhe";
 import { TccFormulario } from "./paginas/TccFormulario";
 import { TccLista } from "./paginas/TccLista";
@@ -24,6 +26,8 @@ export function App() {
               <Route path="/tccs/:id" element={<TccDetalhe />} />
               <Route path="/tccs/:id/editar" element={<TccFormulario />} />
               <Route path="/tccs/:id/banca/nova" element={<BancaFormulario />} />
+              <Route path="/orientadores" element={<BuscarOrientador />} />
+              <Route path="/solicitacoes" element={<Solicitacoes />} />
               <Route path="*" element={<NaoEncontrada />} />
             </Route>
           </Route>

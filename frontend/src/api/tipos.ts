@@ -135,3 +135,31 @@ export type UsuarioGeral = {
 
 export type Curso = { id: string; nome: string; rotulo: string };
 export type Area = { id: string; nome: string };
+
+/* C3a (7.2): orientacao academica */
+export type Orientador = {
+  id: string;
+  nome_completo: string;
+  email: string;
+  departamento: "SI" | "ECP" | "LIC";
+  aceita_orientacoes: boolean;
+  areas_interesse: Area[];
+  qtd_orientacoes: number;
+};
+
+export type StatusSolicitacao = "PENDENTE" | "ACEITA" | "RECUSADA";
+
+export type SolicitacaoOrientacao = {
+  id: string;
+  aluno: string;
+  aluno_nome: string;
+  aluno_email: string;
+  aluno_curso: string;
+  docente: string;
+  docente_nome: string;
+  mensagem: string | null;
+  status: StatusSolicitacao;
+  motivo_recusa: string | null;
+  enviada_em: string;
+  respondida_em: string | null;
+};

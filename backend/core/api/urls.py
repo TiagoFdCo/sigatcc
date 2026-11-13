@@ -9,6 +9,8 @@ from core.api.views import (
     BancaViewSet,
     CursoViewSet,
     DocenteViewSet,
+    OrientadorViewSet,
+    SolicitacaoOrientacaoViewSet,
     TCCViewSet,
     UsuarioViewSet,
 )
@@ -21,6 +23,13 @@ router.register("alunos", AlunoViewSet, basename="aluno")
 router.register("usuarios", UsuarioViewSet, basename="usuario")
 router.register("cursos", CursoViewSet, basename="curso")
 router.register("areas", AreaConhecimentoViewSet, basename="area")
+# C3a (7.2): orientacao academica
+router.register("orientadores", OrientadorViewSet, basename="orientador")
+router.register(
+    "solicitacoes-orientacao",
+    SolicitacaoOrientacaoViewSet,
+    basename="solicitacao-orientacao",
+)
 
 urlpatterns = [
     path("auth/login/", LoginView.as_view(), name="auth-login"),

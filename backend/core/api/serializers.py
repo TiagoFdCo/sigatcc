@@ -13,12 +13,14 @@ from core.models import (
     MotivoNaoApresentacao,
     ParticipacaoBanca,
     Publicacao,
+    SolicitacaoOrientacao,
     StatusTCC,
     TipoLocal,
     Usuario,
 )
 from core.services import escopo
 from core.services.pessoas import TIPOS_GERAIS
+from core.services.solicitacao import RESPOSTAS
 from core.validators import cpf_valido, mascarar_cpf, so_digitos
 
 
@@ -365,3 +367,70 @@ class AreaConhecimentoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AreaConhecimento
         fields = ["id", "nome"]
+
+
+# ------------------------------------------- C3a: orientacao academica (7.2)
+class OrientadorSerializer(serializers.ModelSerializer):
+    """PF63: busca de orientador pelo aluno. Sem CPF nem matricula (RNF12)."""
+
+    id = serializers.UUIDField(source="pk", read_only=True)
+    nome_completo = serializers.CharField(source="usuario.nome_completo")
+    email = serializers.EmailField(source="usuario.email")
+    areas_interesse = AreaConhecimentoSerializer(many=True, read_only=True)
+    qtd_orientacoes = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Docente
+        fields = [
+            "id",
+            "nome_completo",
+            "email",
+            "departamento",
+            "aceita_orientacoes",
+            "areas_interesse",
+            "qtd_orientacoes",
+        ]
+
+
+class SolicitacaoOrientacaoSerializer(serializers.ModelSerializer):
+    aluno_nome = serializers.CharField(
+        source="aluno.usuario.nome_completo", read_only=True
+    )
+    aluno_email = serializers.EmailField(source="aluno.usuario.email", read_only=True)
+    aluno_curso = serializers.CharField(source="aluno.curso.nome", read_only=True)
+    docente_nome = serializers.CharField(
+        source="docente.usuario.nome_completo", read_only=True
+    )
+
+    class Meta:
+        model = SolicitacaoOrientacao
+        fields = [
+            "id",
+            "aluno",
+            "aluno_nome",
+            "aluno_email",
+            "aluno_curso",
+            "docente",
+            "docente_nome",
+            "mensagem",
+            "status",
+            "motivo_recusa",
+            "enviada_em",
+            "respondida_em",
+        ]
+
+
+class EnviarSolicitacaoSerializer(serializers.Serializer):
+    docente = serializers.PrimaryKeyRelatedField(
+        queryset=Docente.objects.select_related("usuario")
+    )
+    mensagem = serializers.CharField(
+        max_length=2000, required=False, allow_blank=True, allow_null=True
+    )
+
+
+class ResponderSolicitacaoSerializer(serializers.Serializer):
+    status = serializers.ChoiceField(choices=sorted(RESPOSTAS))
+    motivo_recusa = serializers.CharField(
+        max_length=2000, required=False, allow_blank=True, allow_null=True
+    )
