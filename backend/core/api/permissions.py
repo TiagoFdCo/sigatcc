@@ -77,3 +77,17 @@ class EscopoDoTCC(BasePermission):
             acao = f"{request.method} {getattr(view, 'action', '') or ''}".strip()
             escopo.registrar_acesso_negado(usuario, obj, acao)
         return permitido
+
+
+class ProfessorTccOuAdministrador(BasePermission):
+    """C16 (RBN58): o Professor de TCC cadastra membro externo na tela de banca."""
+
+    message = "Só o Professor de TCC ou o administrador faz isto."
+
+    def has_permission(self, request, view):
+        usuario = request.user
+        if not (usuario and usuario.is_authenticated):
+            return False
+        return usuario.tipo_usuario == TipoUsuario.ADMINISTRADOR or (
+            escopo.eh_professor_tcc(usuario)
+        )

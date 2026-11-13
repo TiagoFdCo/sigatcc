@@ -198,10 +198,33 @@ export type ConviteRecebido = {
   enviado_em: string;
   respondido_em: string | null;
   convidado_nome: string;
+  /** C16: o externo recebe o link de acesso ao TCC depois de aceitar. */
+  convidado_externo: boolean;
   papel: "TITULAR" | "SUPLENTE" | null;
   tcc: string;
   tcc_titulo: string;
   autor_nome: string;
   orientador_nome: string;
   banca: BancaResumo;
+};
+
+/* C16 (4.6): leitura do TCC pelo membro externo, via token */
+export type AcessoExterno = {
+  membro_nome: string;
+  expira_em: string;
+  tcc: {
+    titulo: string;
+    subtitulo: string | null;
+    autor_nome: string;
+    orientador_nome: string;
+    coorientador_nome: string | null;
+    curso_nome: string;
+    area_nome: string;
+    modalidade: Modalidade;
+    link_externo: string | null;
+    arquivo_tcc_path: string | null;
+  };
+  banca: BancaResumo & {
+    membros: { nome: string; tipo_membro: "TITULAR" | "SUPLENTE"; membro_externo: boolean }[];
+  };
 };

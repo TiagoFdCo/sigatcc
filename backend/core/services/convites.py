@@ -7,6 +7,7 @@
   aceitar ou recusar. O link e assinado (django.core.signing): o membro
   externo responde sem login; quem tem login tambem responde pela tela.
 - Responde-se uma vez, e so antes da defesa. Reenviar (PF33) so convite pendente.
+- O aceite do membro externo gera o token de acesso temporario (C16).
 """
 
 from django.core import signing
@@ -23,7 +24,7 @@ from core.models import (
     TipoLocal,
     TipoUsuario,
 )
-from core.services import email
+from core.services import acesso_externo, email
 from core.services.auditoria import registrar
 from core.services.escopo import pode_editar_tcc
 
@@ -93,6 +94,14 @@ def _mensagem(convite):
         f"Local: {descrever_local(banca)}\n\n"
         f"Para aceitar ou recusar, acesse:\n{link_resposta(convite)}"
     )
+    if (
+        convite.tipo == TipoConvite.BANCA
+        and convite.usuario.tipo_usuario == TipoUsuario.MEMBRO_EXTERNO
+    ):
+        texto += (
+            "\n\nAo aceitar, você recebe por e-mail o link de acesso ao TCC, "
+            "válido até 48 horas depois do início da defesa."
+        )
     return assunto, texto
 
 
@@ -195,6 +204,13 @@ def responder_convite(*, convite_id, resposta):
         StatusConvite.PENDENTE,
         resposta,
     )
+    # C16 (RBN54, RD32): o aceite do externo gera o token de acesso ao TCC
+    if (
+        resposta == StatusConvite.ACEITO
+        and convite.tipo == TipoConvite.BANCA
+        and convite.usuario.tipo_usuario == TipoUsuario.MEMBRO_EXTERNO
+    ):
+        acesso_externo.gerar_token(convite)
     return convite
 
 

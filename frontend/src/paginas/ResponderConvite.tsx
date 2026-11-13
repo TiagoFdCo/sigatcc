@@ -82,6 +82,9 @@ export function ResponderConvite() {
               {convite.status === "PENDENTE"
                 ? "A defesa já começou; o convite não pode mais ser respondido."
                 : `${STATUS_CONVITE[convite.status]}. Obrigado pela resposta.`}
+              {convite.status === "ACEITO" && convite.tipo === "BANCA" && convite.convidado_externo && (
+                <> Enviamos para o seu e-mail o link de acesso ao TCC, válido até 48 horas depois da defesa.</>
+              )}
             </Alerta>
           )}
         </section>
