@@ -10,6 +10,8 @@ from core.models import (
     Departamento,
     Docente,
     HistoricoStatus,
+    LogAcesso,
+    LogAuditoria,
     MotivoNaoApresentacao,
     ParticipacaoBanca,
     Publicacao,
@@ -617,3 +619,32 @@ class AcessoExternoSerializer(serializers.Serializer):
                 ],
             },
         }
+
+
+# ------------------------------------------------- C7: consulta dos logs (8.3)
+class LogAuditoriaSerializer(serializers.ModelSerializer):
+    responsavel_nome = serializers.CharField(
+        source="responsavel.nome_completo", read_only=True
+    )
+
+    class Meta:
+        model = LogAuditoria
+        fields = [
+            "id",
+            "data_hora",
+            "responsavel",
+            "responsavel_nome",
+            "entidade",
+            "registro_id",
+            "campo",
+            "valor_anterior",
+            "valor_novo",
+        ]
+
+
+class LogAcessoSerializer(serializers.ModelSerializer):
+    usuario_nome = serializers.CharField(source="usuario.nome_completo", read_only=True)
+
+    class Meta:
+        model = LogAcesso
+        fields = ["id", "data_hora", "usuario", "usuario_nome", "ip"]

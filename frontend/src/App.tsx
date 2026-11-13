@@ -4,6 +4,7 @@ import { ProvedorAuth } from "./auth/AuthContext";
 import { RotaProtegida } from "./auth/RotaProtegida";
 import { Layout } from "./componentes/Layout";
 import { AcessoExterno } from "./paginas/AcessoExterno";
+import { Auditoria } from "./paginas/Auditoria";
 import { BancaFormulario } from "./paginas/BancaFormulario";
 import { BuscarOrientador } from "./paginas/BuscarOrientador";
 import { Convites } from "./paginas/Convites";
@@ -36,6 +37,7 @@ export function App() {
               <Route path="/orientadores" element={<BuscarOrientador />} />
               <Route path="/solicitacoes" element={<Solicitacoes />} />
               <Route path="/convites" element={<Convites />} />
+              <Route path="/auditoria" element={<Auditoria />} />
               <Route path="*" element={<NaoEncontrada />} />
             </Route>
           </Route>

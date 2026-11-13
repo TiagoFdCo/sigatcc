@@ -168,6 +168,7 @@ O comando mostra os logins criados. A senha padrao e `Demo#2026`.
 | `/api/tccs/` e `/api/tccs/{id}/situacao/` | leitura: todos; escrita: docente e admin | B7a, B7b |
 | `POST /api/tccs/{id}/publicacao/` | docente e admin | C1 |
 | `/api/bancas/` | leitura: todos; escrita: docente e admin | B8 |
+| `GET /api/auditoria/` (?entidade, ?campo, ?registro, ?responsavel, ?de, ?ate, ?limit, ?offset) e `GET /api/acessos/` (?usuario, ?de, ?ate) | somente leitura; só administrador | C7 |
 
 ## Configurar o GitHub (uma vez, por quem administra o repositorio)
 

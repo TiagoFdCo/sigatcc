@@ -2,9 +2,11 @@ import uuid
 
 from django.db.models import Count, Exists, OuterRef, Prefetch, Q
 from django.utils import timezone
+from django.utils.dateparse import parse_date
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,6 +18,7 @@ from core.api.permissions import (
     LeituraOuAdministrador,
     LeituraOuGestao,
     ProfessorTccOuAdministrador,
+    SomenteAdministrador,
 )
 from core.api.serializers import (
     AcessoExternoSerializer,
@@ -32,6 +35,8 @@ from core.api.serializers import (
     DocenteEntradaSerializer,
     DocenteSerializer,
     EnviarSolicitacaoSerializer,
+    LogAcessoSerializer,
+    LogAuditoriaSerializer,
     MembroExternoEntradaSerializer,
     MudarSituacaoSerializer,
     OrientadorSerializer,
@@ -55,6 +60,8 @@ from core.models import (
     Curso,
     Docente,
     HistoricoStatus,
+    LogAcesso,
+    LogAuditoria,
     ParticipacaoBanca,
     ReuniaoAlinhamento,
     SolicitacaoOrientacao,
@@ -654,3 +661,74 @@ class AcessoExternoView(APIView):
         acesso = servico_acesso_externo.validar_token(token)
         servico_acesso_externo.registrar_acesso(acesso, ip_da_requisicao(request))
         return Response(AcessoExternoSerializer(acesso).data)
+
+
+# ------------------------------------------- C7: consulta dos logs (8.3, RNF08)
+class PaginaDeLog(LimitOffsetPagination):
+    """Os logs crescem sem parar: nunca devolvemos tudo de uma vez."""
+
+    default_limit = 50
+    max_limit = 200
+
+
+def _filtrar_por_periodo(queryset, params):
+    """?de=AAAA-MM-DD e ?ate=AAAA-MM-DD (os dois dias entram no resultado)."""
+    for nome, filtro in (
+        ("de", "data_hora__date__gte"),
+        ("ate", "data_hora__date__lte"),
+    ):
+        valor = params.get(nome)
+        if not valor:
+            continue
+        dia = parse_date(valor)
+        if dia is None:
+            raise ValidationError({nome: "Use a data no formato AAAA-MM-DD."})
+        queryset = queryset.filter(**{filtro: dia})
+    return queryset
+
+
+class AuditoriaViewSet(viewsets.ReadOnlyModelViewSet):
+    """/api/auditoria/ (C7): LOG_AUDITORIA so para leitura, do mais novo ao mais antigo.
+
+    Filtros: ?entidade=TCC, ?registro=<id>, ?responsavel=<id do usuario>,
+    ?campo=status, ?de= e ?ate= (datas). Paginado com ?limit= e ?offset=.
+    Escrever e impossivel: a rota e somente leitura e o banco bloqueia UPDATE e
+    DELETE (migration 0003).
+    """
+
+    serializer_class = LogAuditoriaSerializer
+    permission_classes = [SomenteAdministrador]
+    pagination_class = PaginaDeLog
+
+    def get_queryset(self):
+        params = self.request.query_params
+        qs = LogAuditoria.objects.select_related("responsavel").order_by(
+            "-data_hora", "-id"
+        )
+        if params.get("entidade"):
+            qs = qs.filter(entidade__iexact=params["entidade"])
+        if params.get("campo"):
+            qs = qs.filter(campo=params["campo"])
+        if params.get("registro"):
+            qs = filtro_uuid(qs, "registro_id", params["registro"])
+        if params.get("responsavel"):
+            qs = filtro_uuid(qs, "responsavel_id", params["responsavel"])
+        return _filtrar_por_periodo(qs, params)
+
+
+class AcessoViewSet(viewsets.ReadOnlyModelViewSet):
+    """/api/acessos/ (C7): LOG_ACESSO (cada login bem-sucedido), so leitura.
+
+    Filtros: ?usuario=<id>, ?de= e ?ate=. Paginado como a auditoria.
+    """
+
+    serializer_class = LogAcessoSerializer
+    permission_classes = [SomenteAdministrador]
+    pagination_class = PaginaDeLog
+
+    def get_queryset(self):
+        params = self.request.query_params
+        qs = LogAcesso.objects.select_related("usuario").order_by("-data_hora", "-id")
+        if params.get("usuario"):
+            qs = filtro_uuid(qs, "usuario_id", params["usuario"])
+        return _filtrar_por_periodo(qs, params)
