@@ -118,6 +118,28 @@ SIMPLE_JWT = {
     "USER_ID_CLAIM": "user_id",
 }
 
+# --- E-mail transacional (C5, RNF07) ---
+# Desenvolvimento: os e-mails saem no log do container (backend console).
+# Homologacao e producao: SMTP do Resend, com
+#   EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend e RESEND_API_KEY.
+# Nos testes o Django troca sozinho para o backend em memoria.
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.resend.com")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "resend")
+EMAIL_HOST_PASSWORD = os.environ.get("RESEND_API_KEY", "")
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True").lower() == "true"
+EMAIL_TIMEOUT = int(os.environ.get("EMAIL_TIMEOUT", "10"))
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL", "SIGATCC <nao-responda@sigatcc.com.br>"
+)
+# Endereco da SPA, usado nos links dos e-mails (convites, acesso do externo)
+SIGATCC_FRONTEND_URL = os.environ.get(
+    "SIGATCC_FRONTEND_URL", "http://localhost:5173"
+).rstrip("/")
+
 # --- Producao e homologacao (B11) ---
 # O TLS termina no proxy (Caddy/nginx); ele avisa o Django pelo X-Forwarded-Proto.
 CSRF_TRUSTED_ORIGINS = _lista("CSRF_TRUSTED_ORIGINS")
