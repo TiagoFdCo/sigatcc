@@ -1,6 +1,7 @@
 import uuid
 
 from django.db.models import Count, Exists, OuterRef, Prefetch, Q
+from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
@@ -13,6 +14,7 @@ from core.api.permissions import (
     LeituraOuGestao,
 )
 from core.api.serializers import (
+    AgendarReuniaoSerializer,
     AlunoEntradaSerializer,
     AlunoSerializer,
     AreaConhecimentoSerializer,
@@ -26,6 +28,7 @@ from core.api.serializers import (
     OrientadorSerializer,
     RegistrarPublicacaoSerializer,
     ResponderSolicitacaoSerializer,
+    ReuniaoSerializer,
     SolicitacaoOrientacaoSerializer,
     TCCDetalheSerializer,
     TCCSerializer,
@@ -41,6 +44,7 @@ from core.models import (
     Docente,
     HistoricoStatus,
     ParticipacaoBanca,
+    ReuniaoAlinhamento,
     SolicitacaoOrientacao,
     Usuario,
 )
@@ -50,6 +54,7 @@ from core.services import docente as servico_docente
 from core.services import escopo
 from core.services import pessoas as servico_pessoas
 from core.services import publicacao as servico_publicacao
+from core.services import reuniao as servico_reuniao
 from core.services import solicitacao as servico_solicitacao
 from core.services import tcc as servico_tcc
 
@@ -474,7 +479,7 @@ class SolicitacaoOrientacaoViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         qs = SolicitacaoOrientacao.objects.select_related(
-            "aluno__usuario", "aluno__curso", "docente__usuario"
+            "aluno__usuario", "aluno__curso", "docente__usuario", "reuniao"
         ).order_by("-enviada_em")
         qs = servico_solicitacao.filtrar_visiveis(self.request.user, qs)
         if self.request.query_params.get("status"):
@@ -502,3 +507,34 @@ class SolicitacaoOrientacaoViewSet(viewsets.ReadOnlyModelViewSet):
             solicitacao_id=pk, usuario=request.user, **entrada.validated_data
         )
         return Response(self.get_serializer(solicitacao).data)
+
+    @action(detail=True, methods=["post"])
+    def reuniao(self, request, pk=None):
+        """C3b (PF44): agenda ou remarca a reuniao; devolve os alertas de agenda."""
+        entrada = AgendarReuniaoSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        reuniao, criada, alertas = servico_reuniao.agendar_reuniao(
+            solicitacao_id=pk, usuario=request.user, **entrada.validated_data
+        )
+        return Response(
+            {"reuniao": ReuniaoSerializer(reuniao).data, "alertas": alertas},
+            status=status.HTTP_201_CREATED if criada else status.HTTP_200_OK,
+        )
+
+
+class ReuniaoViewSet(viewsets.ReadOnlyModelViewSet):
+    """/api/reunioes/ (C3b, PF45): reunioes de alinhamento de quem consulta.
+
+    ?futuras=true traz so as que ainda vao acontecer.
+    """
+
+    serializer_class = ReuniaoSerializer
+
+    def get_queryset(self):
+        qs = ReuniaoAlinhamento.objects.select_related(
+            "solicitacao__aluno__usuario", "solicitacao__docente__usuario"
+        ).order_by("data_hora")
+        qs = servico_reuniao.filtrar_reunioes_visiveis(self.request.user, qs)
+        if self.request.query_params.get("futuras") == "true":
+            qs = qs.filter(data_hora__gte=timezone.now())
+        return qs

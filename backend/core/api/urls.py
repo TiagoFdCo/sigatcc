@@ -10,6 +10,7 @@ from core.api.views import (
     CursoViewSet,
     DocenteViewSet,
     OrientadorViewSet,
+    ReuniaoViewSet,
     SolicitacaoOrientacaoViewSet,
     TCCViewSet,
     UsuarioViewSet,
@@ -30,6 +31,8 @@ router.register(
     SolicitacaoOrientacaoViewSet,
     basename="solicitacao-orientacao",
 )
+# C3b (7.3): reunioes de alinhamento
+router.register("reunioes", ReuniaoViewSet, basename="reuniao")
 
 urlpatterns = [
     path("auth/login/", LoginView.as_view(), name="auth-login"),

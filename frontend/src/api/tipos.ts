@@ -162,4 +162,17 @@ export type SolicitacaoOrientacao = {
   motivo_recusa: string | null;
   enviada_em: string;
   respondida_em: string | null;
+  /** C3b: reunião de alinhamento agendada depois do aceite. */
+  reuniao: ResumoReuniao | null;
 };
+
+/* C3b (7.3): reuniao de alinhamento */
+export type ResumoReuniao = { id: string; data_hora: string; tipo_local: TipoLocal; local: string };
+
+export type Reuniao = ResumoReuniao & {
+  solicitacao: string;
+  aluno_nome: string;
+  docente_nome: string;
+};
+
+export type RespostaReuniao = { reuniao: Reuniao; alertas: string[] };

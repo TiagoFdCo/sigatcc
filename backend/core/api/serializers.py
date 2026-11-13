@@ -13,6 +13,7 @@ from core.models import (
     MotivoNaoApresentacao,
     ParticipacaoBanca,
     Publicacao,
+    ReuniaoAlinhamento,
     SolicitacaoOrientacao,
     StatusTCC,
     TipoLocal,
@@ -392,6 +393,35 @@ class OrientadorSerializer(serializers.ModelSerializer):
         ]
 
 
+class ReuniaoSerializer(serializers.ModelSerializer):
+    """C3b (PF45): reuniao de alinhamento, com quem participa."""
+
+    aluno_nome = serializers.CharField(
+        source="solicitacao.aluno.usuario.nome_completo", read_only=True
+    )
+    docente_nome = serializers.CharField(
+        source="solicitacao.docente.usuario.nome_completo", read_only=True
+    )
+
+    class Meta:
+        model = ReuniaoAlinhamento
+        fields = [
+            "id",
+            "solicitacao",
+            "aluno_nome",
+            "docente_nome",
+            "data_hora",
+            "tipo_local",
+            "local",
+        ]
+
+
+class AgendarReuniaoSerializer(serializers.Serializer):
+    data_hora = serializers.DateTimeField()
+    tipo_local = serializers.ChoiceField(choices=TipoLocal.choices)
+    local = serializers.CharField(max_length=300)
+
+
 class SolicitacaoOrientacaoSerializer(serializers.ModelSerializer):
     aluno_nome = serializers.CharField(
         source="aluno.usuario.nome_completo", read_only=True
@@ -401,6 +431,8 @@ class SolicitacaoOrientacaoSerializer(serializers.ModelSerializer):
     docente_nome = serializers.CharField(
         source="docente.usuario.nome_completo", read_only=True
     )
+    # C3b: a reuniao agendada depois do aceite (ou null)
+    reuniao = serializers.SerializerMethodField()
 
     class Meta:
         model = SolicitacaoOrientacao
@@ -417,7 +449,21 @@ class SolicitacaoOrientacaoSerializer(serializers.ModelSerializer):
             "motivo_recusa",
             "enviada_em",
             "respondida_em",
+            "reuniao",
         ]
+
+    def get_reuniao(self, obj):
+        reuniao = getattr(obj, "reuniao", None)
+        if reuniao is None:
+            return None
+        return {
+            "id": str(reuniao.id),
+            "data_hora": serializers.DateTimeField().to_representation(
+                reuniao.data_hora
+            ),
+            "tipo_local": reuniao.tipo_local,
+            "local": reuniao.local,
+        }
 
 
 class EnviarSolicitacaoSerializer(serializers.Serializer):
