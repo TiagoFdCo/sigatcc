@@ -44,7 +44,9 @@ export function TccDetalhe() {
     );
   }
 
-  const podeMudar = podeEditar && tcc.ativo && tcc.status === "EM_DESENVOLVIMENTO";
+  // C17: o perfil precisa poder editar e o TCC precisa estar no escopo dele
+  const podeEditarEste = podeEditar && tcc.pode_editar;
+  const podeMudar = podeEditarEste && tcc.ativo && tcc.status === "EM_DESENVOLVIMENTO";
   const podeRegistrarPublicacao = podeMudar && tcc.modalidade === "PUBLICACAO_APROVADA";
   const publicacao = tcc.publicacao;
 
@@ -79,7 +81,7 @@ export function TccDetalhe() {
           <h1>{tcc.titulo}</h1>
           {tcc.subtitulo && <p className="texto-suave subtitulo">{tcc.subtitulo}</p>}
         </div>
-        {podeEditar && (
+        {podeEditarEste && (
           <div className="acoes">
             <Link to={`/tccs/${tcc.id}/editar`} className="botao-secundario">
               Editar
@@ -184,7 +186,7 @@ export function TccDetalhe() {
               </dl>
             </section>
           )}
-          <CartaoBanca tcc={tcc} podeEditar={podeEditar} />
+          <CartaoBanca tcc={tcc} podeEditar={podeEditarEste} />
         </div>
 
         <aside className="cartao coluna-lateral">

@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { ErroApi, api } from "../api/cliente";
 import type { ErrosFormulario } from "../api/erros";
 import type { Aluno, Area, Docente, Modalidade, Tcc, Visibilidade } from "../api/tipos";
+import { useAuth } from "../auth/AuthContext";
 import { Alerta } from "../componentes/Alerta";
 import { useCarregar } from "../hooks/useCarregar";
 import { MODALIDADES, VISIBILIDADES, nomeDoCurso } from "../util/rotulos";
@@ -49,7 +50,15 @@ export function TccFormulario() {
   const edicao = Boolean(id);
   const navegar = useNavigate();
 
-  const [form, setForm] = useState<Formulario>(VAZIO);
+  const { usuario } = useAuth();
+  // C17 / RD24: o orientador cadastra so TCC em que ele mesmo orienta; o
+  // Professor de TCC e o administrador escolhem qualquer docente.
+  const orientadorFixo =
+    !edicao && usuario?.tipo_usuario === "DOCENTE" && !usuario.professor_tcc ? usuario.id : null;
+
+  const [form, setForm] = useState<Formulario>(() =>
+    orientadorFixo ? { ...VAZIO, orientador: orientadorFixo } : VAZIO,
+  );
   const [erros, setErros] = useState<ErrosFormulario | null>(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -242,6 +251,7 @@ export function TccFormulario() {
               <select
                 id="orientador"
                 value={form.orientador}
+                disabled={Boolean(orientadorFixo)}
                 aria-invalid={Boolean(erroCampo("orientador"))}
                 onChange={(e: ChangeEvent<HTMLSelectElement>) => mudar("orientador", e.target.value)}
               >
@@ -252,7 +262,13 @@ export function TccFormulario() {
                   </option>
                 ))}
               </select>
-              {erroCampo("orientador") && <span className="campo-erro">{erroCampo("orientador")}</span>}
+              {erroCampo("orientador") ? (
+                <span className="campo-erro">{erroCampo("orientador")}</span>
+              ) : (
+                orientadorFixo && (
+                  <span className="campo-ajuda">Você cadastra os TCCs que orienta. O Professor de TCC cadastra para qualquer docente.</span>
+                )
+              )}
             </div>
             <div className="campo">
               <label htmlFor="coorientador">Coorientador</label>

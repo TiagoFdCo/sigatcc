@@ -1,12 +1,13 @@
 from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 from core.models import TipoUsuario
+from core.services import escopo
 
 
 class LeituraOuGestao(BasePermission):
     """Leitura para qualquer usuario logado; escrita so para docente e administrador.
 
-    A visao por perfil (cada um ve so o que lhe cabe) e o item C15, na E2.
+    O que cada perfil ve e edita em cada TCC fica em EscopoDoTCC (C17).
     """
 
     PODEM_ESCREVER = {TipoUsuario.DOCENTE, TipoUsuario.ADMINISTRADOR}
@@ -55,3 +56,24 @@ class GestaoDePessoas(BasePermission):
         if request.method in SAFE_METHODS:
             return usuario.tipo_usuario in self.PODEM_LER
         return usuario.tipo_usuario == TipoUsuario.ADMINISTRADOR
+
+
+class EscopoDoTCC(BasePermission):
+    """C17 (RBN56, RD29): o TCC pedido precisa estar no escopo do perfil.
+
+    Leitura segue escopo.pode_ver_tcc; escrita, escopo.pode_editar_tcc. A
+    recusa e registrada em LOG_AUDITORIA antes do 403.
+    """
+
+    message = "Você não tem acesso a este TCC."
+
+    def has_object_permission(self, request, view, obj):
+        usuario = request.user
+        if request.method in SAFE_METHODS:
+            permitido = escopo.pode_ver_tcc(usuario, obj)
+        else:
+            permitido = escopo.pode_editar_tcc(usuario, obj)
+        if not permitido:
+            acao = f"{request.method} {getattr(view, 'action', '') or ''}".strip()
+            escopo.registrar_acesso_negado(usuario, obj, acao)
+        return permitido

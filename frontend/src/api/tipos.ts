@@ -44,6 +44,8 @@ export type Tcc = {
   orientador_nome: string;
   coorientador: string | null;
   coorientador_nome: string | null;
+  /** C17: o usuario logado pode editar este TCC (visao por perfil). */
+  pode_editar: boolean;
 };
 
 export type HistoricoStatus = {
