@@ -42,9 +42,14 @@ export function Layout() {
               </NavLink>
             )}
             {(usuario?.tipo_usuario === "ALUNO" || usuario?.tipo_usuario === "DOCENTE") && (
-              <NavLink to="/solicitacoes" className="menu-item">
-                Solicitações
-              </NavLink>
+              <>
+                <NavLink to="/solicitacoes" className="menu-item">
+                  Solicitações
+                </NavLink>
+                <NavLink to="/convites" className="menu-item">
+                  Convites
+                </NavLink>
+              </>
             )}
           </nav>
           <div className="usuario">

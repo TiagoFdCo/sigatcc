@@ -5,8 +5,10 @@ import { RotaProtegida } from "./auth/RotaProtegida";
 import { Layout } from "./componentes/Layout";
 import { BancaFormulario } from "./paginas/BancaFormulario";
 import { BuscarOrientador } from "./paginas/BuscarOrientador";
+import { Convites } from "./paginas/Convites";
 import { Login } from "./paginas/Login";
 import { NaoEncontrada } from "./paginas/NaoEncontrada";
+import { ResponderConvite } from "./paginas/ResponderConvite";
 import { Solicitacoes } from "./paginas/Solicitacoes";
 import { TccDetalhe } from "./paginas/TccDetalhe";
 import { TccFormulario } from "./paginas/TccFormulario";
@@ -18,6 +20,8 @@ export function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          {/* C6: rota publica do link do convite (o membro externo nao tem login) */}
+          <Route path="/convites/responder" element={<ResponderConvite />} />
           <Route element={<RotaProtegida />}>
             <Route element={<Layout />}>
               <Route index element={<Navigate to="/tccs" replace />} />
@@ -28,6 +32,7 @@ export function App() {
               <Route path="/tccs/:id/banca/nova" element={<BancaFormulario />} />
               <Route path="/orientadores" element={<BuscarOrientador />} />
               <Route path="/solicitacoes" element={<Solicitacoes />} />
+              <Route path="/convites" element={<Convites />} />
               <Route path="*" element={<NaoEncontrada />} />
             </Route>
           </Route>

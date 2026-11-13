@@ -80,7 +80,10 @@ export type ParticipacaoBanca = {
 };
 
 export type Convite = {
+  id: string;
   usuario: string;
+  usuario_nome: string;
+  tipo_usuario: TipoUsuario;
   tipo: "BANCA" | "AUDIENCIA";
   status: "PENDENTE" | "ACEITO" | "RECUSADO";
   enviado_em: string;
@@ -176,3 +179,29 @@ export type Reuniao = ResumoReuniao & {
 };
 
 export type RespostaReuniao = { reuniao: Reuniao; alertas: string[] };
+
+/* C6 (6.3): convites de banca e audiencia */
+export type BancaResumo = {
+  id: string;
+  data_hora_inicio: string;
+  data_hora_fim: string;
+  tipo_local: TipoLocal;
+  bloco: string | null;
+  sala: string | null;
+  link_remoto: string | null;
+};
+
+export type ConviteRecebido = {
+  id: string;
+  tipo: "BANCA" | "AUDIENCIA";
+  status: "PENDENTE" | "ACEITO" | "RECUSADO";
+  enviado_em: string;
+  respondido_em: string | null;
+  convidado_nome: string;
+  papel: "TITULAR" | "SUPLENTE" | null;
+  tcc: string;
+  tcc_titulo: string;
+  autor_nome: string;
+  orientador_nome: string;
+  banca: BancaResumo;
+};

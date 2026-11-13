@@ -104,3 +104,13 @@ export const DEPARTAMENTOS: Record<string, string> = {
   ECP: "Engenharia de Computação",
   LIC: "Licenciatura em Computação",
 };
+
+/* C6: descricao do convite e do local da defesa */
+export function descreverLocal(b: { tipo_local: string; bloco: string | null; sala: string | null; link_remoto: string | null }) {
+  return b.tipo_local === "REMOTO" ? (b.link_remoto ?? "") : `Bloco ${b.bloco ?? "—"}, sala ${b.sala ?? "—"}`;
+}
+
+export function papelDoConvite(c: { tipo: string; papel: string | null }) {
+  if (c.tipo === "AUDIENCIA") return "Audiência da defesa";
+  return c.papel === "SUPLENTE" ? "Banca · suplente" : "Banca · titular";
+}

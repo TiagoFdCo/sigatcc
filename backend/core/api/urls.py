@@ -7,6 +7,7 @@ from core.api.views import (
     AlunoViewSet,
     AreaConhecimentoViewSet,
     BancaViewSet,
+    ConviteViewSet,
     CursoViewSet,
     DocenteViewSet,
     OrientadorViewSet,
@@ -33,6 +34,8 @@ router.register(
 )
 # C3b (7.3): reunioes de alinhamento
 router.register("reunioes", ReuniaoViewSet, basename="reuniao")
+# C6 (6.3): convites de banca e audiencia
+router.register("convites", ConviteViewSet, basename="convite")
 
 urlpatterns = [
     path("auth/login/", LoginView.as_view(), name="auth-login"),
