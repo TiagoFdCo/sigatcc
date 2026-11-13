@@ -4,12 +4,14 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from core.api.auth import LoginView, LogoutView, MeView
 from core.api.views import (
+    AcessoExternoView,
     AlunoViewSet,
     AreaConhecimentoViewSet,
     BancaViewSet,
     ConviteViewSet,
     CursoViewSet,
     DocenteViewSet,
+    MembroExternoView,
     OrientadorViewSet,
     ReuniaoViewSet,
     SolicitacaoOrientacaoViewSet,
@@ -42,5 +44,12 @@ urlpatterns = [
     path("auth/refresh/", TokenRefreshView.as_view(), name="auth-refresh"),
     path("auth/logout/", LogoutView.as_view(), name="auth-logout"),
     path("auth/me/", MeView.as_view(), name="auth-me"),
+    # C16 (4.6): membro externo
+    path("membros-externos/", MembroExternoView.as_view(), name="membro-externo"),
+    path(
+        "acesso-externo/<str:token>/",
+        AcessoExternoView.as_view(),
+        name="acesso-externo",
+    ),
     *router.urls,
 ]

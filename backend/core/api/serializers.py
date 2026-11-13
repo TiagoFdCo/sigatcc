@@ -17,6 +17,7 @@ from core.models import (
     SolicitacaoOrientacao,
     StatusTCC,
     TipoLocal,
+    TipoUsuario,
     Usuario,
 )
 from core.services import convites as servico_convites
@@ -520,6 +521,8 @@ class ConviteRecebidoSerializer(serializers.ModelSerializer):
         source="usuario.nome_completo", read_only=True
     )
     papel = serializers.SerializerMethodField()
+    # C16: a pagina publica avisa o externo que o link de acesso vem por e-mail
+    convidado_externo = serializers.SerializerMethodField()
     tcc = serializers.UUIDField(source="banca.tcc_id", read_only=True)
     tcc_titulo = serializers.CharField(source="banca.tcc.titulo", read_only=True)
     autor_nome = serializers.CharField(
@@ -539,6 +542,7 @@ class ConviteRecebidoSerializer(serializers.ModelSerializer):
             "enviado_em",
             "respondido_em",
             "convidado_nome",
+            "convidado_externo",
             "papel",
             "tcc",
             "tcc_titulo",
@@ -549,6 +553,9 @@ class ConviteRecebidoSerializer(serializers.ModelSerializer):
 
     def get_papel(self, obj):
         return servico_convites.papel_na_banca(obj)
+
+    def get_convidado_externo(self, obj):
+        return obj.usuario.tipo_usuario == TipoUsuario.MEMBRO_EXTERNO
 
 
 class ResponderConviteSerializer(serializers.Serializer):
@@ -563,3 +570,50 @@ class ConvidarAudienciaSerializer(serializers.Serializer):
     usuarios = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Usuario.objects.all()
     )
+
+
+# ------------------------------------ C16: acesso temporario do externo (4.6)
+class MembroExternoEntradaSerializer(serializers.Serializer):
+    """PF60: cadastro do membro externo pelo Professor de TCC (sem senha)."""
+
+    nome_completo = serializers.CharField(max_length=200)
+    email = serializers.EmailField()
+    instituicao_origem = serializers.CharField(max_length=200)
+
+
+class AcessoExternoSerializer(serializers.Serializer):
+    """PF19: o que o externo ve pelo token (leitura do TCC e da banca)."""
+
+    def to_representation(self, token):
+        banca = token.banca
+        tcc = banca.tcc
+        return {
+            "membro_nome": token.membro_externo.usuario.nome_completo,
+            "expira_em": serializers.DateTimeField().to_representation(token.expira_em),
+            "tcc": {
+                "titulo": tcc.titulo,
+                "subtitulo": tcc.subtitulo,
+                "autor_nome": tcc.autor.usuario.nome_completo,
+                "orientador_nome": tcc.orientador.usuario.nome_completo,
+                "coorientador_nome": (
+                    tcc.coorientador.usuario.nome_completo if tcc.coorientador else None
+                ),
+                "curso_nome": tcc.curso.nome,
+                "area_nome": tcc.area_conhecimento.nome,
+                "modalidade": tcc.modalidade,
+                "link_externo": tcc.link_externo,
+                "arquivo_tcc_path": tcc.arquivo_tcc_path,
+            },
+            "banca": {
+                **BancaResumoSerializer(banca).data,
+                "membros": [
+                    {
+                        "nome": p.usuario.nome_completo,
+                        "tipo_membro": p.tipo_membro,
+                        "membro_externo": p.usuario.tipo_usuario
+                        == TipoUsuario.MEMBRO_EXTERNO,
+                    }
+                    for p in banca.participacoes.select_related("usuario")
+                ],
+            },
+        }

@@ -7,14 +7,18 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from core.api.auth import ip_da_requisicao
 from core.api.permissions import (
     EscopoDoTCC,
     GestaoDePessoas,
     LeituraOuAdministrador,
     LeituraOuGestao,
+    ProfessorTccOuAdministrador,
 )
 from core.api.serializers import (
+    AcessoExternoSerializer,
     AgendarReuniaoSerializer,
     AlunoEntradaSerializer,
     AlunoSerializer,
@@ -28,6 +32,7 @@ from core.api.serializers import (
     DocenteEntradaSerializer,
     DocenteSerializer,
     EnviarSolicitacaoSerializer,
+    MembroExternoEntradaSerializer,
     MudarSituacaoSerializer,
     OrientadorSerializer,
     RegistrarPublicacaoSerializer,
@@ -53,8 +58,10 @@ from core.models import (
     ParticipacaoBanca,
     ReuniaoAlinhamento,
     SolicitacaoOrientacao,
+    TipoUsuario,
     Usuario,
 )
+from core.services import acesso_externo as servico_acesso_externo
 from core.services import banca as servico_banca
 from core.services import contas as servico_contas
 from core.services import convites as servico_convites
@@ -614,3 +621,36 @@ class ConviteViewSet(viewsets.ReadOnlyModelViewSet):
             resposta=entrada.validated_data["resposta"],
         )
         return Response(ConviteRecebidoSerializer(convite).data)
+
+
+# ------------------------------------ C16: acesso temporario do externo (4.6)
+class MembroExternoView(APIView):
+    """POST /api/membros-externos/ (PF60): Professor de TCC ou administrador
+    cadastra o membro externo, sem senha (ele entra so pelo token)."""
+
+    permission_classes = [ProfessorTccOuAdministrador]
+
+    def post(self, request):
+        entrada = MembroExternoEntradaSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        conta = servico_pessoas.cadastrar_usuario(
+            dados={
+                **entrada.validated_data,
+                "tipo_usuario": TipoUsuario.MEMBRO_EXTERNO,
+            },
+            usuario=request.user,
+        )
+        return Response(UsuarioSerializer(conta).data, status=status.HTTP_201_CREATED)
+
+
+class AcessoExternoView(APIView):
+    """GET /api/acesso-externo/<token>/ (PF19): leitura do TCC pelo membro
+    externo, sem login, ate 48 h depois da defesa (RD32)."""
+
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get(self, request, token):
+        acesso = servico_acesso_externo.validar_token(token)
+        servico_acesso_externo.registrar_acesso(acesso, ip_da_requisicao(request))
+        return Response(AcessoExternoSerializer(acesso).data)

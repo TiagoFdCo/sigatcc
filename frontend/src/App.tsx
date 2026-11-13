@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ProvedorAuth } from "./auth/AuthContext";
 import { RotaProtegida } from "./auth/RotaProtegida";
 import { Layout } from "./componentes/Layout";
+import { AcessoExterno } from "./paginas/AcessoExterno";
 import { BancaFormulario } from "./paginas/BancaFormulario";
 import { BuscarOrientador } from "./paginas/BuscarOrientador";
 import { Convites } from "./paginas/Convites";
@@ -22,6 +23,8 @@ export function App() {
           <Route path="/login" element={<Login />} />
           {/* C6: rota publica do link do convite (o membro externo nao tem login) */}
           <Route path="/convites/responder" element={<ResponderConvite />} />
+          {/* C16: leitura do TCC pelo membro externo, pelo token do e-mail */}
+          <Route path="/acesso-externo/:token" element={<AcessoExterno />} />
           <Route element={<RotaProtegida />}>
             <Route element={<Layout />}>
               <Route index element={<Navigate to="/tccs" replace />} />
