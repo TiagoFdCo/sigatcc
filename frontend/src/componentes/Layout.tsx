@@ -46,6 +46,11 @@ export function Layout() {
                 Solicitações
               </NavLink>
             )}
+            {usuario?.tipo_usuario === "ADMINISTRADOR" && (
+              <NavLink to="/auditoria" className="menu-item">
+                Auditoria
+              </NavLink>
+            )}
           </nav>
           <div className="usuario">
             <span>

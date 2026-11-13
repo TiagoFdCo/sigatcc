@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ProvedorAuth } from "./auth/AuthContext";
 import { RotaProtegida } from "./auth/RotaProtegida";
 import { Layout } from "./componentes/Layout";
+import { Auditoria } from "./paginas/Auditoria";
 import { BancaFormulario } from "./paginas/BancaFormulario";
 import { BuscarOrientador } from "./paginas/BuscarOrientador";
 import { Login } from "./paginas/Login";
@@ -28,6 +29,7 @@ export function App() {
               <Route path="/tccs/:id/banca/nova" element={<BancaFormulario />} />
               <Route path="/orientadores" element={<BuscarOrientador />} />
               <Route path="/solicitacoes" element={<Solicitacoes />} />
+              <Route path="/auditoria" element={<Auditoria />} />
               <Route path="*" element={<NaoEncontrada />} />
             </Route>
           </Route>
