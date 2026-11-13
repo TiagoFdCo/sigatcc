@@ -4,13 +4,13 @@ import { DashboardCards } from '../componentes/DashboardCards';
 
 export const DashboardIndicadoresView: React.FC = () => {
   const [metricas, setMetricas] = useState<MetricasDashboard | null>(null);
-  const [carregando, setCarregando] = useState<boolean>(true);
-  const [erro, setErro] = useState<string>('');
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState('');
 
   useEffect(() => {
     getMetricasDashboard()
-      .then((dados: MetricasDashboard) => setMetricas(dados))
-      .catch((err: Error | any) => setErro(err?.message || 'Erro ao carregar indicadores.'))
+      .then((dados) => setMetricas(dados))
+      .catch((err) => setErro(err?.message || 'Erro ao carregar indicadores.'))
       .finally(() => setCarregando(false));
   }, []);
 
