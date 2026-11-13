@@ -5,6 +5,7 @@ from datetime import timedelta
 from django.utils import timezone
 
 from core.models import Docente, LogAcesso, Usuario
+from core.services.auditoria import registrar
 
 MAX_TENTATIVAS = 5  # RNF02 / RD26
 TEMPO_BLOQUEIO = timedelta(minutes=15)
@@ -57,6 +58,15 @@ def autenticar(*, login, senha, ip):
             usuario.bloqueado_ate = agora + TEMPO_BLOQUEIO
         usuario.save(update_fields=["tentativas_falhas", "bloqueado_ate"])
         if bloqueou:
+            # C7 (RD26): o bloqueio da conta fica na auditoria, com a conta como responsavel
+            registrar(
+                usuario,
+                "USUARIO",
+                usuario.pk,
+                "bloqueado_ate",
+                None,
+                usuario.bloqueado_ate,
+            )
             raise ContaBloqueada(usuario.bloqueado_ate)
         raise CredenciaisInvalidas
 

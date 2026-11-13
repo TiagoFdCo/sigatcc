@@ -163,3 +163,26 @@ export type SolicitacaoOrientacao = {
   enviada_em: string;
   respondida_em: string | null;
 };
+
+/* C7 (8.3): consulta dos logs, so administrador */
+export type Pagina<T> = { count: number; next: string | null; previous: string | null; results: T[] };
+
+export type LogAuditoria = {
+  id: string;
+  data_hora: string;
+  responsavel: string;
+  responsavel_nome: string;
+  entidade: string;
+  registro_id: string;
+  campo: string;
+  valor_anterior: string | null;
+  valor_novo: string | null;
+};
+
+export type LogAcesso = {
+  id: string;
+  data_hora: string;
+  usuario: string;
+  usuario_nome: string;
+  ip: string;
+};

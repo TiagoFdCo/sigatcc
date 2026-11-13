@@ -36,6 +36,18 @@ class LeituraOuAdministrador(BasePermission):
         return usuario.tipo_usuario == TipoUsuario.ADMINISTRADOR
 
 
+class SomenteAdministrador(BasePermission):
+    """Consulta dos logs (C7, RNF08): so o administrador le LOG_AUDITORIA e LOG_ACESSO."""
+
+    def has_permission(self, request, view):
+        usuario = request.user
+        return bool(
+            usuario
+            and usuario.is_authenticated
+            and usuario.tipo_usuario == TipoUsuario.ADMINISTRADOR
+        )
+
+
 class GestaoDePessoas(BasePermission):
     """Cadastro de alunos e contas gerais (B14).
 

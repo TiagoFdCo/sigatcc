@@ -4,8 +4,10 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from core.api.auth import LoginView, LogoutView, MeView
 from core.api.views import (
+    AcessoViewSet,
     AlunoViewSet,
     AreaConhecimentoViewSet,
+    AuditoriaViewSet,
     BancaViewSet,
     CursoViewSet,
     DocenteViewSet,
@@ -23,6 +25,9 @@ router.register("alunos", AlunoViewSet, basename="aluno")
 router.register("usuarios", UsuarioViewSet, basename="usuario")
 router.register("cursos", CursoViewSet, basename="curso")
 router.register("areas", AreaConhecimentoViewSet, basename="area")
+# C7 (8.3): logs, so leitura e so administrador
+router.register("auditoria", AuditoriaViewSet, basename="auditoria")
+router.register("acessos", AcessoViewSet, basename="acesso")
 # C3a (7.2): orientacao academica
 router.register("orientadores", OrientadorViewSet, basename="orientador")
 router.register(
