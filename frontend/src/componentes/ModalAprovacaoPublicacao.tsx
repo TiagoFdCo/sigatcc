@@ -12,11 +12,11 @@ export const ModalAprovacaoPublicacao: React.FC<ModalAprovacaoPublicacaoProps> =
   onClose,
   onSuccess,
 }) => {
-  const [linkPublicacao, setLinkPublicacao] = useState('');
+  const [linkPublicacao, setLinkPublicacao] = useState<string>('');
   const [comprovante, setComprovante] = useState<File | null>(null);
-  const [observacoes, setObservacoes] = useState('');
-  const [erro, setErro] = useState('');
-  const [enviando, setEnviando] = useState(false);
+  const [observacoes, setObservacoes] = useState<string>('');
+  const [erro, setErro] = useState<string>('');
+  const [enviando, setEnviando] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +38,7 @@ export const ModalAprovacaoPublicacao: React.FC<ModalAprovacaoPublicacaoProps> =
       });
       alert('Solicitação de aprovação por publicação enviada com sucesso!');
       onSuccess();
-    } catch (err: any) {
+    } catch (err: Error | any) {
       setErro(err?.message || 'Erro ao submeter comprovante de publicação.');
     } finally {
       setEnviando(false);
