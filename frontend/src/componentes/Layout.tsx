@@ -36,6 +36,9 @@ export function Layout() {
             <NavLink to="/tccs" className="menu-item">
               TCCs
             </NavLink>
+            <NavLink to="/indicadores" className="menu-item">
+              Indicadores
+            </NavLink>
             {usuario?.tipo_usuario === "ALUNO" && (
               <NavLink to="/orientadores" className="menu-item">
                 Buscar orientador
