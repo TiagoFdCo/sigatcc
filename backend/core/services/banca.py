@@ -1,6 +1,7 @@
 """B8 (cadastro de banca: titulares, suplentes, data e local) e C4 (validação de conflitos)."""
 
 from datetime import timedelta
+
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import URLValidator
 from django.db import transaction
@@ -57,16 +58,29 @@ def validar_conflito_banca(
 
         if se_sobrepoe:
             # 1. Conflito de Local
-            if tipo_local == TipoLocal.PRESENCIAL and banca.tipo_local == TipoLocal.PRESENCIAL:
-                if banca.bloco == bloco and banca.sala == sala:
-                    raise ValidationError(
-                        {"local": f"Conflito de local: a sala {sala} do bloco {bloco} já está reservada para outra banca nesse horário."}
-                    )
-            elif tipo_local == TipoLocal.REMOTO and banca.tipo_local == TipoLocal.REMOTO:
-                if banca.link_remoto and link_remoto and banca.link_remoto == link_remoto:
-                    raise ValidationError(
-                        {"link_remoto": "Conflito de local remoto: este link de reunião já está em uso por outra banca nesse horário."}
-                    )
+            if (
+                tipo_local == TipoLocal.PRESENCIAL
+                and banca.tipo_local == TipoLocal.PRESENCIAL
+                and banca.bloco == bloco
+                and banca.sala == sala
+            ):
+                raise ValidationError(
+                    {
+                        "local": f"Conflito de local: a sala {sala} do bloco {bloco} já está reservada para outra banca nesse horário."
+                    }
+                )
+            elif (
+                tipo_local == TipoLocal.REMOTO
+                and banca.tipo_local == TipoLocal.REMOTO
+                and banca.link_remoto
+                and link_remoto
+                and banca.link_remoto == link_remoto
+            ):
+                raise ValidationError(
+                    {
+                        "link_remoto": "Conflito de local remoto: este link de reunião já está em uso por outra banca nesse horário."
+                    }
+                )
 
             # 2. Conflito de Membro (Docente / Membro Externo)
             if usuarios_membros_ids:
@@ -78,7 +92,9 @@ def validar_conflito_banca(
                 if membros_existentes.exists():
                     nome_membro = membros_existentes.first().usuario.nome_completo
                     raise ValidationError(
-                        {"membros": f"Conflito de agenda: O(a) avaliador(a) {nome_membro} já possui banca agendada nesse horário."}
+                        {
+                            "membros": f"Conflito de agenda: O(a) avaliador(a) {nome_membro} já possui banca agendada nesse horário."
+                        }
                     )
 
 
@@ -197,4 +213,13 @@ def cadastrar_banca(
     Convite.objects.bulk_create(
         [
             Convite(banca=banca, usuario=u, tipo=TipoConvite.BANCA)
-            for u in [*titulares, *su
+            for u in [*titulares, *suplentes]
+            if u != tcc.orientador.usuario
+        ]
+    )
+    registrar(
+        usuario, "BANCA", banca.id, "data_hora_inicio", None, banca.data_hora_inicio
+    )
+    # C6: os convites saem por e-mail depois do commit (RBN49, RBN51)
+    servico_convites.enviar_convites_da_banca(banca)
+    return banca
