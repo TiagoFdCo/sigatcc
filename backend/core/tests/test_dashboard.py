@@ -1,18 +1,20 @@
 import pytest
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APIClient
 
 from core.models import Usuario
 
 
 @pytest.mark.django_db
-def test_dashboard_metricas_autenticado(client):
+def test_dashboard_metricas_autenticado():
     usuario = Usuario.objects.create_user(
         email="teste_dashboard@uea.edu.br",
         nome_completo="Usuario Teste Dashboard",
         tipo_usuario="ADMINISTRADOR",
     )
-    client.force_login(usuario)
+    client = APIClient()
+    client.force_authenticate(user=usuario)
 
     url = reverse("dashboard-metricas")
     response = client.get(url)
