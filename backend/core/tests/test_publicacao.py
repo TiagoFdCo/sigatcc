@@ -16,7 +16,7 @@ def cenario_publicacao(db):
     docente = Docente.objects.create(
         usuario=user_orientador,
         matricula_institucional="DOC123456",
-        departamento="COMPUTACAO",
+        departamento="DCC",
     )
 
     user_aluno = Usuario.objects.create_user(
