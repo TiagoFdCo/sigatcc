@@ -18,22 +18,32 @@ def obter_metricas_dashboard(usuario):
     # RD19: Conclusão por Banca vs Conclusão por Publicação
     aprovados_publicacao = TCC.objects.filter(status="APROVADO_POR_PUBLICACAO").count()
 
-    # RBN22: Carga de orientação por docente
-    orientacoes_por_docente = list(
-        Docente.objects.annotate(
+    # RBN22: Carga de orientação por docente (usa usuario_id e usuario__nome_completo)
+    orientacoes_por_docente = [
+        {
+            "id": str(d["usuario_id"]),
+            "nome": d["usuario__nome_completo"],
+            "qtd_orientacoes": d["qtd_orientacoes"],
+        }
+        for d in Docente.objects.annotate(
             qtd_orientacoes=Count(
                 "tccs_orientados",
                 filter=Q(tccs_orientados__status="EM_DESENVOLVIMENTO"),
             )
-        ).values("id", "nome", "qtd_orientacoes")
-    )
+        ).values("usuario_id", "usuario__nome_completo", "qtd_orientacoes")
+    ]
 
     # RBN23: Carga de bancas por docente
-    bancas_por_docente = list(
-        Docente.objects.annotate(qtd_bancas=Count("participacoes_banca")).values(
-            "id", "nome", "qtd_bancas"
-        )
-    )
+    bancas_por_docente = [
+        {
+            "id": str(d["usuario_id"]),
+            "nome": d["usuario__nome_completo"],
+            "qtd_bancas": d["qtd_bancas"],
+        }
+        for d in Docente.objects.annotate(
+            qtd_bancas=Count("usuario__participacoes_banca")
+        ).values("usuario_id", "usuario__nome_completo", "qtd_bancas")
+    ]
 
     return {
         "em_desenvolvimento": em_desenvolvimento,
