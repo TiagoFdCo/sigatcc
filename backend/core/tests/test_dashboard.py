@@ -9,7 +9,6 @@ from core.models import Usuario
 def test_dashboard_metricas_autenticado(client):
     usuario = Usuario.objects.create_user(
         email="teste_dashboard@uea.edu.br",
-        cpf="00000000000",
         nome_completo="Usuario Teste Dashboard",
         tipo_usuario="ADMINISTRADOR",
     )
