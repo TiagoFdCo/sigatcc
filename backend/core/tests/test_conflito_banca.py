@@ -1,9 +1,19 @@
 from datetime import timedelta
-import pytest
+
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+import pytest
 
-from core.models import TCC, Aluno, Banca, Curso, Docente, ParticipacaoBanca, TipoLocal, Usuario
+from core.models import (
+    TCC,
+    Aluno,
+    Banca,
+    Curso,
+    Docente,
+    ParticipacaoBanca,
+    TipoLocal,
+    Usuario,
+)
 from core.services.banca import validar_conflito_banca
 
 
