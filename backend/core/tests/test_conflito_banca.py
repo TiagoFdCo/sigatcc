@@ -1,8 +1,8 @@
 from datetime import timedelta
 
+import pytest
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-import pytest
 
 from core.models import (
     TCC,
