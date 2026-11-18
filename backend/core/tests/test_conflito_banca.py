@@ -220,6 +220,4 @@ def cadastrar_banca(
     registrar(
         usuario, "BANCA", banca.id, "data_hora_inicio", None, banca.data_hora_inicio
     )
-    # C6: os convites saem por e-mail depois do commit (RBN49, RBN51)
-    servico_convites.enviar_convites_da_banca(banca)
-    return banca
+    # C6: os convites saem por e-mail depois do commit (RBN4
