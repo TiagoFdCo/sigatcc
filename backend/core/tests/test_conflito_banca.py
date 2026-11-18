@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 import pytest
-from django.core.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError
 from django.utils import timezone
 
 from core.models import (
@@ -9,6 +9,7 @@ from core.models import (
     Aluno,
     Banca,
     Curso,
+    Departamento,
     Docente,
     ParticipacaoBanca,
     TipoLocal,
@@ -28,7 +29,7 @@ def cenario_banca(db):
     docente1 = Docente.objects.create(
         usuario=user_docente1,
         matricula_institucional="DOC401",
-        departamento="EST",
+        departamento=Departamento.EST,
     )
 
     user_aluno = Usuario.objects.create_user(
