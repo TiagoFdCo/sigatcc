@@ -72,7 +72,6 @@ from core.services import acesso_externo as servico_acesso_externo
 from core.services import banca as servico_banca
 from core.services import contas as servico_contas
 from core.services import convites as servico_convites
-from core.services.dashboard import obter_metricas_dashboard
 from core.services import docente as servico_docente
 from core.services import escopo
 from core.services import pessoas as servico_pessoas
@@ -80,6 +79,7 @@ from core.services import publicacao as servico_publicacao
 from core.services import reuniao as servico_reuniao
 from core.services import solicitacao as servico_solicitacao
 from core.services import tcc as servico_tcc
+from core.services.dashboard import obter_metricas_dashboard
 
 
 class TCCViewSet(viewsets.ModelViewSet):
