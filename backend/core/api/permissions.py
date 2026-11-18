@@ -103,3 +103,42 @@ class ProfessorTccOuAdministrador(BasePermission):
         return usuario.tipo_usuario == TipoUsuario.ADMINISTRADOR or (
             escopo.eh_professor_tcc(usuario)
         )
+
+
+class SomenteAluno(BasePermission):
+    """Rotas "meu perfil" (C2a): so o proprio aluno logado."""
+
+    def has_permission(self, request, view):
+        usuario = request.user
+        return bool(
+            usuario
+            and usuario.is_authenticated
+            and usuario.tipo_usuario == TipoUsuario.ALUNO
+        )
+
+
+class SemAluno(BasePermission):
+    """Fecha a rota para o aluno: ele so ve o proprio TCC e o proprio perfil (C2a)."""
+
+    def has_permission(self, request, view):
+        usuario = request.user
+        return bool(
+            usuario
+            and usuario.is_authenticated
+            and usuario.tipo_usuario != TipoUsuario.ALUNO
+        )
+
+
+class SomenteProfessorTCC(BasePermission):
+    """Confirmacao do cadastro do aluno: so docente ativo marcado como Professor de TCC."""
+
+    def has_permission(self, request, view):
+        return _professor_tcc_ativo(request.user)
+
+
+def _professor_tcc_ativo(usuario):
+    if not (usuario and usuario.is_authenticated):
+        return False
+    if usuario.tipo_usuario != TipoUsuario.DOCENTE or not usuario.ativo:
+        return False
+    return escopo.eh_professor_tcc(usuario)

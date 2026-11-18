@@ -251,3 +251,17 @@ export type LogAcesso = {
   usuario_nome: string;
   ip: string;
 };
+
+/** C2a: o que o aluno ve em "Meu perfil" (cpf ja vem mascarado; meu_tcc e o TCC ativo, se houver). */
+export type PerfilAluno = {
+  id: string;
+  nome_completo: string;
+  email: string;
+  matricula: string;
+  cpf: string | null;
+  curso: string;
+  curso_nome: string;
+  cadastro_confirmado: boolean;
+  areas_interesse: Area[];
+  meu_tcc: Tcc | null;
+};

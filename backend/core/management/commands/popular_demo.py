@@ -120,6 +120,13 @@ class Command(BaseCommand):
                 )
             )
 
+        # C2a: so entra quem teve o cadastro confirmado pela Professora de TCC
+        for aluno in alunos:
+            if not aluno.cadastro_confirmado:
+                servico_pessoas.confirmar_cadastro_aluno(
+                    aluno_id=aluno.pk, usuario=docentes[0].usuario
+                )
+
         for email, nome, tipo, extra in [
             ("secretaria@uea.edu.br", "Secretaria NUCOMP", TipoUsuario.SECRETARIA, {}),
             (

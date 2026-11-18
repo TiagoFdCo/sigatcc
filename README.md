@@ -163,12 +163,16 @@ O comando mostra os logins criados. A senha padrao e `Demo#2026`.
 | Rota | Quem usa | Atividade |
 | --- | --- | --- |
 | `POST /api/auth/login/`, `refresh/`, `logout/`, `GET me/` | todos | B5 |
-| `/api/docentes/` (+ `desativar/`, `reativar/`) | leitura: todos; escrita: administrador | B6 |
+| `/api/docentes/` (+ `desativar/`, `reativar/`) | leitura: todos, menos o aluno; escrita: administrador | B6, C2a |
 | `/api/alunos/`, `/api/usuarios/`, `/api/cursos/`, `/api/areas/` | leitura: docente, secretaria, admin; escrita: admin | B14 |
-| `/api/tccs/` e `/api/tccs/{id}/situacao/` | leitura: todos; escrita: docente e admin | B7a, B7b |
+| `/api/tccs/` e `/api/tccs/{id}/situacao/` | leitura: todos (o aluno so o proprio TCC); escrita: docente e admin | B7a, B7b, C2a |
 | `POST /api/tccs/{id}/publicacao/` | docente e admin | C1 |
 | `/api/bancas/` | leitura: todos; escrita: docente e admin | B8 |
 | `GET /api/auditoria/` (?entidade, ?campo, ?registro, ?responsavel, ?de, ?ate, ?limit, ?offset) e `GET /api/acessos/` (?usuario, ?de, ?ate) | somente leitura; só administrador | C7 |
+| `GET`/`PATCH /api/alunos/meu-perfil/` | so o aluno logado | C2a |
+| `POST /api/alunos/{id}/senha/` | administrador | C2a |
+| `POST /api/alunos/{id}/confirmar/` e `recusar/` (motivo) | Professor de TCC | C2a |
+| `GET /api/alunos/?cadastro=pendente` | docente, secretaria, admin | C2a |
 
 ## Configurar o GitHub (uma vez, por quem administra o repositorio)
 
