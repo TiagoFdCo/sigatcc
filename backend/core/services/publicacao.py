@@ -15,9 +15,11 @@ CAMPOS_OBRIGATORIOS = {
     "periodico": "Informe o periódico ou evento.",
     "issn_doi": "Informe o ISSN ou o DOI.",
     "data_publicacao": "Informe a data de publicação.",
-    "comprovante_arquivo_path": "Informe o comprovante da publicação.",
 }
-CAMPOS_PUBLICACAO = (*CAMPOS_OBRIGATORIOS, "link_artigo")
+# D15 (RBN37): basta o comprovante OU o link do artigo, pelo menos um dos dois.
+CAMPOS_COMPROVACAO = ("comprovante_arquivo_path", "link_artigo")
+MENSAGEM_COMPROVACAO = "Informe o comprovante ou o link do artigo (pelo menos um)."
+CAMPOS_PUBLICACAO = (*CAMPOS_OBRIGATORIOS, *CAMPOS_COMPROVACAO)
 
 
 def _limpar(dados):
@@ -33,7 +35,10 @@ def _limpar(dados):
         limpos["issn_doi"] = validar_issn_doi(limpos["issn_doi"])
     except ErroDjango as erro:
         raise ValidationError({"issn_doi": erro.messages[0]}) from erro
-    limpos["link_artigo"] = limpos["link_artigo"] or None
+    for campo in CAMPOS_COMPROVACAO:
+        limpos[campo] = limpos[campo] or None
+    if not any(limpos[campo] for campo in CAMPOS_COMPROVACAO):
+        raise ValidationError(dict.fromkeys(CAMPOS_COMPROVACAO, MENSAGEM_COMPROVACAO))
     return limpos
 
 

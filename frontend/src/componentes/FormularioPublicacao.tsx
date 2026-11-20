@@ -31,7 +31,9 @@ export function FormularioPublicacao({ tcc, aoConcluir, aoCancelar }: Props) {
     String(agora.getDate()).padStart(2, "0"),
   ].join("-");
 
-  const incompleto = !periodico.trim() || !issnDoi.trim() || !data || !comprovante.trim();
+  // D15: basta o comprovante OU o link do artigo
+  const semComprovacao = !comprovante.trim() && !link.trim();
+  const incompleto = !periodico.trim() || !issnDoi.trim() || !data || semComprovacao;
   const erroCampo = (campo: string) => erros?.campos[campo];
   // Erros de campos que nao estao no formulario (ex.: "tcc") vao no alerta
   const foraDoFormulario = Object.entries(erros?.campos ?? {})
@@ -50,7 +52,7 @@ export function FormularioPublicacao({ tcc, aoConcluir, aoCancelar }: Props) {
           periodico: periodico.trim(),
           issn_doi: issnDoi.trim(),
           data_publicacao: data,
-          comprovante_arquivo_path: comprovante.trim(),
+          comprovante_arquivo_path: comprovante.trim() || null,
           link_artigo: link.trim() || null,
         },
       });
@@ -132,7 +134,7 @@ export function FormularioPublicacao({ tcc, aoConcluir, aoCancelar }: Props) {
           )}
         </div>
         <div className="campo">
-          <label htmlFor="pub-link">Link do artigo (opcional)</label>
+          <label htmlFor="pub-link">Link do artigo</label>
           <input
             id="pub-link"
             type="url"
@@ -147,7 +149,7 @@ export function FormularioPublicacao({ tcc, aoConcluir, aoCancelar }: Props) {
 
       <div className="campo">
         <label htmlFor="pub-comprovante">
-          Comprovante (link ou caminho do arquivo) <span className="obrigatorio">*</span>
+          Comprovante (caminho do arquivo)
         </label>
         <input
           id="pub-comprovante"
@@ -160,7 +162,10 @@ export function FormularioPublicacao({ tcc, aoConcluir, aoCancelar }: Props) {
         {erroCampo("comprovante_arquivo_path") ? (
           <span className="campo-erro">{erroCampo("comprovante_arquivo_path")}</span>
         ) : (
-          <span className="campo-ajuda">O envio de arquivo ainda não existe: informe onde o comprovante está guardado.</span>
+          <span className="campo-ajuda">
+            Informe o link do artigo, o comprovante ou os dois. O envio de arquivo ainda não existe: informe onde
+            o comprovante está guardado.
+          </span>
         )}
       </div>
 
