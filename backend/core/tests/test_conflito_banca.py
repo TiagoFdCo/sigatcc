@@ -1,53 +1,17 @@
 from datetime import timedelta
 
-from django.utils import timezone
 import pytest
+from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
-from core.models import (
-    TCC,
-    Aluno,
-    Banca,
-    Curso,
-    Departamento,
-    Docente,
-    ParticipacaoBanca,
-    TipoLocal,
-    Usuario,
-)
+from core.models import Banca, ParticipacaoBanca, TipoLocal
 from core.services.banca import validar_conflito_banca
 
 
 @pytest.fixture
-def cenario_banca(db):
-    """Cria usuários, docente e TCC base para os testes de conflito."""
-    user_docente1 = Usuario.objects.create_user(
-        email="docente1_c4@uea.edu.br",
-        nome_completo="Professor Avaliador 1",
-        tipo_usuario="DOCENTE",
-    )
-    docente1 = Docente.objects.create(
-        usuario=user_docente1,
-        matricula_institucional="DOC401",
-        departamento=Departamento.EST,
-    )
-
-    user_aluno = Usuario.objects.create_user(
-        email="aluno_c4@uea.edu.br",
-        nome_completo="Aluno C4",
-        tipo_usuario="ALUNO",
-    )
-    curso = Curso.objects.create(nome="Licenciatura em Computação")
-    aluno = Aluno.objects.create(usuario=user_aluno, matricula="ALU401", curso=curso)
-
-    tcc = TCC.objects.create(
-        titulo="TCC C4 Teste",
-        autor=aluno,
-        orientador=docente1,
-        status="EM_DESENVOLVIMENTO",
-    )
-
-    return tcc, docente1, user_docente1
+def cenario_banca(tcc, orientador):
+    """TCC base e o orientador dele (fixtures do conftest)."""
+    return tcc, orientador, orientador.usuario
 
 
 @pytest.mark.django_db
