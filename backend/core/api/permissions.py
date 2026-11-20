@@ -129,6 +129,28 @@ class SemAluno(BasePermission):
         )
 
 
+class PainelDeGestao(BasePermission):
+    """Dashboard de indicadores (C8): so docente, secretaria e administrador.
+
+    Aluno e membro externo nao veem os indicadores agregados nem a carga de
+    orientacao e de bancas de cada docente (RBN20-RBN23, RNF03).
+    """
+
+    PODEM_VER = {
+        TipoUsuario.DOCENTE,
+        TipoUsuario.SECRETARIA,
+        TipoUsuario.ADMINISTRADOR,
+    }
+
+    def has_permission(self, request, view):
+        usuario = request.user
+        return bool(
+            usuario
+            and usuario.is_authenticated
+            and usuario.tipo_usuario in self.PODEM_VER
+        )
+
+
 class SomenteProfessorTCC(BasePermission):
     """Confirmacao do cadastro do aluno: so docente ativo marcado como Professor de TCC."""
 

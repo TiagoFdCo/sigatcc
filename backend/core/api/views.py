@@ -8,7 +8,7 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -18,6 +18,7 @@ from core.api.permissions import (
     GestaoDePessoas,
     LeituraOuAdministrador,
     LeituraOuGestao,
+    PainelDeGestao,
     ProfessorTccOuAdministrador,
     SemAluno,
     SomenteAdministrador,
@@ -802,9 +803,12 @@ class AcessoViewSet(viewsets.ReadOnlyModelViewSet):
 
 # ------------------------------------------- C8: metricas e indicadores do dashboard
 class DashboardMetricasView(APIView):
-    """GET /api/dashboard/metricas/ (C8): retorna indicadores RBN20-RBN23 e RD19."""
+    """GET /api/dashboard/metricas/ (C8): retorna indicadores RBN20-RBN23 e RD19.
 
-    permission_classes = [IsAuthenticated]
+    So docente, secretaria e administrador (PainelDeGestao).
+    """
+
+    permission_classes = [PainelDeGestao]
 
     def get(self, request):
         metricas = obter_metricas_dashboard(request.user)

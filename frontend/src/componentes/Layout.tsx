@@ -11,6 +11,9 @@ const PERFIS: Record<string, string> = {
   MEMBRO_EXTERNO: "Membro externo",
 };
 
+// Mesma regra do backend (PainelDeGestao): aluno e membro externo nao veem os indicadores.
+const PERFIS_DO_PAINEL: string[] = ["DOCENTE", "SECRETARIA", "ADMINISTRADOR"];
+
 export function Layout() {
   const { usuario, sair } = useAuth();
   const navegar = useNavigate();
@@ -33,19 +36,19 @@ export function Layout() {
             SIGATCC
           </NavLink>
           <nav aria-label="Principal" className="menu">
-{usuario?.tipo_usuario === "ALUNO" ? (
+            {usuario?.tipo_usuario === "ALUNO" ? (
               <NavLink to="/meu-perfil" className="menu-item">
                 Meu perfil
               </NavLink>
             ) : (
-              <>
-                <NavLink to="/tccs" className="menu-item">
-                  TCCs
-                </NavLink>
-                <NavLink to="/indicadores" className="menu-item">
-                  Indicadores
-                </NavLink>
-              </>
+              <NavLink to="/tccs" className="menu-item">
+                TCCs
+              </NavLink>
+            )}
+            {usuario && PERFIS_DO_PAINEL.includes(usuario.tipo_usuario) && (
+              <NavLink to="/indicadores" className="menu-item">
+                Indicadores
+              </NavLink>
             )}
             {usuario?.tipo_usuario === "ALUNO" && (
               <NavLink to="/orientadores" className="menu-item">
