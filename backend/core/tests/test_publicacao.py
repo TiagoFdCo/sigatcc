@@ -111,9 +111,75 @@ def test_espacos_das_bordas_saem_e_link_vazio_vira_nulo(tcc_pub, dados_pub, orie
     assert pub.link_artigo is None
 
 
-@pytest.mark.parametrize(
-    "campo", ["periodico", "issn_doi", "data_publicacao", "comprovante_arquivo_path"]
-)
+# D15 (RBN37): comprovante OU link, pelo menos um. Ideia trazida da branch
+# feature/C1-aprovacao-publicacao (Anggelo).
+def test_publicacao_so_com_link_e_aceita(tcc_pub, dados_pub, orientador):
+    servico.registrar_publicacao(
+        tcc_id=tcc_pub.pk,
+        dados={**dados_pub, "comprovante_arquivo_path": None},
+        usuario=orientador.usuario,
+    )
+    pub = Publicacao.objects.get(tcc=tcc_pub)
+    assert pub.comprovante_arquivo_path is None
+    assert pub.link_artigo == dados_pub["link_artigo"]
+    tcc_pub.refresh_from_db()
+    assert tcc_pub.status == StatusTCC.APROVADO_POR_PUBLICACAO
+
+
+def test_publicacao_so_com_comprovante_e_aceita(tcc_pub, dados_pub, orientador):
+    servico.registrar_publicacao(
+        tcc_id=tcc_pub.pk,
+        dados={**dados_pub, "link_artigo": ""},
+        usuario=orientador.usuario,
+    )
+    pub = Publicacao.objects.get(tcc=tcc_pub)
+    assert pub.comprovante_arquivo_path == dados_pub["comprovante_arquivo_path"]
+    assert pub.link_artigo is None
+
+
+@pytest.mark.parametrize("vazio", [None, "", "   "])
+def test_publicacao_sem_comprovante_e_sem_link_e_recusada(
+    tcc_pub, dados_pub, orientador, vazio
+):
+    with pytest.raises(ValidationError) as erro:
+        servico.registrar_publicacao(
+            tcc_id=tcc_pub.pk,
+            dados={
+                **dados_pub,
+                "comprovante_arquivo_path": vazio,
+                "link_artigo": vazio,
+            },
+            usuario=orientador.usuario,
+        )
+    assert set(erro.value.detail) == {"comprovante_arquivo_path", "link_artigo"}
+    _nada_mudou(tcc_pub)
+
+
+def test_post_publicacao_so_com_link_devolve_201(
+    api_como, orientador, tcc_pub, dados_pub
+):
+    corpo = _json({**dados_pub})
+    del corpo["comprovante_arquivo_path"]
+    resp = api_como(orientador.usuario).post(
+        f"{URL}{tcc_pub.pk}/publicacao/", corpo, format="json"
+    )
+    assert resp.status_code == 201, resp.data
+    assert resp.data["status"] == StatusTCC.APROVADO_POR_PUBLICACAO
+
+
+def test_post_publicacao_sem_comprovante_e_sem_link_devolve_400(
+    api_como, orientador, tcc_pub, dados_pub
+):
+    corpo = _json({**dados_pub, "comprovante_arquivo_path": "", "link_artigo": ""})
+    resp = api_como(orientador.usuario).post(
+        f"{URL}{tcc_pub.pk}/publicacao/", corpo, format="json"
+    )
+    assert resp.status_code == 400
+    assert "comprovante_arquivo_path" in resp.data
+    _nada_mudou(tcc_pub)
+
+
+@pytest.mark.parametrize("campo", ["periodico", "issn_doi", "data_publicacao"])
 @pytest.mark.parametrize("vazio", [None, "", "   "])
 def test_campo_obrigatorio_em_branco_e_recusado(
     tcc_pub, dados_pub, orientador, campo, vazio
@@ -324,12 +390,7 @@ def test_post_publicacao_sem_campos_devolve_400_por_campo(
         f"{URL}{tcc_pub.pk}/publicacao/", {}, format="json"
     )
     assert resp.status_code == 400
-    assert {
-        "periodico",
-        "issn_doi",
-        "data_publicacao",
-        "comprovante_arquivo_path",
-    } <= set(resp.data)
+    assert {"periodico", "issn_doi", "data_publicacao"} <= set(resp.data)
 
 
 def test_post_publicacao_com_link_invalido_devolve_400(

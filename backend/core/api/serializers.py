@@ -163,7 +163,10 @@ class RegistrarPublicacaoSerializer(serializers.Serializer):
     periodico = serializers.CharField(max_length=300)
     issn_doi = serializers.CharField(max_length=100)
     data_publicacao = serializers.DateField()
-    comprovante_arquivo_path = serializers.CharField(max_length=500)
+    # D15: comprovante OU link; o servico exige pelo menos um dos dois.
+    comprovante_arquivo_path = serializers.CharField(
+        max_length=500, required=False, allow_null=True, allow_blank=True
+    )
     link_artigo = serializers.URLField(
         required=False, allow_null=True, allow_blank=True
     )
