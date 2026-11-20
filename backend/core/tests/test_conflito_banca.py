@@ -96,3 +96,133 @@ def test_bancas_encostadas_sem_conflito(cenario_banca):
         sala="101",
         usuarios_membros_ids=[user_docente.id],
     )
+
+
+# ------------------------------------------------------------------------
+# Casos do Plano de Testes (C13, cap. 8): CT-BAN-01 a 03 pelo fluxo completo
+# de cadastro de banca (servico cadastrar_banca), nao so pela validacao.
+# ------------------------------------------------------------------------
+@pytest.fixture
+def novo_tcc(criar_aluno, orientador, area):
+    """Cada banca precisa de um TCC proprio (uma banca por TCC)."""
+    from core.services import tcc as servico_tcc
+
+    def _criar():
+        return servico_tcc.cadastrar_tcc(
+            dados={
+                "titulo": "TCC para teste de conflito",
+                "area_conhecimento": area,
+                "modalidade": "DEFESA_EM_BANCA",
+                "autor": criar_aluno(),
+                "orientador": orientador,
+            },
+            usuario=orientador.usuario,
+        )
+
+    return _criar
+
+
+@pytest.fixture
+def as_14h():
+    """Daqui a 10 dias, as 14h (hora local)."""
+    dia = timezone.localtime() + timedelta(days=10)
+    return dia.replace(hour=14, minute=0, second=0, microsecond=0)
+
+
+def _cadastrar(tcc, membros, inicio, **local):
+    from core.services import banca as servico_banca
+
+    local = local or {"tipo_local": "PRESENCIAL", "bloco": "NUCOMP", "sala": "10"}
+    return servico_banca.cadastrar_banca(
+        tcc=tcc,
+        titulares=[tcc.orientador.usuario, *membros],
+        data_hora_inicio=inicio,
+        usuario=tcc.orientador.usuario,
+        **local,
+    )
+
+
+def _sala(numero):
+    return {"tipo_local": "PRESENCIAL", "bloco": "NUCOMP", "sala": str(numero)}
+
+
+def test_ct_ban_01_membro_em_comum_antes_e_depois(novo_tcc, outros_docentes, as_14h):
+    """CT-BAN-01: banca X 14h-16h; Y as 15h e Z as 13h com o mesmo titular sao recusadas."""
+    d1, d2, d3, _ = (d.usuario for d in outros_docentes)
+    _cadastrar(novo_tcc(), [d1, d2], as_14h, **_sala(1))
+    total = Banca.objects.count()
+
+    for inicio, sala in (
+        (as_14h + timedelta(hours=1), 2),
+        (as_14h - timedelta(hours=1), 3),
+    ):
+        with pytest.raises(ValidationError) as erro:
+            _cadastrar(novo_tcc(), [d1, d3], inicio, **_sala(sala))
+        assert "membros" in erro.value.detail
+    assert Banca.objects.count() == total  # nada gravado
+
+
+def test_ct_ban_02_mesma_sala_recusa_e_remota_aceita(
+    criar_docente, criar_aluno, area, as_14h
+):
+    """CT-BAN-02: sem membros em comum, mesma sala e recusada; remota no mesmo horario e aceita."""
+    from core.services import tcc as servico_tcc
+
+    def tcc_de_outro_orientador():
+        orientador = criar_docente()
+        tcc = servico_tcc.cadastrar_tcc(
+            dados={
+                "titulo": "TCC de outro orientador",
+                "area_conhecimento": area,
+                "modalidade": "DEFESA_EM_BANCA",
+                "autor": criar_aluno(),
+                "orientador": orientador,
+            },
+            usuario=orientador.usuario,
+        )
+        return tcc, [criar_docente().usuario, criar_docente().usuario]
+
+    tcc_x, membros_x = tcc_de_outro_orientador()
+    _cadastrar(tcc_x, membros_x, as_14h, **_sala(10))
+
+    tcc_y, membros_y = tcc_de_outro_orientador()
+    with pytest.raises(ValidationError) as erro:
+        _cadastrar(tcc_y, membros_y, as_14h + timedelta(hours=1), **_sala(10))
+    assert "local" in erro.value.detail
+
+    tcc_z, membros_z = tcc_de_outro_orientador()
+    remota = {"tipo_local": "REMOTO", "link_remoto": "https://meet.example.org/z"}
+    assert _cadastrar(tcc_z, membros_z, as_14h + timedelta(hours=1), **remota)
+
+
+def test_ct_ban_03_valor_limite_16h00_aceita_15h59_recusa(
+    novo_tcc, outros_docentes, as_14h
+):
+    """CT-BAN-03: com X das 14h as 16h, Y as 16h00 e aceita e Z as 15h59 e recusada."""
+    d1, d2, d3, _ = (d.usuario for d in outros_docentes)
+    _cadastrar(novo_tcc(), [d1, d2], as_14h, **_sala(1))
+
+    assert _cadastrar(novo_tcc(), [d1, d3], as_14h + timedelta(hours=2), **_sala(1))
+
+    with pytest.raises(ValidationError):
+        _cadastrar(
+            novo_tcc(), [d1, d3], as_14h + timedelta(hours=1, minutes=59), **_sala(2)
+        )
+
+
+def test_ct_ban_04_consulta_so_a_janela_de_horario(
+    novo_tcc, outros_docentes, as_14h, django_assert_max_num_queries
+):
+    """CT-BAN-04 (parte automatizavel): a validacao nao cresce com bancas fora da janela."""
+    d1, d2, *_ = (d.usuario for d in outros_docentes)
+    for dias in range(1, 6):  # bancas em outros dias nao entram na consulta
+        _cadastrar(novo_tcc(), [d1, d2], as_14h + timedelta(days=dias), **_sala(1))
+
+    with django_assert_max_num_queries(2):
+        validar_conflito_banca(
+            data_hora_inicio=as_14h,
+            tipo_local=TipoLocal.PRESENCIAL,
+            bloco="NUCOMP",
+            sala="1",
+            usuarios_membros_ids=[d1.id],
+        )
