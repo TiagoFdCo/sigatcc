@@ -45,7 +45,12 @@ def validar_conflito_banca(
     inicio_novo = data_hora_inicio
     fim_novo = inicio_novo + timedelta(hours=2)
 
-    bancas_existentes = Banca.objects.all()
+    # So busca as bancas que podem se sobrepor, as que comecam entre
+    # (inicio - 2 h) e o fim da nova, em vez de varrer todas (RNF04, CT-BAN-04).
+    bancas_existentes = Banca.objects.filter(
+        data_hora_inicio__gt=inicio_novo - timedelta(hours=2),
+        data_hora_inicio__lt=fim_novo,
+    )
     if banca_id_atual:
         bancas_existentes = bancas_existentes.exclude(pk=banca_id_atual)
 

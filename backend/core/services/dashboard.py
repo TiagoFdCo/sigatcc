@@ -8,15 +8,18 @@ def obter_metricas_dashboard(usuario):
 
     Compatível com os perfis do C17.
     """
+    # TCC inativado (soft delete, RBN08) nao entra em nenhum indicador (RD17).
+    tccs = TCC.objects.filter(ativo=True)
+
     # RBN20: TCCs em desenvolvimento
-    em_desenvolvimento = TCC.objects.filter(status="EM_DESENVOLVIMENTO").count()
+    em_desenvolvimento = tccs.filter(status="EM_DESENVOLVIMENTO").count()
 
     # RBN21: Apresentados vs Não Apresentados
-    apresentados = TCC.objects.filter(status="APRESENTADO").count()
-    nao_apresentados = TCC.objects.filter(status="NAO_APRESENTADO").count()
+    apresentados = tccs.filter(status="APRESENTADO").count()
+    nao_apresentados = tccs.filter(status="NAO_APRESENTADO").count()
 
     # RD19: Conclusão por Banca vs Conclusão por Publicação
-    aprovados_publicacao = TCC.objects.filter(status="APROVADO_POR_PUBLICACAO").count()
+    aprovados_publicacao = tccs.filter(status="APROVADO_POR_PUBLICACAO").count()
 
     # RBN22: Carga de orientação por docente (usa usuario_id e usuario__nome_completo)
     orientacoes_por_docente = [
@@ -28,7 +31,10 @@ def obter_metricas_dashboard(usuario):
         for d in Docente.objects.annotate(
             qtd_orientacoes=Count(
                 "tccs_orientados",
-                filter=Q(tccs_orientados__status="EM_DESENVOLVIMENTO"),
+                filter=Q(
+                    tccs_orientados__status="EM_DESENVOLVIMENTO",
+                    tccs_orientados__ativo=True,
+                ),
             )
         ).values("usuario_id", "usuario__nome_completo", "qtd_orientacoes")
     ]
