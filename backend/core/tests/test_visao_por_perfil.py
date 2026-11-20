@@ -4,6 +4,7 @@ Criterio de aceite do pacote: o Orientador nao abre nem edita TCC de outro
 orientador (acesso negado e registrado); teste na matriz perfil x acao.
 """
 
+import itertools
 from datetime import timedelta
 
 import pytest
@@ -199,11 +200,16 @@ def test_professor_tcc_cadastra_para_qualquer_docente(
 
 
 # ---------------------------------------------------------------- bancas
+_dias_de_banca = itertools.count(7)
+
+
 def _banca_de(tcc, membros):
+    # Cada banca num dia diferente: a validacao de conflito (C4) recusa duas
+    # bancas na mesma sala ou com o mesmo membro no mesmo horario.
     return servico_banca.cadastrar_banca(
         tcc=tcc,
         titulares=[tcc.orientador.usuario, *membros],
-        data_hora_inicio=timezone.now() + timedelta(days=7),
+        data_hora_inicio=timezone.now() + timedelta(days=next(_dias_de_banca)),
         tipo_local="PRESENCIAL",
         bloco="NUCOMP",
         sala="10",

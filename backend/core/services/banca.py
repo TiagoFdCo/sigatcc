@@ -1,4 +1,6 @@
-"""B8 (cadastro de banca: titulares, suplentes, data e local)."""
+"""B8 (cadastro de banca: titulares, suplentes, data e local) e C4 (validação de conflitos)."""
+
+from datetime import timedelta
 
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import URLValidator
@@ -23,6 +25,77 @@ from core.services.auditoria import registrar
 
 TITULARES_POR_BANCA = 3
 PODEM_COMPOR_BANCA = {TipoUsuario.DOCENTE, TipoUsuario.MEMBRO_EXTERNO}
+
+
+def validar_conflito_banca(
+    data_hora_inicio,
+    tipo_local,
+    bloco=None,
+    sala=None,
+    link_remoto=None,
+    usuarios_membros_ids=None,
+    banca_id_atual=None,
+):
+    """C4 (RBN13, RD16, RNF04): Valida sobreposição de horário por membro ou local.
+
+    Regra: Dois intervalos [inicio, inicio + 2h) que se sobrepõem geram conflito
+    se compartilharem o mesmo membro (docente ou externo) ou o mesmo local (presencial ou remoto).
+    Bancas encostadas (ex: 14h-16h e 16h-18h) são permitidas.
+    """
+    inicio_novo = data_hora_inicio
+    fim_novo = inicio_novo + timedelta(hours=2)
+
+    bancas_existentes = Banca.objects.all()
+    if banca_id_atual:
+        bancas_existentes = bancas_existentes.exclude(pk=banca_id_atual)
+
+    for banca in bancas_existentes:
+        inicio_existente = banca.data_hora_inicio
+        fim_existente = inicio_existente + timedelta(hours=2)
+
+        # Checa sobreposição temporal rigorosa [inicio, fim)
+        se_sobrepoe = (inicio_existente < fim_novo) and (fim_existente > inicio_novo)
+
+        if se_sobrepoe:
+            # 1. Conflito de Local
+            if (
+                tipo_local == TipoLocal.PRESENCIAL
+                and banca.tipo_local == TipoLocal.PRESENCIAL
+                and banca.bloco == bloco
+                and banca.sala == sala
+            ):
+                raise ValidationError(
+                    {
+                        "local": f"Conflito de local: a sala {sala} do bloco {bloco} já está reservada para outra banca nesse horário."
+                    }
+                )
+            elif (
+                tipo_local == TipoLocal.REMOTO
+                and banca.tipo_local == TipoLocal.REMOTO
+                and banca.link_remoto
+                and link_remoto
+                and banca.link_remoto == link_remoto
+            ):
+                raise ValidationError(
+                    {
+                        "link_remoto": "Conflito de local remoto: este link de reunião já está em uso por outra banca nesse horário."
+                    }
+                )
+
+            # 2. Conflito de Membro (Docente / Membro Externo)
+            if usuarios_membros_ids:
+                membros_existentes = ParticipacaoBanca.objects.filter(
+                    banca=banca,
+                    usuario_id__in=usuarios_membros_ids,
+                ).select_related("usuario")
+
+                if membros_existentes.exists():
+                    nome_membro = membros_existentes.first().usuario.nome_completo
+                    raise ValidationError(
+                        {
+                            "membros": f"Conflito de agenda: O(a) avaliador(a) {nome_membro} já possui banca agendada nesse horário."
+                        }
+                    )
 
 
 def _validar_tcc(tcc):
@@ -67,10 +140,7 @@ def _validar_data(data_hora_inicio):
 
 
 def _local(tipo_local, bloco, sala, link_remoto):
-    """D17 / RBN12: presencial exige bloco e sala; remota, um link valido.
-
-    Devolve so os campos do tipo escolhido; os do outro tipo ficam nulos.
-    """
+    """D17 / RBN12: presencial exige bloco e sala; remota, um link valido."""
     bloco, sala, link_remoto = _texto(bloco), _texto(sala), _texto(link_remoto)
     if tipo_local == TipoLocal.REMOTO:
         try:
@@ -102,8 +172,7 @@ def cadastrar_banca(
 ):
     """Grava BANCA, PARTICIPACAO_BANCA e os CONVITES pendentes, tudo ou nada.
 
-    A defesa dura 2 h (D5): so o inicio e guardado. Os convites saem por e-mail
-    depois do commit (C6). O conflito de horario (C4) fica no pacote dele.
+    A defesa dura 2 h (D5): só o início é guardado. Valida conflito de horário e local (C4).
     """
     tcc = TCC.objects.select_for_update().get(pk=tcc.pk)  # trava contra banca dupla
     titulares, suplentes = list(titulares), list(suplentes)
@@ -112,6 +181,17 @@ def cadastrar_banca(
     _validar_membros(tcc, titulares, suplentes)
     _validar_data(data_hora_inicio)
     local = _local(tipo_local, bloco, sala, link_remoto)
+
+    # C4: Validação de conflito de horário e de local antes de salvar
+    todos_membros_ids = [m.id for m in [*titulares, *suplentes]]
+    validar_conflito_banca(
+        data_hora_inicio=data_hora_inicio,
+        tipo_local=tipo_local,
+        bloco=local.get("bloco"),
+        sala=local.get("sala"),
+        link_remoto=local.get("link_remoto"),
+        usuarios_membros_ids=todos_membros_ids,
+    )
 
     banca = Banca.objects.create(
         tcc=tcc, data_hora_inicio=data_hora_inicio, tipo_local=tipo_local, **local
