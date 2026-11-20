@@ -33,12 +33,20 @@ export function Layout() {
             SIGATCC
           </NavLink>
           <nav aria-label="Principal" className="menu">
-            <NavLink to="/tccs" className="menu-item">
-              TCCs
-            </NavLink>
-            <NavLink to="/indicadores" className="menu-item">
-              Indicadores
-            </NavLink>
+{usuario?.tipo_usuario === "ALUNO" ? (
+              <NavLink to="/meu-perfil" className="menu-item">
+                Meu perfil
+              </NavLink>
+            ) : (
+              <>
+                <NavLink to="/tccs" className="menu-item">
+                  TCCs
+                </NavLink>
+                <NavLink to="/indicadores" className="menu-item">
+                  Indicadores
+                </NavLink>
+              </>
+            )}
             {usuario?.tipo_usuario === "ALUNO" && (
               <NavLink to="/orientadores" className="menu-item">
                 Buscar orientador

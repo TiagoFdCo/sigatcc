@@ -6,6 +6,7 @@ from django.utils.dateparse import parse_date
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -18,7 +19,10 @@ from core.api.permissions import (
     LeituraOuAdministrador,
     LeituraOuGestao,
     ProfessorTccOuAdministrador,
+    SemAluno,
     SomenteAdministrador,
+    SomenteAluno,
+    SomenteProfessorTCC,
 )
 from core.api.serializers import (
     AcessoExternoSerializer,
@@ -40,11 +44,15 @@ from core.api.serializers import (
     MembroExternoEntradaSerializer,
     MudarSituacaoSerializer,
     OrientadorSerializer,
+    PerfilAlunoEntradaSerializer,
+    PerfilAlunoSerializer,
+    RecusarCadastroSerializer,
     RegistrarPublicacaoSerializer,
     ResponderConviteSerializer,
     ResponderPorLinkSerializer,
     ResponderSolicitacaoSerializer,
     ReuniaoSerializer,
+    SenhaAlunoSerializer,
     SolicitacaoOrientacaoSerializer,
     TCCDetalheSerializer,
     TCCSerializer,
@@ -74,6 +82,7 @@ from core.services import contas as servico_contas
 from core.services import convites as servico_convites
 from core.services import docente as servico_docente
 from core.services import escopo
+from core.services import perfil_aluno as servico_perfil
 from core.services import pessoas as servico_pessoas
 from core.services import publicacao as servico_publicacao
 from core.services import reuniao as servico_reuniao
@@ -251,7 +260,7 @@ class DocenteViewSet(viewsets.ReadOnlyModelViewSet):
     """/api/docentes/ (B6): todos leem; so o administrador cadastra e edita."""
 
     serializer_class = DocenteSerializer
-    permission_classes = [LeituraOuAdministrador]
+    permission_classes = [SemAluno, LeituraOuAdministrador]
 
     def get_queryset(self):
         qs = (
@@ -339,6 +348,10 @@ class AlunoViewSet(viewsets.ReadOnlyModelViewSet):
         curso = self.request.query_params.get("curso")
         if curso:
             qs = filtro_uuid(qs, "curso_id", curso)
+        # ?cadastro=pendente|confirmado: a fila do Professor de TCC (C2a)
+        cadastro = self.request.query_params.get("cadastro")
+        if cadastro in ("pendente", "confirmado"):
+            qs = qs.filter(cadastro_confirmado=cadastro == "confirmado")
         return qs
 
     def _saida(self, pk):
@@ -375,6 +388,58 @@ class AlunoViewSet(viewsets.ReadOnlyModelViewSet):
             usuario_id=pk, ativo=True, usuario=request.user, entidade="ALUNO"
         )
         return Response(self._saida(pk))
+
+    @action(detail=True, methods=["post"], permission_classes=[SomenteProfessorTCC])
+    def confirmar(self, request, pk=None):
+        """C2a (RBN61): o Professor de TCC confirma o cadastro; so entao o aluno entra."""
+        self.get_object()
+        servico_pessoas.confirmar_cadastro_aluno(aluno_id=pk, usuario=request.user)
+        return Response(self._saida(pk))
+
+    @action(detail=True, methods=["post"], permission_classes=[SomenteProfessorTCC])
+    def recusar(self, request, pk=None):
+        """C2a (RBN61): recusa o cadastro com motivo (fica na auditoria)."""
+        self.get_object()
+        entrada = RecusarCadastroSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        servico_pessoas.recusar_cadastro_aluno(
+            aluno_id=pk, motivo=entrada.validated_data["motivo"], usuario=request.user
+        )
+        return Response(self._saida(pk))
+
+    @action(detail=True, methods=["post"])
+    def senha(self, request, pk=None):
+        """C2a: o administrador define a senha para o aluno poder entrar."""
+        self.get_object()
+        entrada = SenhaAlunoSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        servico_pessoas.definir_senha_aluno(
+            aluno_id=pk, senha=entrada.validated_data["senha"], usuario=request.user
+        )
+        return Response(self._saida(pk))
+
+    @action(
+        detail=False,
+        methods=["get", "patch"],
+        url_path="meu-perfil",
+        permission_classes=[SomenteAluno],
+    )
+    def meu_perfil(self, request):
+        """C2a: o aluno ve os proprios dados e mantem as areas de interesse."""
+        consulta = Aluno.objects.select_related("usuario", "curso").prefetch_related(
+            "areas_interesse"
+        )
+        aluno = get_object_or_404(consulta, pk=request.user.pk)
+        if request.method == "PATCH":
+            entrada = PerfilAlunoEntradaSerializer(data=request.data)
+            entrada.is_valid(raise_exception=True)
+            servico_perfil.atualizar_areas_interesse(
+                aluno=aluno,
+                areas=entrada.validated_data["areas_interesse"],
+                usuario=request.user,
+            )
+            aluno = get_object_or_404(consulta, pk=request.user.pk)
+        return Response(PerfilAlunoSerializer(aluno).data)
 
 
 class UsuarioViewSet(viewsets.ReadOnlyModelViewSet):

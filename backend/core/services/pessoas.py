@@ -1,7 +1,7 @@
 """B14 (demais perfis): alunos, secretaria, administrador, membro externo e areas."""
 
 from django.db import transaction
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.generics import get_object_or_404
 
 from core.models import Aluno, AreaConhecimento, MembroExterno, TipoUsuario, Usuario
@@ -72,6 +72,88 @@ def atualizar_aluno(*, aluno_id, dados, usuario):
         entidade="ALUNO",
         registro_id=conta.pk,
     )
+    return aluno
+
+
+@transaction.atomic
+def definir_senha_aluno(*, aluno_id, senha, usuario):
+    """C2a: o administrador define (ou redefine) a senha do aluno, que passa a entrar.
+
+    Zera o bloqueio por tentativas, para a nova senha valer na hora. A senha
+    nunca vai para o log: ele guarda so "definida" ou "redefinida".
+    """
+    aluno = get_object_or_404(
+        Aluno.objects.select_for_update().select_related("usuario"), pk=aluno_id
+    )
+    conta = aluno.usuario
+    if not conta.ativo:
+        raise ValidationError({"aluno": "Aluno inativo não recebe senha."})
+    contas.validar_senha(senha, campo="senha")
+
+    tinha_senha = conta.has_usable_password()
+    conta.set_password(senha)
+    conta.tentativas_falhas = 0
+    conta.bloqueado_ate = None
+    conta.save(update_fields=["password", "tentativas_falhas", "bloqueado_ate"])
+    registrar(
+        usuario,
+        "ALUNO",
+        conta.pk,
+        "senha",
+        "definida" if tinha_senha else None,
+        "redefinida" if tinha_senha else "definida",
+    )
+    return aluno
+
+
+def _exigir_professor_tcc(usuario):
+    """RBN61/RD25: so o Professor de TCC confirma ou recusa o cadastro do aluno."""
+    docente = getattr(usuario, "docente", None)
+    if not (
+        usuario.tipo_usuario == TipoUsuario.DOCENTE
+        and usuario.ativo
+        and docente
+        and docente.professor_tcc
+    ):
+        raise PermissionDenied("Só o Professor de TCC confirma o cadastro do aluno.")
+
+
+def _aluno_para_decidir(aluno_id):
+    aluno = get_object_or_404(
+        Aluno.objects.select_for_update().select_related("usuario"), pk=aluno_id
+    )
+    if not aluno.usuario.ativo:
+        raise ValidationError({"aluno": "Aluno inativo não tem cadastro a decidir."})
+    if aluno.cadastro_confirmado:
+        raise ValidationError(
+            {"cadastro": "O cadastro deste aluno já está confirmado."}
+        )
+    return aluno
+
+
+@transaction.atomic
+def confirmar_cadastro_aluno(*, aluno_id, usuario):
+    """C2a: o Professor de TCC confirma o cadastro e o aluno passa a poder entrar."""
+    _exigir_professor_tcc(usuario)
+    aluno = _aluno_para_decidir(aluno_id)
+    aluno.cadastro_confirmado = True
+    aluno.save(update_fields=["cadastro_confirmado"])
+    registrar(usuario, "ALUNO", aluno.pk, "cadastro_confirmado", False, True)
+    return aluno
+
+
+@transaction.atomic
+def recusar_cadastro_aluno(*, aluno_id, motivo, usuario):
+    """C2a: o Professor de TCC recusa o cadastro, com motivo; o aluno segue sem entrar.
+
+    O banco nao tem campo para o motivo, entao ele fica so na auditoria.
+    """
+    _exigir_professor_tcc(usuario)
+    motivo = (motivo or "").strip()
+    if not motivo:
+        raise ValidationError({"motivo": "Informe o motivo da recusa."})
+    aluno = _aluno_para_decidir(aluno_id)
+    registrar(usuario, "ALUNO", aluno.pk, "cadastro_recusado", None, motivo)
     return aluno
 
 

@@ -22,3 +22,16 @@ def test_popular_demo_cria_dados_e_e_idempotente(api):
         "/api/auth/login/", {"login": "DOC-002", "senha": "Demo#2026"}, format="json"
     )
     assert resp.status_code == 200
+
+
+def test_aluno_da_demonstracao_consegue_entrar(api):
+    """C2a: os alunos criados pelo comando ja entram com a senha de demonstracao."""
+    call_command("popular_demo")
+
+    resp = api.post(
+        "/api/auth/login/",
+        {"login": "aluno1@uea.edu.br", "senha": "Demo#2026"},
+        format="json",
+    )
+    assert resp.status_code == 200
+    assert resp.data["usuario"]["tipo_usuario"] == "ALUNO"

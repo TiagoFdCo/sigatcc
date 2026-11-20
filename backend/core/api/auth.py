@@ -67,6 +67,15 @@ class LoginView(APIView):
                 },
                 status=HTTP_423_LOCKED,
             )
+        except acesso.CadastroNaoConfirmado:
+            return Response(
+                {
+                    "detail": "Seu cadastro ainda não foi confirmado pelo Professor de TCC. "
+                    "Quando for confirmado, você poderá entrar.",
+                    "code": "cadastro_nao_confirmado",
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
         except acesso.CredenciaisInvalidas:
             return Response(
                 {

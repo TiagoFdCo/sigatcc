@@ -4,7 +4,7 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-from core.models import Docente, LogAcesso, Usuario
+from core.models import Docente, LogAcesso, TipoUsuario, Usuario
 from core.services.auditoria import registrar
 
 MAX_TENTATIVAS = 5  # RNF02 / RD26
@@ -13,6 +13,10 @@ TEMPO_BLOQUEIO = timedelta(minutes=15)
 
 class CredenciaisInvalidas(Exception):
     """Login inexistente, conta inativa ou senha errada (mesma resposta para todos)."""
+
+
+class CadastroNaoConfirmado(Exception):
+    """Aluno com a senha certa, mas ainda sem a confirmacao do Professor de TCC (RBN61)."""
 
 
 class ContaBloqueada(Exception):
@@ -72,6 +76,12 @@ def autenticar(*, login, senha, ip):
 
     usuario.tentativas_falhas = 0
     usuario.bloqueado_ate = None
+    if usuario.tipo_usuario == TipoUsuario.ALUNO:
+        # So depois de conferir a senha: quem erra a senha nao descobre o estado do cadastro
+        aluno = getattr(usuario, "aluno", None)
+        if not (aluno and aluno.cadastro_confirmado):
+            usuario.save(update_fields=["tentativas_falhas", "bloqueado_ate"])
+            raise CadastroNaoConfirmado
     usuario.last_login = agora
     usuario.save(update_fields=["tentativas_falhas", "bloqueado_ate", "last_login"])
     LogAcesso.objects.create(usuario=usuario, ip=ip or "0.0.0.0")

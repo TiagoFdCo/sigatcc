@@ -12,7 +12,7 @@ function horaDoDesbloqueio(dados: unknown): string | null {
   return new Date(ate).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 }
 
-/** B9a: login do docente, secretaria e administrador (RBN29). */
+/** B9a: login do docente, secretaria e administrador (RBN29); C2a: tambem o aluno. */
 export function Login() {
   const { usuario, entrar } = useAuth();
   const navegar = useNavigate();
@@ -41,6 +41,9 @@ export function Login() {
           tom: "aviso",
           texto: `Conta bloqueada por 15 minutos após 5 tentativas sem sucesso.${hora ? ` Tente de novo às ${hora}.` : ""}`,
         });
+      } else if (e instanceof ErroApi && e.status === 403) {
+        // C2a: aluno com a senha certa, mas cadastro ainda nao confirmado pelo Professor de TCC
+        setErro({ tom: "aviso", texto: e.message });
       } else {
         setErro({ tom: "erro", texto: e instanceof Error ? e.message : "Não foi possível entrar." });
       }
@@ -70,7 +73,7 @@ export function Login() {
         <form className="login-cartao" onSubmit={aoEnviar} noValidate>
           <div className="pilha-pequena">
             <h2>Entrar</h2>
-            <p className="texto-suave">Acesso para docentes, secretaria e administração.</p>
+            <p className="texto-suave">Acesso para alunos, docentes, secretaria e administração.</p>
           </div>
 
           {erro && <Alerta tom={erro.tom}>{erro.texto}</Alerta>}
