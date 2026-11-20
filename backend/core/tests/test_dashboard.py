@@ -115,6 +115,7 @@ def test_ct_dsh_01_numeros_batem_com_consulta_direta(
     assert bancas[str(outros_docentes[2].usuario_id)] == 0
 
 
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     ("tipo_usuario", "esperado"),
     [
