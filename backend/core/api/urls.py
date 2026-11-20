@@ -12,6 +12,7 @@ from core.api.views import (
     BancaViewSet,
     ConviteViewSet,
     CursoViewSet,
+    DashboardMetricasView,
     DocenteViewSet,
     MembroExternoView,
     OrientadorViewSet,
@@ -49,6 +50,8 @@ urlpatterns = [
     path("auth/refresh/", TokenRefreshView.as_view(), name="auth-refresh"),
     path("auth/logout/", LogoutView.as_view(), name="auth-logout"),
     path("auth/me/", MeView.as_view(), name="auth-me"),
+    # C8: metricas e indicadores do dashboard
+    path("dashboard/metricas/", DashboardMetricasView.as_view(), name="dashboard-metricas"),
     # C16 (4.6): membro externo
     path("membros-externos/", MembroExternoView.as_view(), name="membro-externo"),
     path(

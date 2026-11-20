@@ -7,7 +7,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -79,6 +79,7 @@ from core.services import publicacao as servico_publicacao
 from core.services import reuniao as servico_reuniao
 from core.services import solicitacao as servico_solicitacao
 from core.services import tcc as servico_tcc
+from core.services.dashboard import obter_metricas_dashboard
 
 
 class TCCViewSet(viewsets.ModelViewSet):
@@ -732,3 +733,14 @@ class AcessoViewSet(viewsets.ReadOnlyModelViewSet):
         if params.get("usuario"):
             qs = filtro_uuid(qs, "usuario_id", params["usuario"])
         return _filtrar_por_periodo(qs, params)
+
+
+# ------------------------------------------- C8: metricas e indicadores do dashboard
+class DashboardMetricasView(APIView):
+    """GET /api/dashboard/metricas/ (C8): retorna indicadores RBN20-RBN23 e RD19."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        metricas = obter_metricas_dashboard(request.user)
+        return Response(metricas)

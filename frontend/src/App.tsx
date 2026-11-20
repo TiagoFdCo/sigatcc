@@ -8,6 +8,7 @@ import { Auditoria } from "./paginas/Auditoria";
 import { BancaFormulario } from "./paginas/BancaFormulario";
 import { BuscarOrientador } from "./paginas/BuscarOrientador";
 import { Convites } from "./paginas/Convites";
+import { DashboardIndicadoresView } from "./paginas/DashboardIndicadoresView";
 import { Login } from "./paginas/Login";
 import { NaoEncontrada } from "./paginas/NaoEncontrada";
 import { ResponderConvite } from "./paginas/ResponderConvite";
@@ -30,6 +31,7 @@ export function App() {
             <Route element={<Layout />}>
               <Route index element={<Navigate to="/tccs" replace />} />
               <Route path="/tccs" element={<TccLista />} />
+              <Route path="/indicadores" element={<DashboardIndicadoresView />} />
               <Route path="/tccs/novo" element={<TccFormulario />} />
               <Route path="/tccs/:id" element={<TccDetalhe />} />
               <Route path="/tccs/:id/editar" element={<TccFormulario />} />

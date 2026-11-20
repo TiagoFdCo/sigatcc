@@ -15,14 +15,18 @@ export const DashboardIndicadoresView: React.FC = () => {
   }, []);
 
   if (carregando) return <div className="carregando">Carregando painel de indicadores...</div>;
-  if (erro) return <div className="alerta alerta-perigo">{erro}</div>;
+  if (erro) return <div className="alerta alerta-erro">{erro}</div>;
   if (!metricas) return null;
 
   return (
-    <div className="conteudo-principal">
+    <div className="pilha">
       <header className="cabecalho-pagina">
-        <h1>Painel Geral de Indicadores (C8)</h1>
-        <p>Acompanhamento analítico e métricas em tempo real do progresso dos TCCs</p>
+        <div>
+          <h1>Painel Geral de Indicadores (C8)</h1>
+          <p className="subtitulo texto-suave">
+            Acompanhamento de métricas RBN20-RBN23 e conclusões do TCC
+          </p>
+        </div>
       </header>
 
       <DashboardCards metricas={metricas} />
