@@ -1,0 +1,26 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><link rel="stylesheet" href="../styles.css"><style>
+.pf{position:relative;outline:2.5px dashed #e8590c;outline-offset:5px;border-radius:6px}
+.pf::before{content:attr(data-n);position:absolute;top:-15px;left:-34px;width:28px;height:28px;border-radius:50%;
+ background:#e8590c;color:#fff;font:700 14px/28px system-ui,sans-serif;text-align:center;z-index:9;
+ box-shadow:0 0 0 3px #fff}
+.faixa{background:#16202a;color:#fff;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;
+ font:15px system-ui,sans-serif;gap:16px}
+.faixa b{font-size:18px}
+.faixa .est{padding:4px 10px;border-radius:999px;font-size:13px;font-weight:600;background:#fff}
+.barra{display:flex;align-items:flex-end;gap:14px;height:150px;padding-top:8px;border-bottom:1px solid var(--borda)}
+.barra div{flex:1;background:var(--verde);border-radius:4px 4px 0 0;position:relative}
+.barra div span{position:absolute;bottom:-22px;left:0;right:0;text-align:center;font-size:12px;color:var(--tinta-suave)}
+.barra div em{position:absolute;top:-20px;left:0;right:0;text-align:center;font-size:12px;font-style:normal}
+.hbar{display:flex;align-items:center;gap:10px;font-size:14px;margin:6px 0}
+.hbar span{width:150px;color:var(--tinta-suave)}
+.hbar i{display:block;height:14px;background:var(--verde);border-radius:3px}
+.modal-fundo{background:rgba(22,32,42,.45);padding:40px 0;margin:-32px -24px -48px}
+.modal{max-width:640px;margin:0 auto;background:#fff;border-radius:12px;padding:28px;display:flex;flex-direction:column;gap:18px}
+.pizza{width:150px;height:150px;border-radius:50%;background:conic-gradient(#0b6b5d 0 58%,#8cc9be 58% 82%,#d5dae0 82%)}
+.legenda span{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.nota{font-size:13px;color:var(--tinta-suave)}
+</style></head><body><div class="faixa"><div><b>T15 · Buscar orientador</b> &nbsp; 2 funções · 9 PF</div><span class="est" style="color:#7a4100">No código desde 13/11, falta homologar (E3)</span></div><div class="app"><header class="topo"><div class="topo-conteudo"><a class="marca" href="#"><svg width="28" height="28" viewBox="0 0 36 36" fill="none"><rect x="1" y="1" width="34" height="34" rx="8" stroke="currentColor" stroke-width="2.5"/><path d="M10 13h16M10 18h16M10 23h10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg> SIGATCC</a><nav class="menu"><a class="menu-item" href="#">Meu perfil</a><a class="menu-item active" href="#">Buscar orientador</a><a class="menu-item" href="#">Solicitações</a><a class="menu-item" href="#">Convites</a></nav><div class="usuario"><span>Ana Beatriz Souza<br><small class="texto-suave">Aluno</small></span><button class="link-botao">Sair</button></div></div></header><main class="conteudo">
+<div class="pilha"><div class="cabecalho-pagina"><div class="pilha-pequena"><h1>Buscar orientador</h1><p class="texto-suave">Docentes pela área de interesse, com o número de orientandos de cada um.</p></div><div class="acoes"></div></div>
+<div class="cartao filtros"><div class="campo"><label>Área de interesse</label><select><option>Engenharia de Software</option></select></div></div>
+<div class="pf" data-n="1"><div class="grade"><div class="cartao pilha-pequena"><b>Prof. Marcos Lima</b><span class="texto-suave">Engenharia de Software · Banco de Dados</span><span class="campo-ajuda">6 orientandos</span><span class="pf" data-n="2" style="display:inline-block"><button class="botao" style="margin-top:8px">Solicitar orientação</button></span></div><div class="cartao pilha-pequena"><b>Profa. Lúcia Ramos</b><span class="texto-suave">Engenharia de Software · IA</span><span class="campo-ajuda">2 orientandos</span><button class="botao-secundario" style="margin-top:8px">Solicitar orientação</button></div><div class="cartao pilha-pequena"><b>Prof. Rui Almeida</b><span class="texto-suave">Engenharia de Software · Informática na Educação</span><span class="campo-ajuda">2 orientandos</span><button class="botao-secundario" style="margin-top:8px">Solicitar orientação</button></div></div></div>
+<p class="nota">A busca mostra um dado derivado (número de orientandos), por isso é saída externa (SE). Só aluno sem TCC ativo solicita (RBN46).</p></div></main></div></body></html>

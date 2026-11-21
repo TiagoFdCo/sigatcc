@@ -1,7 +1,7 @@
 # Plano de Avaliação do Projeto por Ponto de Função – SIGATCC (TP3)
 
-Pacote da EAP **1.4 Pontos de função e valor** · atividade **C10** · marco **E2 (18/11/2026)**
-Responsável: Tiago Feitosa · Revisão: 12/11/2026 · Base: contagem de 08/11 (234 PF), planilha *SIGATCC_Cronograma_EAP_PF_v4*
+Pacote da EAP **1.4 Pontos de função e valor** · atividade **C10** · marco **E2 (20/11/2026, adiada de 18/11)**
+Responsável: Tiago Feitosa · Revisão: 12/11/2026 (contagem por tela acrescentada em 20/11/2026) · Base: contagem de 08/11 (234 PF), planilha *SIGATCC_Cronograma_EAP_PF_v4*
 
 Este plano diz **como a equipe mede o tamanho do SIGATCC em pontos de função (PF) e usa essa medida para avaliar o projeto**: quanto já foi entregue, a que custo, com que produtividade e se o ritmo cabe no prazo. A contagem detalhada está na aba *Pontos de Função* da planilha de cronograma; aqui ficam o método, a linha de base, as métricas, os limites de alerta e a rotina de acompanhamento.
 
@@ -82,10 +82,281 @@ Não há AIE: o SIGATCC não lê dados mantidos por outra aplicação.
 | Marco | Data | PF do marco | PF acumulados | % acumulado |
 |---|---|---|---|---|
 | E1 · TP2 | 25/10 | 81 | 81 | 35% |
-| E2 · TP3 | 18/11 | 69 | 150 | 64% |
+| E2 · TP3 | 20/11 (adiada de 18/11) | 69 | 150 | 64% |
 | E3 · TP4 | 09/12 | 84 | 234 | 100% |
 
 Os 69 PF da E2 vêm dos pacotes 3.2 (21), 4.2 (20), 8.1 (20), 5.3 (4) e 8.3 (4). Os pacotes 4.5, 4.7 e 6.2 não acrescentam função nova (são regras de acesso e de validação sobre funções já contadas) e por isso não somam PF, embora tenham esforço.
+
+### 3.4 Contagem por tela (protótipo de 20/11)
+
+Para facilitar a conferência, as 45 funções de transação foram localizadas nas telas do sistema. O protótipo abaixo usa o mesmo estilo do front-end (tokens e componentes de `frontend/src/styles.css`) e cobre as 21 telas do escopo, inclusive as do E3 que ainda não existem no código. As páginas do protótipo estão em `docs/tp3/telas/prototipo/` e as imagens, em `docs/tp3/telas/`.
+
+**Como ler cada tela:**
+
+- A faixa escura no alto traz o código da tela, o número de funções, o total de PF e a situação no código.
+- Cada **marcador laranja numerado** aponta o elemento que dispara ou mostra uma função. A tabela logo abaixo da imagem liga o número à função da contagem (ID, tipo, complexidade e PF).
+- Elementos sem marcador, como filtros, botões de cancelar e mensagens, fazem parte de uma função já contada e não somam PF.
+- Cada função aparece em uma única tela, então a soma das telas fecha com a linha de base.
+- Tipos: EE = entrada externa; CE = consulta externa; SE = saída externa; ALI = arquivo lógico interno. As transações usam a complexidade padrão NESMA (Média); as funções de dados, a contagem detalhada do DER (seção 2).
+
+As **funções de dados** (ALI) não têm tela própria: são os grupos de dados mantidos pelo sistema e somam 45 PF (tabela 3.4.1). As **transações** somam 189 PF nas 21 telas (tabela 3.4.2). O total é 234 PF, igual ao da seção 3.1.
+
+#### 3.4.1 Funções de dados (sem tela)
+
+| ID | Arquivo lógico interno | TD | RLR | Complexidade | PF |
+|----|------------------------|---|----|-------|---|
+| PF01 | Usuário (docente, aluno e membro externo, com áreas de interesse) | 17 | 4 | Baixa | 7 |
+| PF03 | TCC (situação, histórico de status e publicação) | 25 | 3 | Média | 10 |
+| PF04 | Banca (participação e avaliação) | 12 | 3 | Baixa | 7 |
+| PF06 | Solicitação de orientação (com reunião de alinhamento) | 10 | 2 | Baixa | 7 |
+| PF08 | Convite (banca e audiência) | 6 | 1 | Baixa | 7 |
+| PF09 | Log de auditoria | 7 | 1 | Baixa | 7 |
+| | **Total** | | | | **45** |
+
+#### 3.4.2 Resumo por tela
+
+| Tela | Nome | Funções | PF | Situação no código |
+|----|----------------|------|---|--------------------|
+| T01 | Login | 2 | 8 | Implementada na v0.3.0 (E2) |
+| T02 | Lista de TCCs | 1 | 4 | Implementada na v0.3.0 (E2) |
+| T03 | Cadastro e edição de TCC | 2 | 8 | Implementada na v0.3.0 (E2) |
+| T04 | Detalhe do TCC | 4 | 16 | Marcadores 1, 2, 3: implementada · 4: a implementar (E3) |
+| T05 | Registrar aprovação por publicação | 1 | 4 | Implementada na v0.3.0 (E2) |
+| T06 | Cadastro de banca | 3 | 12 | Marcadores 1: implementada · 3: no código, sem homologação · 2: a implementar (E3) |
+| T07 | Banca e defesa | 4 | 16 | Marcadores 1: implementada · 2, 3: no código, sem homologação · 4: a implementar (E3) |
+| T08 | Convites recebidos | 2 | 8 | No código desde 13/11, falta homologar (E3) |
+| T09 | Acesso temporário do membro externo | 1 | 4 | No código desde 13/11, falta homologar (E3) |
+| T10 | Meu perfil (aluno) | 2 | 8 | Implementada na v0.3.0 (E2) |
+| T11 | Confirmação de cadastro de aluno | 1 | 4 | Implementada na v0.3.0 (E2) |
+| T12 | Docentes (Administrador) | 4 | 17 | Implementada na v0.3.0 (E2) |
+| T13 | Cadastro de aluno (Administrador) | 1 | 4 | Implementada na v0.3.0 (E2) |
+| T14 | Áreas de interesse do docente | 1 | 4 | Parcialmente implementada (E3) |
+| T15 | Buscar orientador | 2 | 9 | No código desde 13/11, falta homologar (E3) |
+| T16 | Solicitações de orientação e reuniões | 4 | 16 | No código desde 13/11, falta homologar (E3) |
+| T17 | Painel de indicadores | 6 | 30 | Marcadores 1, 2, 3, 4: implementada · 5, 6: a implementar (E3) |
+| T18 | Relatório de defesas por dia | 1 | 5 | Protótipo: a implementar no E3 |
+| T19 | Log de auditoria | 1 | 4 | Implementada na v0.3.0 (E2) |
+| T20 | Consulta pública de TCCs | 1 | 4 | Protótipo: a implementar no E3 |
+| T21 | Detalhe público do TCC | 1 | 4 | Protótipo: a implementar no E3 |
+| | **Transações** | **45** | **189** | |
+| | **Funções de dados (3.4.1)** | **6** | **45** | |
+| | **Total** | **51** | **234** | |
+
+#### 3.4.3 Telas
+
+##### T01 · Login (8 PF)
+
+![T01 · Login](telas/T01.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF11 · Login do docente | CE | Média | 4 | 4.1 · Implementada (E2) |
+| 2 | PF58 · Login do aluno | CE | Média | 4 | 4.2 · Implementada (E2) |
+| | **Total da tela** | | | **8** | |
+
+##### T02 · Lista de TCCs (4 PF)
+
+![T02 · Lista de TCCs](telas/T02.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF25 · Listar TCCs | CE | Média | 4 | 5.1 · Implementada (E2) |
+| | **Total da tela** | | | **4** | |
+
+##### T03 · Cadastro e edição de TCC (8 PF)
+
+![T03 · Cadastro e edição de TCC](telas/T03.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF21 · Incluir TCC (com visibilidade) | EE | Média | 4 | 5.1 · Implementada (E2) |
+| 2 | PF22 · Alterar TCC | EE | Média | 4 | 5.1 · Implementada (E2) |
+| | **Total da tela** | | | **8** | |
+
+##### T04 · Detalhe do TCC (16 PF)
+
+![T04 · Detalhe do TCC](telas/T04.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF24 · Consultar detalhes do TCC | CE | Média | 4 | 5.1 · Implementada (E2) |
+| 2 | PF26 · Alterar situação do TCC | EE | Média | 4 | 5.2 · Implementada (E2) |
+| 3 | PF23 · Inativar TCC (soft delete) | EE | Média | 4 | 5.1 · Implementada (E2) |
+| 4 | PF61 · Enviar arquivo do TCC | EE | Média | 4 | 5.4 · A implementar (E3) |
+| | **Total da tela** | | | **16** | |
+
+##### T05 · Registrar aprovação por publicação (4 PF)
+
+![T05 · Registrar aprovação por publicação](telas/T05.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF27 · Registrar aprovação por publicação (com comprovante ou link) | EE | Média | 4 | 5.3 · Implementada (E2) |
+| | **Total da tela** | | | **4** | |
+
+##### T06 · Cadastro de banca (12 PF)
+
+![T06 · Cadastro de banca](telas/T06.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF29 · Incluir banca (dispara os convites) | EE | Média | 4 | 6.1 · Implementada (E2) |
+| 2 | PF30 · Alterar banca | EE | Média | 4 | 6.1 · A implementar (E3) |
+| 3 | PF60 · Cadastrar membro externo | EE | Média | 4 | 4.6 · No código, sem homologação |
+| | **Total da tela** | | | **12** | |
+
+##### T07 · Banca e defesa (16 PF)
+
+![T07 · Banca e defesa](telas/T07.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF32 · Consultar banca | CE | Média | 4 | 6.1 · Implementada (E2) |
+| 2 | PF33 · Reenviar convite | EE | Média | 4 | 6.3 · No código, sem homologação |
+| 3 | PF34 · Enviar convite para audiência | EE | Média | 4 | 6.3 · No código, sem homologação |
+| 4 | PF20 · Lançar avaliação (titular interno ou externo) | EE | Média | 4 | 6.4 · A implementar (E3) |
+| | **Total da tela** | | | **16** | |
+
+##### T08 · Convites recebidos (8 PF)
+
+![T08 · Convites recebidos](telas/T08.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF62 · Consultar convites recebidos | CE | Média | 4 | 6.3 · No código, sem homologação |
+| 2 | PF35 · Responder convite (aceitar ou recusar) | EE | Média | 4 | 6.3 · No código, sem homologação |
+| | **Total da tela** | | | **8** | |
+
+##### T09 · Acesso temporário do membro externo (4 PF)
+
+![T09 · Acesso temporário do membro externo](telas/T09.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF19 · Acessar TCC via token | CE | Média | 4 | 4.6 · No código, sem homologação |
+| | **Total da tela** | | | **4** | |
+
+##### T10 · Meu perfil (aluno) (8 PF)
+
+![T10 · Meu perfil (aluno)](telas/T10.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF14 · Consultar perfil do aluno | CE | Média | 4 | 4.2 · Implementada (E2) |
+| 2 | PF13 · Editar perfil do aluno (áreas de interesse) | EE | Média | 4 | 4.2 · Implementada (E2) |
+| | **Total da tela** | | | **8** | |
+
+##### T11 · Confirmação de cadastro de aluno (4 PF)
+
+![T11 · Confirmação de cadastro de aluno](telas/T11.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF59 · Confirmar cadastro do aluno | EE | Média | 4 | 4.2 · Implementada (E2) |
+| | **Total da tela** | | | **4** | |
+
+##### T12 · Docentes (Administrador) (17 PF)
+
+![T12 · Docentes (Administrador)](telas/T12.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF38 · Listar professores com orientandos e bancas | SE | Média | 5 | 7.1 · Implementada (E2) |
+| 2 | PF36 · Incluir docente | EE | Média | 4 | 4.4 · Implementada (E2) |
+| 3 | PF37 · Alterar docente | EE | Média | 4 | 4.4 · Implementada (E2) |
+| 4 | PF17 · Desativar ou reativar conta de professor | EE | Média | 4 | 4.4 · Implementada (E2) |
+| | **Total da tela** | | | **17** | |
+
+##### T13 · Cadastro de aluno (Administrador) (4 PF)
+
+![T13 · Cadastro de aluno (Administrador)](telas/T13.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF12 · Cadastro do aluno | EE | Média | 4 | 4.2 · Implementada (E2) |
+| | **Total da tela** | | | **4** | |
+
+##### T14 · Áreas de interesse do docente (4 PF)
+
+![T14 · Áreas de interesse do docente](telas/T14.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF15 · Registrar áreas de interesse do docente | EE | Média | 4 | 4.3 · Parcial (E3) |
+| | **Total da tela** | | | **4** | |
+
+##### T15 · Buscar orientador (9 PF)
+
+![T15 · Buscar orientador](telas/T15.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF63 · Buscar orientador por área | SE | Média | 5 | 7.2 · No código, sem homologação |
+| 2 | PF41 · Enviar solicitação de orientação | EE | Média | 4 | 7.2 · No código, sem homologação |
+| | **Total da tela** | | | **9** | |
+
+##### T16 · Solicitações de orientação e reuniões (16 PF)
+
+![T16 · Solicitações de orientação e reuniões](telas/T16.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF43 · Listar solicitações | CE | Média | 4 | 7.2 · No código, sem homologação |
+| 2 | PF42 · Aceitar ou recusar solicitação | EE | Média | 4 | 7.2 · No código, sem homologação |
+| 3 | PF44 · Agendar reunião de alinhamento | EE | Média | 4 | 7.3 · No código, sem homologação |
+| 4 | PF45 · Consultar reuniões | CE | Média | 4 | 7.3 · No código, sem homologação |
+| | **Total da tela** | | | **16** | |
+
+##### T17 · Painel de indicadores (30 PF)
+
+![T17 · Painel de indicadores](telas/T17.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF46 · Gráfico de TCCs em desenvolvimento por período | SE | Média | 5 | 8.1 · Implementada (E2) |
+| 2 | PF47 · Gráfico apresentados × não apresentados | SE | Média | 5 | 8.1 · Implementada (E2) |
+| 3 | PF48 · Gráfico de carga de orientação | SE | Média | 5 | 8.1 · Implementada (E2) |
+| 4 | PF49 · Gráfico de carga de bancas | SE | Média | 5 | 8.1 · Implementada (E2) |
+| 5 | PF50 · Indicador banca × publicação (com filtros) | SE | Média | 5 | 8.2 · A implementar (E3) |
+| 6 | PF54 · Indicador de defesas por dia no dashboard | SE | Média | 5 | 8.5 · A implementar (E3) |
+| | **Total da tela** | | | **30** | |
+
+##### T18 · Relatório de defesas por dia (5 PF)
+
+![T18 · Relatório de defesas por dia](telas/T18.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF53 · Relatório de defesas por dia | SE | Média | 5 | 8.5 · A implementar (E3) |
+| | **Total da tela** | | | **5** | |
+
+##### T19 · Log de auditoria (4 PF)
+
+![T19 · Log de auditoria](telas/T19.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF51 · Consultar log de auditoria | CE | Média | 4 | 8.3 · Implementada (E2) |
+| | **Total da tela** | | | **4** | |
+
+##### T20 · Consulta pública de TCCs (4 PF)
+
+![T20 · Consulta pública de TCCs](telas/T20.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF56 · Consulta pública de TCCs | CE | Média | 4 | 9.2 · A implementar (E3) |
+| | **Total da tela** | | | **4** | |
+
+##### T21 · Detalhe público do TCC (4 PF)
+
+![T21 · Detalhe público do TCC](telas/T21.png){width=16.5cm}
+
+| Nº | Função | Tipo | Complexidade | PF | Pacote · situação |
+|---|----------------------|----|-------|---|------------|
+| 1 | PF57 · Detalhe público do TCC | CE | Média | 4 | 9.2 · A implementar (E3) |
+| | **Total da tela** | | | **4** | |
+
 
 ## 4. Do tamanho ao esforço e ao valor
 

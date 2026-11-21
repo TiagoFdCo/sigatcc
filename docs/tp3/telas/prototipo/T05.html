@@ -1,0 +1,29 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><link rel="stylesheet" href="../styles.css"><style>
+.pf{position:relative;outline:2.5px dashed #e8590c;outline-offset:5px;border-radius:6px}
+.pf::before{content:attr(data-n);position:absolute;top:-15px;left:-34px;width:28px;height:28px;border-radius:50%;
+ background:#e8590c;color:#fff;font:700 14px/28px system-ui,sans-serif;text-align:center;z-index:9;
+ box-shadow:0 0 0 3px #fff}
+.faixa{background:#16202a;color:#fff;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;
+ font:15px system-ui,sans-serif;gap:16px}
+.faixa b{font-size:18px}
+.faixa .est{padding:4px 10px;border-radius:999px;font-size:13px;font-weight:600;background:#fff}
+.barra{display:flex;align-items:flex-end;gap:14px;height:150px;padding-top:8px;border-bottom:1px solid var(--borda)}
+.barra div{flex:1;background:var(--verde);border-radius:4px 4px 0 0;position:relative}
+.barra div span{position:absolute;bottom:-22px;left:0;right:0;text-align:center;font-size:12px;color:var(--tinta-suave)}
+.barra div em{position:absolute;top:-20px;left:0;right:0;text-align:center;font-size:12px;font-style:normal}
+.hbar{display:flex;align-items:center;gap:10px;font-size:14px;margin:6px 0}
+.hbar span{width:150px;color:var(--tinta-suave)}
+.hbar i{display:block;height:14px;background:var(--verde);border-radius:3px}
+.modal-fundo{background:rgba(22,32,42,.45);padding:40px 0;margin:-32px -24px -48px}
+.modal{max-width:640px;margin:0 auto;background:#fff;border-radius:12px;padding:28px;display:flex;flex-direction:column;gap:18px}
+.pizza{width:150px;height:150px;border-radius:50%;background:conic-gradient(#0b6b5d 0 58%,#8cc9be 58% 82%,#d5dae0 82%)}
+.legenda span{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.nota{font-size:13px;color:var(--tinta-suave)}
+</style></head><body><div class="faixa"><div><b>T05 · Registrar aprovação por publicação</b> &nbsp; 1 função · 4 PF</div><span class="est" style="color:#0b6b5d">Implementada na v0.3.0 (E2)</span></div><div class="app"><header class="topo"><div class="topo-conteudo"><a class="marca" href="#"><svg width="28" height="28" viewBox="0 0 36 36" fill="none"><rect x="1" y="1" width="34" height="34" rx="8" stroke="currentColor" stroke-width="2.5"/><path d="M10 13h16M10 18h16M10 23h10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg> SIGATCC</a><nav class="menu"><a class="menu-item active" href="#">TCCs</a><a class="menu-item" href="#">Indicadores</a><a class="menu-item" href="#">Solicitações</a><a class="menu-item" href="#">Convites</a></nav><div class="usuario"><span>Prof. Marcos Lima<br><small class="texto-suave">Docente</small></span><button class="link-botao">Sair</button></div></div></header><main class="conteudo">
+<div class="modal-fundo"><div class="modal"><div class="pf" data-n="1"><div class="pilha" style="gap:16px"><h2>Registrar publicação e aprovar o TCC</h2>
+<p class="texto-suave">Aprova o TCC sem banca (RBN33 a RBN35). Basta o comprovante ou o link do artigo (D15).</p>
+<div class="campo"><label>Periódico ou evento</label><input value="Revista Brasileira de Informática na Educação"></div>
+<div class="grade"><div class="campo"><label>ISSN ou DOI</label><input value="10.5753/rbie.2026.1234"></div><div class="campo"><label>Data de publicação</label><input value="10/11/2026"></div></div>
+<div class="campo"><label>Link do artigo</label><input value="https://doi.org/10.5753/rbie.2026.1234"></div><div class="campo"><label>Comprovante (caminho do arquivo)</label><input value=""></div>
+<div class="acoes"><button class="botao-secundario">Cancelar</button><button class="botao">Registrar e aprovar</button></div></div></div>
+<p class="nota">Anexar o comprovante faz parte do registro (não conta à parte).</p></div></div></main></div></body></html>

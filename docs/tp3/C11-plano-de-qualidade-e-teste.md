@@ -1,6 +1,6 @@
 # Plano de Qualidade e de Teste – SIGATCC (TP3)
 
-Pacote da EAP **10.2 Plano de qualidade e de teste (TP3)** · atividade **C11** · marco **E2 (18/11/2026)**
+Pacote da EAP **10.2 Plano de qualidade e de teste (TP3)** · atividade **C11** · marco **E2 (20/11/2026, adiada de 18/11)**
 Responsável: Tiago Feitosa · Revisão: 12/11/2026
 
 Este plano diz **como a equipe garante e verifica a qualidade do SIGATCC**: quais características da ISO/IEC 25010:2023 valem para o produto, qual meta mede cada requisito não funcional (RNF), como e quando cada meta é verificada e quais testes rodam em cada nível. Ele alimenta a seção 4.1.5 (Plano de Gerenciamento da Qualidade) do Plano de Integração, que a atividade C12 atualiza.
