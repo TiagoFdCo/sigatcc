@@ -21,6 +21,7 @@ const ROTULOS: Record<string, string> = {
   bloco: "Bloco",
   sala: "Sala",
   link_remoto: "Link da sala virtual",
+  local: "Local",
   tcc: "TCC",
 };
 
