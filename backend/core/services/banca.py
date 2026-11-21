@@ -4,7 +4,7 @@ from datetime import timedelta
 
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import URLValidator
-from django.db import transaction
+from django.db import connection, transaction
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
@@ -25,6 +25,26 @@ from core.services.auditoria import registrar
 
 TITULARES_POR_BANCA = 3
 PODEM_COMPOR_BANCA = {TipoUsuario.DOCENTE, TipoUsuario.MEMBRO_EXTERNO}
+# Chave da trava de agenda (pg_advisory_xact_lock): serializa os cadastros de
+# banca para que dois cadastros simultaneos nao passem juntos pela validacao.
+CHAVE_TRAVA_AGENDA = 4_021_118
+
+
+def _travar_agenda_de_bancas():
+    """C4: trava transacional da agenda de bancas (liberada no commit ou rollback).
+
+    Sem ela, dois cadastros ao mesmo tempo leem a agenda antes de qualquer um
+    gravar e os dois passam pela validacao de conflito.
+    """
+    if connection.vendor == "postgresql":
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT pg_advisory_xact_lock(%s)", [CHAVE_TRAVA_AGENDA])
+
+
+def _descrever_banca(banca):
+    """Identifica a banca existente na mensagem de conflito (CT-BAN-01)."""
+    quando = timezone.localtime(banca.data_hora_inicio).strftime("%d/%m às %Hh%M")
+    return f'banca do TCC "{banca.tcc.titulo}" ({quando})'
 
 
 def validar_conflito_banca(
@@ -50,7 +70,7 @@ def validar_conflito_banca(
     bancas_existentes = Banca.objects.filter(
         data_hora_inicio__gt=inicio_novo - timedelta(hours=2),
         data_hora_inicio__lt=fim_novo,
-    )
+    ).select_related("tcc")
     if banca_id_atual:
         bancas_existentes = bancas_existentes.exclude(pk=banca_id_atual)
 
@@ -71,7 +91,10 @@ def validar_conflito_banca(
             ):
                 raise ValidationError(
                     {
-                        "local": f"Conflito de local: a sala {sala} do bloco {bloco} já está reservada para outra banca nesse horário."
+                        "local": (
+                            f"Conflito de local: a sala {sala} do bloco {bloco} "
+                            f"já está reservada para a {_descrever_banca(banca)}."
+                        )
                     }
                 )
             elif (
@@ -83,7 +106,10 @@ def validar_conflito_banca(
             ):
                 raise ValidationError(
                     {
-                        "link_remoto": "Conflito de local remoto: este link de reunião já está em uso por outra banca nesse horário."
+                        "link_remoto": (
+                            "Conflito de local remoto: este link de reunião já "
+                            f"está em uso pela {_descrever_banca(banca)}."
+                        )
                     }
                 )
 
@@ -98,7 +124,10 @@ def validar_conflito_banca(
                     nome_membro = membros_existentes.first().usuario.nome_completo
                     raise ValidationError(
                         {
-                            "membros": f"Conflito de agenda: O(a) avaliador(a) {nome_membro} já possui banca agendada nesse horário."
+                            "membros": (
+                                f"Conflito de agenda: {nome_membro} já está na "
+                                f"{_descrever_banca(banca)}."
+                            )
                         }
                     )
 
@@ -187,7 +216,9 @@ def cadastrar_banca(
     _validar_data(data_hora_inicio)
     local = _local(tipo_local, bloco, sala, link_remoto)
 
-    # C4: Validação de conflito de horário e de local antes de salvar
+    # C4: Validação de conflito de horário e de local antes de salvar, com a
+    # agenda travada até o fim da transação (cadastros simultâneos).
+    _travar_agenda_de_bancas()
     todos_membros_ids = [m.id for m in [*titulares, *suplentes]]
     validar_conflito_banca(
         data_hora_inicio=data_hora_inicio,

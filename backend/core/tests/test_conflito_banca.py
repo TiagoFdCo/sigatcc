@@ -226,3 +226,129 @@ def test_ct_ban_04_consulta_so_a_janela_de_horario(
             sala="1",
             usuarios_membros_ids=[d1.id],
         )
+
+
+# ------------------------------------------------------------------------
+# Ajustes do C4 depois da E2: mensagem que identifica a banca e trava contra
+# cadastros simultaneos.
+# ------------------------------------------------------------------------
+def test_mensagem_de_conflito_de_membro_cita_a_banca_existente(
+    novo_tcc, outros_docentes, as_14h
+):
+    """CT-BAN-01: o alerta cita a banca X (TCC, dia e hora) e o docente."""
+    d1, d2, d3, _ = (d.usuario for d in outros_docentes)
+    existente = _cadastrar(novo_tcc(), [d1, d2], as_14h, **_sala(1))
+
+    with pytest.raises(ValidationError) as erro:
+        _cadastrar(novo_tcc(), [d1, d3], as_14h + timedelta(hours=1), **_sala(2))
+
+    mensagem = str(erro.value.detail["membros"])
+    assert existente.tcc.titulo in mensagem
+    assert timezone.localtime(as_14h).strftime("%d/%m às %Hh%M") in mensagem
+    # o orientador e comum as duas bancas e e o primeiro membro encontrado,
+    # ou outro membro em comum; em qualquer caso, um nome de membro aparece
+    nomes = {u.nome_completo for u in (existente.tcc.orientador.usuario, d1)}
+    assert any(nome in mensagem for nome in nomes)
+
+
+def test_mensagem_de_conflito_de_local_cita_a_banca_existente(
+    criar_docente, criar_aluno, area, as_14h
+):
+    from core.services import tcc as servico_tcc
+
+    def tcc_e_membros():
+        orientador = criar_docente()
+        tcc = servico_tcc.cadastrar_tcc(
+            dados={
+                "titulo": f"TCC do orientador {orientador.pk}",
+                "area_conhecimento": area,
+                "modalidade": "DEFESA_EM_BANCA",
+                "autor": criar_aluno(),
+                "orientador": orientador,
+            },
+            usuario=orientador.usuario,
+        )
+        return tcc, [criar_docente().usuario, criar_docente().usuario]
+
+    tcc_x, membros_x = tcc_e_membros()
+    _cadastrar(tcc_x, membros_x, as_14h, **_sala(10))
+    tcc_y, membros_y = tcc_e_membros()
+    with pytest.raises(ValidationError) as erro:
+        _cadastrar(tcc_y, membros_y, as_14h, **_sala(10))
+
+    mensagem = str(erro.value.detail["local"])
+    assert "sala 10 do bloco NUCOMP" in mensagem
+    assert tcc_x.titulo in mensagem
+
+
+def test_cadastro_de_banca_trava_a_agenda(novo_tcc, outros_docentes, as_14h):
+    """O cadastro pede a trava da agenda antes de validar o conflito."""
+    from unittest import mock
+
+    from core.services import banca as servico_banca
+
+    d1, d2, *_ = (d.usuario for d in outros_docentes)
+    with mock.patch.object(
+        servico_banca,
+        "_travar_agenda_de_bancas",
+        wraps=servico_banca._travar_agenda_de_bancas,
+    ) as trava:
+        _cadastrar(novo_tcc(), [d1, d2], as_14h, **_sala(1))
+    trava.assert_called_once()
+
+
+@pytest.mark.django_db(transaction=True)
+def test_cadastros_simultaneos_conflitantes_so_um_passa(
+    criar_aluno, criar_docente, area
+):
+    """Duas bancas conflitantes cadastradas ao mesmo tempo, em conexoes
+    separadas: com a trava da agenda, exatamente uma e gravada."""
+    import threading
+
+    from django.db import connection as conexao_principal
+    from django.db import connections
+
+    from core.services import tcc as servico_tcc
+
+    if conexao_principal.vendor != "postgresql":
+        pytest.skip("a trava usa pg_advisory_xact_lock")
+
+    orientador = criar_docente()
+    membros = [criar_docente().usuario, criar_docente().usuario]
+    tccs = [
+        servico_tcc.cadastrar_tcc(
+            dados={
+                "titulo": f"TCC simultaneo {n}",
+                "area_conhecimento": area,
+                "modalidade": "DEFESA_EM_BANCA",
+                "autor": criar_aluno(),
+                "orientador": orientador,
+            },
+            usuario=orientador.usuario,
+        )
+        for n in range(2)
+    ]
+    inicio = timezone.now() + timedelta(days=12)
+    largada = threading.Barrier(2)
+    resultados = []
+
+    def cadastrar(tcc, sala):
+        try:
+            largada.wait()
+            _cadastrar(tcc, membros, inicio, **_sala(sala))
+            resultados.append("gravou")
+        except ValidationError:
+            resultados.append("conflito")
+        finally:
+            connections.close_all()
+
+    threads = [
+        threading.Thread(target=cadastrar, args=(tcc, n)) for n, tcc in enumerate(tccs)
+    ]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join(timeout=30)
+
+    assert sorted(resultados) == ["conflito", "gravou"]
+    assert Banca.objects.filter(tcc__in=tccs).count() == 1
