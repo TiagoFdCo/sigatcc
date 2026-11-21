@@ -1,6 +1,6 @@
 # Plano de Avaliação do Projeto por Ponto de Função – SIGATCC (TP3)
 
-Pacote da EAP **1.4 Pontos de função e valor** · atividade **C10** · marco **E2 (18/11/2026)**
+Pacote da EAP **1.4 Pontos de função e valor** · atividade **C10** · marco **E2 (20/11/2026, adiada de 18/11)**
 Responsável: Tiago Feitosa · Revisão: 12/11/2026 (contagem por tela acrescentada em 20/11/2026) · Base: contagem de 08/11 (234 PF), planilha *SIGATCC_Cronograma_EAP_PF_v4*
 
 Este plano diz **como a equipe mede o tamanho do SIGATCC em pontos de função (PF) e usa essa medida para avaliar o projeto**: quanto já foi entregue, a que custo, com que produtividade e se o ritmo cabe no prazo. A contagem detalhada está na aba *Pontos de Função* da planilha de cronograma; aqui ficam o método, a linha de base, as métricas, os limites de alerta e a rotina de acompanhamento.
