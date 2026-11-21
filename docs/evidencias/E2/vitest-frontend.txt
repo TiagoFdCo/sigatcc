@@ -1,0 +1,25 @@
+
+ RUN  v2.1.9 /home/claude/sigatcc/frontend
+
+ ✓ src/util/rotulos.test.ts > opcoesDeSituacao > só oferece mudança a partir de Em desenvolvimento
+ ✓ src/util/rotulos.test.ts > opcoesDeSituacao > defesa em banca permite Apresentado e Não apresentado
+ ✓ src/util/rotulos.test.ts > opcoesDeSituacao > publicação permite só Não apresentado aqui; a aprovação tem tela própria
+ ✓ src/util/rotulos.test.ts > formatarDataPura > não desloca o dia por causa do fuso
+ ✓ src/util/rotulos.test.ts > formatarDataPura > devolve vazio sem valor
+ ✓ src/util/rotulos.test.ts > nomeDoCurso > traduz o código do curso
+ ✓ src/util/rotulos.test.ts > nomeDoCurso > devolve o próprio código quando não conhece e vazio sem valor
+ ✓ src/api/erros.test.ts > lerErros > lê o detail das respostas de permissão e login
+ ✓ src/api/erros.test.ts > lerErros > separa erros por campo e pega a primeira mensagem de cada um
+ ✓ src/api/erros.test.ts > lerErros > trata lista solta como erro geral (ValidationError sem campo)
+ ✓ src/api/erros.test.ts > lerErros > junta non_field_errors ao geral
+ ✓ src/api/erros.test.ts > lerErros > usa a mensagem padrão quando não há corpo
+ ✓ src/api/erros.test.ts > lerErros > ignora campos auxiliares do login bloqueado
+ ✓ src/util/rotas.test.ts > rotaInicial > manda o aluno para o próprio perfil
+ ✓ src/util/rotas.test.ts > rotaInicial > manda os demais perfis para a lista de TCCs
+ ✓ src/util/rotas.test.ts > rotaInicial > sem usuário cai na lista de TCCs (a rota protegida cuida do login)
+
+ Test Files  3 passed (3)
+      Tests  16 passed (16)
+   Start at  20:28:36
+   Duration  587ms (transform 69ms, setup 0ms, collect 82ms, tests 11ms, environment 0ms, prepare 141ms)
+

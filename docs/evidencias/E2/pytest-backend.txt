@@ -1,0 +1,1562 @@
+........................................................................ [ 15%]
+........................................................................ [ 31%]
+........................................................................ [ 47%]
+........................................................................ [ 63%]
+........................................................................ [ 79%]
+........................................................................ [ 95%]
+......................                                                   [100%]
+=============================== warnings summary ===============================
+core/tests/test_cadastro_aluno.py: 2 warnings
+core/tests/test_docentes.py: 1 warning
+core/tests/test_fluxo_integracao.py: 2 warnings
+core/tests/test_login.py: 7 warnings
+core/tests/test_perfil_aluno.py: 2 warnings
+core/tests/test_perfis.py: 1 warning
+core/tests/test_popular_demo.py: 2 warnings
+  /usr/local/lib/python3.13/site-packages/jwt/api_jwt.py:149: InsecureKeyLengthWarning: The HMAC key is 1 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    return self._jws.encode(
+
+core/tests/test_fluxo_integracao.py::test_fluxo_completo_da_e1
+core/tests/test_fluxo_integracao.py::test_sessao_expirada_exige_novo_login
+core/tests/test_login.py::test_token_da_acesso_a_api
+core/tests/test_login.py::test_refresh_troca_o_token_e_logout_invalida
+  /usr/local/lib/python3.13/site-packages/jwt/api_jwt.py:370: InsecureKeyLengthWarning: The HMAC key is 1 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    decoded = self.decode_complete(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+==================================== PASSES ====================================
+_______________ test_convite_do_externo_avisa_do_link_de_acesso ________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+_______________ test_aceite_do_externo_gera_token_e_envia_o_link _______________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+E-mail 'Acesso ao TCC da banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log call -------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Acesso ao TCC da banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+____________________ test_recusa_do_externo_nao_gera_token _____________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+____________________ test_aceite_de_docente_nao_gera_token _____________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+___________ test_externo_aceita_pelo_link_publico_e_recebe_o_acesso ____________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+E-mail 'Acesso ao TCC da banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log call -------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Acesso ao TCC da banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+______________ test_token_le_o_tcc_sem_login_e_registra_o_acesso _______________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+E-mail 'Acesso ao TCC da banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log call -------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Acesso ao TCC da banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+______________________ test_token_inexistente_devolve_404 ______________________
+----------------------------- Captured stderr call -----------------------------
+Not Found: /api/acesso-externo/nao-existe/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Not Found: /api/acesso-externo/nao-existe/
+__________________________ test_token_expira_sozinho ___________________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+E-mail 'Acesso ao TCC da banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+Forbidden: /api/acesso-externo/smoS-diY0TYVW9Hc_75UkCzx1mJ_fdpfj3CLkrvTUVo/
+------------------------------ Captured log call -------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Acesso ao TCC da banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+WARNING  django.request:log.py:293 Forbidden: /api/acesso-externo/smoS-diY0TYVW9Hc_75UkCzx1mJ_fdpfj3CLkrvTUVo/
+________________________ test_token_cancelado_nao_abre _________________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+E-mail 'Acesso ao TCC da banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+Forbidden: /api/acesso-externo/iDL6tGUDMF6KkH9tu6HAT-ATWDzwLaEQYOr8WTGoKME/
+------------------------------ Captured log call -------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Acesso ao TCC da banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+WARNING  django.request:log.py:293 Forbidden: /api/acesso-externo/iDL6tGUDMF6KkH9tu6HAT-ATWDzwLaEQYOr8WTGoKME/
+_______________________ test_externo_desativado_nao_abre _______________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+E-mail 'Acesso ao TCC da banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+Forbidden: /api/acesso-externo/lmW9h4gHAK67ThjJKUVun2kXSm7AabfOyeL1T0OS3Pw/
+------------------------------ Captured log call -------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Acesso ao TCC da banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+WARNING  django.request:log.py:293 Forbidden: /api/acesso-externo/lmW9h4gHAK67ThjJKUVun2kXSm7AabfOyeL1T0OS3Pw/
+__________________ test_orientador_comum_nao_cadastra_externo __________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/membros-externos/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/membros-externos/
+___________________ test_externo_sem_instituicao_e_recusado ____________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/membros-externos/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/membros-externos/
+________________ test_post_remota_sem_link_devolve_400_no_campo ________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/bancas/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/bancas/
+___________________ test_post_com_regra_quebrada_devolve_400 ___________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/bancas/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/bancas/
+________________________ test_secretaria_nao_cria_banca ________________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/bancas/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/bancas/
+______________________ test_confirmar_de_novo_e_recusado _______________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/d739f1bf-f9b3-4bb6-b731-fba5d0c67bc0/confirmar/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/d739f1bf-f9b3-4bb6-b731-fba5d0c67bc0/confirmar/
+_____________________ test_so_o_professor_de_tcc_confirma ______________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/confirmar/
+Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/recusar/
+Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/confirmar/
+Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/recusar/
+Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/confirmar/
+Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/recusar/
+Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/confirmar/
+Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/recusar/
+Unauthorized: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/confirmar/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/confirmar/
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/recusar/
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/confirmar/
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/recusar/
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/confirmar/
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/recusar/
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/confirmar/
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/recusar/
+WARNING  django.request:log.py:293 Unauthorized: /api/alunos/9166954a-9b43-4cc6-9fd9-b504d3f4cd0e/confirmar/
+__________________ test_professor_de_tcc_inativo_nao_confirma __________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/alunos/2f301ca5-f7b2-4fba-8b1b-f351aec98a59/confirmar/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/2f301ca5-f7b2-4fba-8b1b-f351aec98a59/confirmar/
+________________ test_aluno_inativo_nao_tem_cadastro_a_decidir _________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/d56ef341-88d6-41f9-9f51-b1e1a2e1c37d/confirmar/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/d56ef341-88d6-41f9-9f51-b1e1a2e1c37d/confirmar/
+___________________ test_confirmar_aluno_inexistente_da_404 ____________________
+----------------------------- Captured stderr call -----------------------------
+Not Found: /api/alunos/00000000-0000-0000-0000-000000000000/confirmar/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Not Found: /api/alunos/00000000-0000-0000-0000-000000000000/confirmar/
+___________________________ test_recusa_exige_motivo ___________________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/a1cd6f2f-6ef7-4f7d-8fe0-539cd77434e6/recusar/
+Bad Request: /api/alunos/a1cd6f2f-6ef7-4f7d-8fe0-539cd77434e6/recusar/
+Bad Request: /api/alunos/a1cd6f2f-6ef7-4f7d-8fe0-539cd77434e6/recusar/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/a1cd6f2f-6ef7-4f7d-8fe0-539cd77434e6/recusar/
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/a1cd6f2f-6ef7-4f7d-8fe0-539cd77434e6/recusar/
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/a1cd6f2f-6ef7-4f7d-8fe0-539cd77434e6/recusar/
+______________ test_cadastro_ja_confirmado_nao_pode_ser_recusado _______________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/e2d003e5-b4be-4163-9580-8382eb9844f8/recusar/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/e2d003e5-b4be-4163-9580-8382eb9844f8/recusar/
+__________________ test_aluno_com_cadastro_pendente_nao_entra __________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/auth/login/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/auth/login/
+______________ test_senha_errada_nao_revela_o_estado_do_cadastro _______________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/auth/login/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/login/
+________________________ test_recusa_nao_libera_o_login ________________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/auth/login/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/auth/login/
+______ test_so_o_administrador_consulta_os_logs[/api/auditoria/-DOCENTE] _______
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/auditoria/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/auditoria/
+_____ test_so_o_administrador_consulta_os_logs[/api/auditoria/-SECRETARIA] _____
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/auditoria/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/auditoria/
+_______ test_so_o_administrador_consulta_os_logs[/api/auditoria/-ALUNO] ________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/auditoria/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/auditoria/
+___ test_so_o_administrador_consulta_os_logs[/api/auditoria/-MEMBRO_EXTERNO] ___
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/auditoria/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/auditoria/
+_______ test_so_o_administrador_consulta_os_logs[/api/acessos/-DOCENTE] ________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/acessos/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/acessos/
+______ test_so_o_administrador_consulta_os_logs[/api/acessos/-SECRETARIA] ______
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/acessos/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/acessos/
+________ test_so_o_administrador_consulta_os_logs[/api/acessos/-ALUNO] _________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/acessos/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/acessos/
+____ test_so_o_administrador_consulta_os_logs[/api/acessos/-MEMBRO_EXTERNO] ____
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/acessos/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/acessos/
+______________ test_anonimo_nao_consulta_os_logs[/api/auditoria/] ______________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/auditoria/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/auditoria/
+_______________ test_anonimo_nao_consulta_os_logs[/api/acessos/] _______________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/acessos/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/acessos/
+___________ test_logs_sao_somente_leitura_pela_api[/api/auditoria/] ____________
+----------------------------- Captured stderr call -----------------------------
+Method Not Allowed: /api/auditoria/
+Method Not Allowed: /api/auditoria/51e8ea70-c4c3-4ffe-9f2d-9c988db072c9/
+Method Not Allowed: /api/auditoria/51e8ea70-c4c3-4ffe-9f2d-9c988db072c9/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Method Not Allowed: /api/auditoria/
+WARNING  django.request:log.py:293 Method Not Allowed: /api/auditoria/51e8ea70-c4c3-4ffe-9f2d-9c988db072c9/
+WARNING  django.request:log.py:293 Method Not Allowed: /api/auditoria/51e8ea70-c4c3-4ffe-9f2d-9c988db072c9/
+____________ test_logs_sao_somente_leitura_pela_api[/api/acessos/] _____________
+----------------------------- Captured stderr call -----------------------------
+Method Not Allowed: /api/acessos/
+Method Not Allowed: /api/acessos/e059d520-458c-4ea6-bc67-491d7ed720e1/
+Method Not Allowed: /api/acessos/e059d520-458c-4ea6-bc67-491d7ed720e1/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Method Not Allowed: /api/acessos/
+WARNING  django.request:log.py:293 Method Not Allowed: /api/acessos/e059d520-458c-4ea6-bc67-491d7ed720e1/
+WARNING  django.request:log.py:293 Method Not Allowed: /api/acessos/e059d520-458c-4ea6-bc67-491d7ed720e1/
+________________________ test_data_invalida_devolve_400 ________________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/auditoria/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/auditoria/
+___________________ test_bloqueio_da_conta_fica_na_auditoria ___________________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/auth/login/
+Unauthorized: /api/auth/login/
+Unauthorized: /api/auth/login/
+Unauthorized: /api/auth/login/
+Locked: /api/auth/login/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/login/
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/login/
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/login/
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/login/
+WARNING  django.request:log.py:293 Locked: /api/auth/login/
+______________ test_cadastro_da_banca_envia_um_email_por_convite _______________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+_________________________ test_convite_chega_completo __________________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+___________________ test_suplente_e_convidado_como_suplente ____________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+________________________ test_banca_remota_leva_o_link _________________________
+----------------------------- Captured stderr call -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log call -------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+________________________ test_convidado_lista_e_aceita _________________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+___________________________ test_responde_uma_vez_so ___________________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/convites/7891cb55-c9d4-46c2-aeba-c0f161779565/responder/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/convites/7891cb55-c9d4-46c2-aeba-c0f161779565/responder/
+_______________________ test_outro_usuario_nao_responde ________________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/convites/dd9feb2e-f7b8-449b-805d-0835a3cabc94/responder/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/convites/dd9feb2e-f7b8-449b-805d-0835a3cabc94/responder/
+______________________ test_nao_responde_depois_da_defesa ______________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/convites/07c1dd96-6a2d-41ce-8ea0-9d29cb47620b/responder/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/convites/07c1dd96-6a2d-41ce-8ea0-9d29cb47620b/responder/
+________________ test_link_do_email_mostra_e_responde_sem_login ________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+______________________ test_link_adulterado_e_recusado[] _______________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/convites/link/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/convites/link/
+_____________________ test_link_adulterado_e_recusado[abc] _____________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/convites/link/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/convites/link/
+____________ test_link_adulterado_e_recusado[123:falso:assinatura] _____________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/convites/link/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/convites/link/
+___________ test_link_funciona_mesmo_com_token_vencido_no_navegador ____________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+___________________ test_orientador_reenvia_convite_pendente ___________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log call -------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+____________________ test_quem_nao_edita_o_tcc_nao_reenvia _____________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/convites/f5a89bf7-63b6-4444-8d63-6e681f2f80cd/reenviar/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/convites/f5a89bf7-63b6-4444-8d63-6e681f2f80cd/reenviar/
+___________________ test_convite_respondido_nao_e_reenviado ____________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+_____________________ test_convite_de_audiencia_por_pessoa _____________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+E-mail 'Convite para assistir à defesa: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para assistir à defesa: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log call -------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para assistir à defesa: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para assistir à defesa: Sistema de gestao de TCC' enviado (1 destinatário(s))
+________ test_membro_autor_e_repetido_nao_sao_convidados_para_audiencia ________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+_________________ test_externo_nao_e_convidado_para_audiencia __________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+___________ test_membro_da_banca_que_nao_edita_nao_convida_audiencia ___________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/bancas/bfe3721f-4c0b-41ab-a8e0-218cd88e5a1c/audiencia/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/bancas/bfe3721f-4c0b-41ab-a8e0-218cd88e5a1c/audiencia/
+_________________ test_convidado_de_audiencia_aceita_pela_tela _________________
+---------------------------- Captured stderr setup -----------------------------
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+------------------------------ Captured log setup ------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: Sistema de gestao de TCC' enviado (1 destinatário(s))
+_________ test_dashboard_metricas_so_para_perfis_de_gestao[ALUNO-403] __________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/dashboard/metricas/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/dashboard/metricas/
+_____ test_dashboard_metricas_so_para_perfis_de_gestao[MEMBRO_EXTERNO-403] _____
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/dashboard/metricas/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/dashboard/metricas/
+_____________________ test_dashboard_metricas_exige_login ______________________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/dashboard/metricas/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/dashboard/metricas/
+___________________ test_so_administrador_cadastra[DOCENTE] ____________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/docentes/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/docentes/
+__________________ test_so_administrador_cadastra[SECRETARIA] __________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/docentes/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/docentes/
+_________________________ test_cpf_invalido_e_recusado _________________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/docentes/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/docentes/
+_ test_email_e_matricula_repetidos_sao_recusados[email-MARINA.LOPES@uea.edu.br] _
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/docentes/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/docentes/
+_ test_email_e_matricula_repetidos_sao_recusados[matricula_institucional-INST-0099] _
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/docentes/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/docentes/
+_________________________ test_cpf_repetido_e_recusado _________________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/docentes/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/docentes/
+_____________ test_senha_inicial_ausente_ou_fraca_e_recusada[None] _____________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/docentes/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/docentes/
+____________ test_senha_inicial_ausente_ou_fraca_e_recusada[fraca] _____________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/docentes/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/docentes/
+_________ test_senha_inicial_ausente_ou_fraca_e_recusada[semnumero!A] __________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/docentes/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/docentes/
+___________________ test_edicao_recusa_email_de_outra_conta ____________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/docentes/2aecb6c2-9d73-411f-915c-f9aabad0b76c/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/docentes/2aecb6c2-9d73-411f-915c-f9aabad0b76c/
+_______________________ test_docente_nao_edita_cadastro ________________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/docentes/ff9d7f79-d51f-4d69-88f8-10a2fe12020f/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/docentes/ff9d7f79-d51f-4d69-88f8-10a2fe12020f/
+__________________ test_desativar_id_que_nao_e_docente_da_404 __________________
+----------------------------- Captured stderr call -----------------------------
+Not Found: /api/docentes/56167077-b6f8-41f6-8ce9-e8f1ab9510b0/desativar/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Not Found: /api/docentes/56167077-b6f8-41f6-8ce9-e8f1ab9510b0/desativar/
+_____________________ test_envio_acontece_depois_do_commit _____________________
+----------------------------- Captured stderr call -----------------------------
+E-mail 'Oi' enviado (1 destinatário(s))
+------------------------------ Captured log call -------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Oi' enviado (1 destinatário(s))
+______________ test_falha_no_envio_nao_quebra_e_nao_loga_endereco ______________
+----------------------------- Captured stderr call -----------------------------
+Falha ao enviar o e-mail 'Oi' (1 destinatário(s))
+Traceback (most recent call last):
+  File "/home/claude/sigatcc/backend/core/services/email.py", line 50, in enviar_agora
+    mensagem.send()
+    ~~~~~~~~~~~~~^^
+  File "/home/claude/sigatcc/backend/core/tests/test_email.py", line 57, in falhar
+    raise OSError("SMTP fora do ar")
+OSError: SMTP fora do ar
+------------------------------ Captured log call -------------------------------
+ERROR    sigatcc.email:email.py:52 Falha ao enviar o e-mail 'Oi' (1 destinatário(s))
+Traceback (most recent call last):
+  File "/home/claude/sigatcc/backend/core/services/email.py", line 50, in enviar_agora
+    mensagem.send()
+    ~~~~~~~~~~~~~^^
+  File "/home/claude/sigatcc/backend/core/tests/test_email.py", line 57, in falhar
+    raise OSError("SMTP fora do ar")
+OSError: SMTP fora do ar
+_______________ test_comando_de_teste_envia_a_quantidade_pedida ________________
+----------------------------- Captured stdout call -----------------------------
+Backend: django.core.mail.backends.locmem.EmailBackend
+3 de 3 aceito(s) pelo servidor.
+----------------------------- Captured stderr call -----------------------------
+E-mail 'Teste de envio 1/3' enviado (1 destinatário(s))
+E-mail 'Teste de envio 2/3' enviado (1 destinatário(s))
+E-mail 'Teste de envio 3/3' enviado (1 destinatário(s))
+------------------------------ Captured log call -------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Teste de envio 1/3' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Teste de envio 2/3' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Teste de envio 3/3' enviado (1 destinatário(s))
+__________________________ test_fluxo_completo_da_e1 ___________________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/tccs/82ab5355-96ce-43cc-8e79-52444372d7a4/
+Forbidden: /api/bancas/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/tccs/82ab5355-96ce-43cc-8e79-52444372d7a4/
+WARNING  django.request:log.py:293 Forbidden: /api/bancas/
+____________________ test_sessao_expirada_exige_novo_login _____________________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/tccs/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/tccs/
+_______________ test_senha_errada_devolve_401_e_conta_tentativa ________________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/auth/login/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/login/
+_____________ test_quinta_tentativa_errada_bloqueia_por_15_minutos _____________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/auth/login/
+Unauthorized: /api/auth/login/
+Unauthorized: /api/auth/login/
+Unauthorized: /api/auth/login/
+Locked: /api/auth/login/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/login/
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/login/
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/login/
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/login/
+WARNING  django.request:log.py:293 Locked: /api/auth/login/
+________________ test_conta_bloqueada_recusa_ate_a_senha_certa _________________
+----------------------------- Captured stderr call -----------------------------
+Locked: /api/auth/login/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Locked: /api/auth/login/
+_________ test_conta_inativa_e_login_inexistente_tem_a_mesma_resposta __________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/auth/login/
+Unauthorized: /api/auth/login/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/login/
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/login/
+______________________ test_login_sem_campos_devolve_400 _______________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/auth/login/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/auth/login/
+________________________ test_api_sem_token_devolve_401 ________________________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/tccs/
+Unauthorized: /api/auth/me/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/tccs/
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/me/
+_________________ test_refresh_troca_o_token_e_logout_invalida _________________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/auth/refresh/
+Unauthorized: /api/auth/refresh/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/refresh/
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/refresh/
+________________ test_redefinir_troca_a_senha_e_zera_o_bloqueio ________________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/auth/login/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/auth/login/
+_______________________ test_senha_fraca_e_recusada[abc] _______________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/d0fd138b-28bd-4114-9469-054e89c2295e/senha/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/d0fd138b-28bd-4114-9469-054e89c2295e/senha/
+____________________ test_senha_fraca_e_recusada[12345678] _____________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/71d17a19-2986-4a41-b328-882647f760fb/senha/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/71d17a19-2986-4a41-b328-882647f760fb/senha/
+_________________ test_senha_fraca_e_recusada[semmaiuscula1#] __________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/7fcf49a9-d182-48e9-a64b-fa4384fd493d/senha/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/7fcf49a9-d182-48e9-a64b-fa4384fd493d/senha/
+__________________ test_senha_fraca_e_recusada[SemNumero#abc] __________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/785f784e-ab9d-48f2-b1dd-beade684c3e2/senha/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/785f784e-ab9d-48f2-b1dd-beade684c3e2/senha/
+_________________ test_senha_fraca_e_recusada[SemEspecial123] __________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/bc31f00d-ed68-4875-844f-d2de4b380b5b/senha/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/bc31f00d-ed68-4875-844f-d2de4b380b5b/senha/
+_______________________ test_senha_em_branco_e_recusada ________________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/eca269ff-80a9-421f-abee-6b8db4b20212/senha/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/eca269ff-80a9-421f-abee-6b8db4b20212/senha/
+_____________________ test_so_o_administrador_define_senha _____________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/alunos/0c5c5e22-b1bd-40ab-8977-b0ed1de3e16a/senha/
+Forbidden: /api/alunos/0c5c5e22-b1bd-40ab-8977-b0ed1de3e16a/senha/
+Forbidden: /api/alunos/0c5c5e22-b1bd-40ab-8977-b0ed1de3e16a/senha/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/0c5c5e22-b1bd-40ab-8977-b0ed1de3e16a/senha/
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/0c5c5e22-b1bd-40ab-8977-b0ed1de3e16a/senha/
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/0c5c5e22-b1bd-40ab-8977-b0ed1de3e16a/senha/
+___________________ test_definir_senha_sem_login_devolve_401 ___________________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/alunos/21325ca4-f4ce-4c77-bc2e-8a7b90a818be/senha/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/alunos/21325ca4-f4ce-4c77-bc2e-8a7b90a818be/senha/
+_____________________ test_aluno_inativo_nao_recebe_senha ______________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/c16cbf47-e760-4706-897f-a0288d37962a/senha/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/c16cbf47-e760-4706-897f-a0288d37962a/senha/
+________________________ test_aluno_inexistente_da_404 _________________________
+----------------------------- Captured stderr call -----------------------------
+Not Found: /api/alunos/00000000-0000-0000-0000-000000000000/senha/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Not Found: /api/alunos/00000000-0000-0000-0000-000000000000/senha/
+________________ test_lista_vazia_e_recusada_e_mantem_as_areas _________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/meu-perfil/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/meu-perfil/
+_______________________ test_area_inexistente_e_recusada _______________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/meu-perfil/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/meu-perfil/
+_______________________ test_patch_sem_areas_e_recusado ________________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/meu-perfil/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/meu-perfil/
+________________________ test_so_aluno_usa_o_meu_perfil ________________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/alunos/meu-perfil/
+Forbidden: /api/alunos/meu-perfil/
+Forbidden: /api/alunos/meu-perfil/
+Forbidden: /api/alunos/meu-perfil/
+Forbidden: /api/alunos/meu-perfil/
+Forbidden: /api/alunos/meu-perfil/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/meu-perfil/
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/meu-perfil/
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/meu-perfil/
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/meu-perfil/
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/meu-perfil/
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/meu-perfil/
+____________________ test_meu_perfil_sem_login_devolve_401 _____________________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/alunos/meu-perfil/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/alunos/meu-perfil/
+_________________ test_matricula_de_aluno_repetida_e_recusada __________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/alunos/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/alunos/
+__________________ test_cpf_nao_repete_entre_aluno_e_docente ___________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/docentes/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/docentes/
+________________ test_docente_consulta_alunos_mas_nao_cadastra _________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/alunos/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/
+______________________ test_aluno_nao_ve_lista_de_alunos _______________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/alunos/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/alunos/
+_________________________ test_secretaria_exige_senha __________________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/usuarios/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/usuarios/
+____________ test_membro_externo_exige_instituicao_e_fica_sem_senha ____________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/usuarios/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/usuarios/
+____________ test_usuarios_nao_cadastra_docente_nem_aluno[DOCENTE] _____________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/usuarios/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/usuarios/
+_____________ test_usuarios_nao_cadastra_docente_nem_aluno[ALUNO] ______________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/usuarios/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/usuarios/
+___________________ test_admin_nao_desativa_a_propria_conta ____________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/usuarios/6879e9cf-2ed5-4a45-ae66-0098da7fb360/desativar/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/usuarios/6879e9cf-2ed5-4a45-ae66-0098da7fb360/desativar/
+_____________________ test_admin_cadastra_area_sem_repetir _____________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/areas/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/areas/
+__________________ test_docente_lista_areas_mas_nao_cadastra ___________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/areas/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/areas/
+_________________ test_popular_demo_cria_dados_e_e_idempotente _________________
+----------------------------- Captured stdout call -----------------------------
+Dados de demonstração prontos.
+Senha de todas as contas novas: Demo#2026
+Administrador: admin@sigatcc.local
+Professora de TCC: helena.costa@uea.edu.br (ou DOC-001)
+Orientador com banca: carlos.lima@uea.edu.br (ou DOC-002)
+Secretaria: secretaria@uea.edu.br
+Aluno sem TCC (solicita orientação): aluno4@uea.edu.br
+Dados de demonstração prontos.
+Senha de todas as contas novas: Demo#2026
+Administrador: admin@sigatcc.local
+Professora de TCC: helena.costa@uea.edu.br (ou DOC-001)
+Orientador com banca: carlos.lima@uea.edu.br (ou DOC-002)
+Secretaria: secretaria@uea.edu.br
+Aluno sem TCC (solicita orientação): aluno4@uea.edu.br
+__________________ test_aluno_da_demonstracao_consegue_entrar __________________
+----------------------------- Captured stdout call -----------------------------
+Dados de demonstração prontos.
+Senha de todas as contas novas: Demo#2026
+Administrador: admin@sigatcc.local
+Professora de TCC: helena.costa@uea.edu.br (ou DOC-001)
+Orientador com banca: carlos.lima@uea.edu.br (ou DOC-002)
+Secretaria: secretaria@uea.edu.br
+Aluno sem TCC (solicita orientação): aluno4@uea.edu.br
+_________ test_post_publicacao_sem_comprovante_e_sem_link_devolve_400 __________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/tccs/17d4005b-d1eb-4dd3-993d-9f19b6e41106/publicacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/tccs/17d4005b-d1eb-4dd3-993d-9f19b6e41106/publicacao/
+____________ test_post_publicacao_sem_campos_devolve_400_por_campo _____________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/tccs/0a38a37b-441c-46f0-bd72-0f8fb3bf3e96/publicacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/tccs/0a38a37b-441c-46f0-bd72-0f8fb3bf3e96/publicacao/
+______________ test_post_publicacao_com_link_invalido_devolve_400 ______________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/tccs/beb3cd15-f870-42fa-9229-4ee79200d612/publicacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/tccs/beb3cd15-f870-42fa-9229-4ee79200d612/publicacao/
+______________ test_post_publicacao_em_tcc_de_defesa_devolve_400 _______________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/tccs/b3fee662-34a7-4703-8ced-083ea313de5b/publicacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/tccs/b3fee662-34a7-4703-8ced-083ea313de5b/publicacao/
+_____________ test_post_publicacao_de_tcc_inexistente_devolve_404 ______________
+----------------------------- Captured stderr call -----------------------------
+Not Found: /api/tccs/00000000-0000-0000-0000-000000000000/publicacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Not Found: /api/tccs/00000000-0000-0000-0000-000000000000/publicacao/
+___________________ test_secretaria_nao_registra_publicacao ____________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/tccs/2bb6455e-eb85-4dbd-8445-26dd7b178b60/publicacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/tccs/2bb6455e-eb85-4dbd-8445-26dd7b178b60/publicacao/
+__________________________ test_sem_login_devolve_401 __________________________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/tccs/d2596256-2b89-4ccb-910c-0aded1e7f97b/publicacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/tccs/d2596256-2b89-4ccb-910c-0aded1e7f97b/publicacao/
+_______________ test_rota_de_situacao_nao_aprova_sem_publicacao ________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/tccs/2609ce88-dc97-431e-a9c0-02e72963528f/situacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/tccs/2609ce88-dc97-431e-a9c0-02e72963528f/situacao/
+_______________ test_post_com_doi_invalido_devolve_400_no_campo ________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/tccs/de00e3ec-c697-4754-a9ff-bb20509b0b7c/publicacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/tccs/de00e3ec-c697-4754-a9ff-bb20509b0b7c/publicacao/
+____ test_patch_nao_troca_modalidade_de_tcc_com_banca_nem_permite_publicar _____
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/tccs/4976d5e1-879e-4843-a1c0-978476908bb0/
+Bad Request: /api/tccs/4976d5e1-879e-4843-a1c0-978476908bb0/publicacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/tccs/4976d5e1-879e-4843-a1c0-978476908bb0/
+WARNING  django.request:log.py:293 Bad Request: /api/tccs/4976d5e1-879e-4843-a1c0-978476908bb0/publicacao/
+___________________ test_post_situacao_invalida_devolve_400 ____________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/tccs/24a864d5-a1b5-4bbf-bc9e-756a5c53ec9e/situacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/tccs/24a864d5-a1b5-4bbf-bc9e-756a5c53ec9e/situacao/
+__________________________ test_api_docente_nao_envia __________________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/solicitacoes-orientacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/solicitacoes-orientacao/
+_____________________ test_api_outro_docente_nao_responde ______________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/solicitacoes-orientacao/1bf9986c-e847-48ee-b75a-9a4afaf9c006/responder/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/solicitacoes-orientacao/1bf9986c-e847-48ee-b75a-9a4afaf9c006/responder/
+__________________ test_api_aluno_com_tcc_recebe_400_no_campo __________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/solicitacoes-orientacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/solicitacoes-orientacao/
+________________________ test_api_sem_login_devolve_401 ________________________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/solicitacoes-orientacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/solicitacoes-orientacao/
+___________________ test_post_com_regra_quebrada_devolve_400 ___________________
+----------------------------- Captured stderr call -----------------------------
+Bad Request: /api/tccs/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Bad Request: /api/tccs/
+___________________________ test_sem_login_nao_cria ____________________________
+----------------------------- Captured stderr call -----------------------------
+Unauthorized: /api/tccs/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Unauthorized: /api/tccs/
+______________________ test_secretaria_lista_mas_nao_cria ______________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/tccs/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/tccs/
+____________________________ test_delete_nao_existe ____________________________
+----------------------------- Captured stderr call -----------------------------
+Method Not Allowed: /api/tccs/36556453-e0a2-4a12-af24-323716b000ce/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Method Not Allowed: /api/tccs/36556453-e0a2-4a12-af24-323716b000ce/
+__________________ test_aluno_nao_abre_o_tcc_de_outra_pessoa ___________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/tccs/e8ae4c2e-3505-4577-aecd-e0ffb7249ae8/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/tccs/e8ae4c2e-3505-4577-aecd-e0ffb7249ae8/
+________________________ test_aluno_nao_escreve_em_tcc _________________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/tccs/035413dd-da5c-4bc9-8297-e0fa9f05c445/
+Forbidden: /api/tccs/
+Forbidden: /api/tccs/035413dd-da5c-4bc9-8297-e0fa9f05c445/situacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/tccs/035413dd-da5c-4bc9-8297-e0fa9f05c445/
+WARNING  django.request:log.py:293 Forbidden: /api/tccs/
+WARNING  django.request:log.py:293 Forbidden: /api/tccs/035413dd-da5c-4bc9-8297-e0fa9f05c445/situacao/
+________________________ test_aluno_nao_acessa_docentes ________________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/docentes/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/docentes/
+________________________ test_aluno_ve_so_o_proprio_tcc ________________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/tccs/92d228e8-cdbd-4434-8e13-03f2ff5f40e0/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/tccs/92d228e8-cdbd-4434-8e13-03f2ff5f40e0/
+______ test_orientador_nao_abre_tcc_alheio_e_a_tentativa_fica_registrada _______
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/tccs/d780cd20-356f-4f51-ab98-51a5ce7d0bbf/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/tccs/d780cd20-356f-4f51-ab98-51a5ce7d0bbf/
+______________________ test_tcc_inexistente_continua_404 _______________________
+----------------------------- Captured stderr call -----------------------------
+Not Found: /api/tccs/00000000-0000-0000-0000-000000000000/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Not Found: /api/tccs/00000000-0000-0000-0000-000000000000/
+_____________________ test_orientador_nao_edita_tcc_alheio _____________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/tccs/3322b361-b7c7-447e-b753-fd2ce8817721/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/tccs/3322b361-b7c7-447e-b753-fd2ce8817721/
+_______________ test_orientador_nao_muda_situacao_de_tcc_alheio ________________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/tccs/09deb528-149f-4ff5-9ae9-8d000d6d5dd0/situacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/tccs/09deb528-149f-4ff5-9ae9-8d000d6d5dd0/situacao/
+____________ test_orientador_nao_registra_publicacao_de_tcc_alheio _____________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/tccs/f9ae3e57-e57d-446c-b6ea-447baed1169a/publicacao/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/tccs/f9ae3e57-e57d-446c-b6ea-447baed1169a/publicacao/
+_____________ test_orientador_nao_cadastra_tcc_para_outro_docente ______________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/tccs/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/tccs/
+_______________ test_orientador_nao_cadastra_banca_de_tcc_alheio _______________
+----------------------------- Captured stderr call -----------------------------
+Forbidden: /api/bancas/
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:293 Forbidden: /api/bancas/
+_____________ test_cadastros_simultaneos_conflitantes_so_um_passa ______________
+----------------------------- Captured stderr call -----------------------------
+E-mail 'Convite para banca: TCC simultaneo 1' enviado (1 destinatário(s))
+E-mail 'Convite para banca: TCC simultaneo 1' enviado (1 destinatário(s))
+------------------------------ Captured log call -------------------------------
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: TCC simultaneo 1' enviado (1 destinatário(s))
+INFO     sigatcc.email:email.py:56 E-mail 'Convite para banca: TCC simultaneo 1' enviado (1 destinatário(s))
+----------- generated xml file: /home/claude/evid/pytest-backend.xml -----------
+
+---------- coverage: platform linux, python 3.13.18-final-0 ----------
+Name                                             Stmts   Miss  Cover
+--------------------------------------------------------------------
+core/__init__.py                                     0      0   100%
+core/api/__init__.py                                 0      0   100%
+core/api/auth.py                                    53      2    96%
+core/api/permissions.py                             73      2    97%
+core/api/serializers.py                            264      0   100%
+core/api/urls.py                                    20      0   100%
+core/api/views.py                                  385     16    96%
+core/apps.py                                         4      0   100%
+core/management/__init__.py                          0      0   100%
+core/management/commands/__init__.py                 0      0   100%
+core/management/commands/enviar_email_teste.py      20      1    95%
+core/management/commands/popular_demo.py            73      2    97%
+core/models.py                                     250      1    99%
+core/services/__init__.py                            0      0   100%
+core/services/acesso.py                             49      1    98%
+core/services/acesso_externo.py                     40      0   100%
+core/services/auditoria.py                          12      0   100%
+core/services/banca.py                              94      2    98%
+core/services/contas.py                             48      0   100%
+core/services/convites.py                          121      2    98%
+core/services/dashboard.py                          11      0   100%
+core/services/docente.py                            43      7    84%
+core/services/email.py                              28      0   100%
+core/services/escopo.py                             45      3    93%
+core/services/perfil_aluno.py                       17      0   100%
+core/services/pessoas.py                           106     14    87%
+core/services/publicacao.py                         51      0   100%
+core/services/reuniao.py                            63      1    98%
+core/services/solicitacao.py                        56      3    95%
+core/services/tcc.py                                77      0   100%
+core/validators.py                                  45      3    93%
+sigatcc/__init__.py                                  0      0   100%
+sigatcc/settings.py                                 52     10    81%
+sigatcc/urls.py                                      5      0   100%
+--------------------------------------------------------------------
+TOTAL                                             2105     70    97%
+
+=========================== short test summary info ============================
+PASSED core/tests/test_acesso_externo.py::test_convite_do_externo_avisa_do_link_de_acesso
+PASSED core/tests/test_acesso_externo.py::test_aceite_do_externo_gera_token_e_envia_o_link
+PASSED core/tests/test_acesso_externo.py::test_recusa_do_externo_nao_gera_token
+PASSED core/tests/test_acesso_externo.py::test_aceite_de_docente_nao_gera_token
+PASSED core/tests/test_acesso_externo.py::test_externo_aceita_pelo_link_publico_e_recebe_o_acesso
+PASSED core/tests/test_acesso_externo.py::test_token_le_o_tcc_sem_login_e_registra_o_acesso
+PASSED core/tests/test_acesso_externo.py::test_token_inexistente_devolve_404
+PASSED core/tests/test_acesso_externo.py::test_token_expira_sozinho
+PASSED core/tests/test_acesso_externo.py::test_token_cancelado_nao_abre
+PASSED core/tests/test_acesso_externo.py::test_externo_desativado_nao_abre
+PASSED core/tests/test_acesso_externo.py::test_hash_e_estavel
+PASSED core/tests/test_acesso_externo.py::test_professor_tcc_cadastra_membro_externo
+PASSED core/tests/test_acesso_externo.py::test_administrador_tambem_cadastra
+PASSED core/tests/test_acesso_externo.py::test_orientador_comum_nao_cadastra_externo
+PASSED core/tests/test_acesso_externo.py::test_externo_sem_instituicao_e_recusado
+PASSED core/tests/test_banca.py::test_banca_valida_grava_participacoes_convites_e_log
+PASSED core/tests/test_banca.py::test_suplentes_sao_opcionais
+PASSED core/tests/test_banca.py::test_numero_errado_de_titulares_e_recusado[2]
+PASSED core/tests/test_banca.py::test_numero_errado_de_titulares_e_recusado[4]
+PASSED core/tests/test_banca.py::test_titular_repetido_e_recusado
+PASSED core/tests/test_banca.py::test_banca_sem_o_orientador_e_recusada
+PASSED core/tests/test_banca.py::test_membro_titular_e_suplente_e_recusado
+PASSED core/tests/test_banca.py::test_suplente_repetido_e_recusado
+PASSED core/tests/test_banca.py::test_aluno_nao_compoe_banca
+PASSED core/tests/test_banca.py::test_docente_inativo_nao_compoe_banca
+PASSED core/tests/test_banca.py::test_membro_externo_pode_ser_titular
+PASSED core/tests/test_banca.py::test_data_que_nao_e_futura_e_recusada[delta0]
+PASSED core/tests/test_banca.py::test_data_que_nao_e_futura_e_recusada[delta1]
+PASSED core/tests/test_banca.py::test_presencial_exige_bloco_e_sala[-bloco]
+PASSED core/tests/test_banca.py::test_presencial_exige_bloco_e_sala[-sala]
+PASSED core/tests/test_banca.py::test_presencial_exige_bloco_e_sala[   -bloco]
+PASSED core/tests/test_banca.py::test_presencial_exige_bloco_e_sala[   -sala]
+PASSED core/tests/test_banca.py::test_presencial_exige_bloco_e_sala[None-bloco]
+PASSED core/tests/test_banca.py::test_presencial_exige_bloco_e_sala[None-sala]
+PASSED core/tests/test_banca.py::test_presencial_guarda_bloco_e_sala_sem_link
+PASSED core/tests/test_banca.py::test_banca_remota_exige_link_valido[None]
+PASSED core/tests/test_banca.py::test_banca_remota_exige_link_valido[]
+PASSED core/tests/test_banca.py::test_banca_remota_exige_link_valido[Sala 10]
+PASSED core/tests/test_banca.py::test_banca_remota_exige_link_valido[ftp://exemplo.com/x]
+PASSED core/tests/test_banca.py::test_banca_remota_guarda_so_o_link
+PASSED core/tests/test_banca.py::test_defesa_dura_duas_horas
+PASSED core/tests/test_banca.py::test_convites_guardam_a_data_de_envio
+PASSED core/tests/test_banca.py::test_tcc_com_banca_nao_recebe_outra
+PASSED core/tests/test_banca.py::test_tcc_por_publicacao_nao_tem_banca
+PASSED core/tests/test_banca.py::test_tcc_fora_de_desenvolvimento_nao_recebe_banca
+PASSED core/tests/test_banca.py::test_falha_na_auditoria_desfaz_a_banca
+PASSED core/tests/test_banca.py::test_post_cria_banca_e_devolve_201
+PASSED core/tests/test_banca.py::test_post_remota_sem_link_devolve_400_no_campo
+PASSED core/tests/test_banca.py::test_post_com_regra_quebrada_devolve_400
+PASSED core/tests/test_banca.py::test_secretaria_nao_cria_banca
+PASSED core/tests/test_banca.py::test_lista_bancas
+PASSED core/tests/test_banca_tela.py::test_detalhe_do_tcc_sem_banca
+PASSED core/tests/test_banca_tela.py::test_detalhe_do_tcc_traz_a_banca_com_nomes_e_convites
+PASSED core/tests/test_banca_tela.py::test_listagem_de_bancas_traz_o_titulo_do_tcc
+PASSED core/tests/test_cadastro_aluno.py::test_professor_confirma_o_cadastro
+PASSED core/tests/test_cadastro_aluno.py::test_confirmar_de_novo_e_recusado
+PASSED core/tests/test_cadastro_aluno.py::test_so_o_professor_de_tcc_confirma
+PASSED core/tests/test_cadastro_aluno.py::test_professor_de_tcc_inativo_nao_confirma
+PASSED core/tests/test_cadastro_aluno.py::test_servico_tambem_exige_professor_de_tcc
+PASSED core/tests/test_cadastro_aluno.py::test_aluno_inativo_nao_tem_cadastro_a_decidir
+PASSED core/tests/test_cadastro_aluno.py::test_confirmar_aluno_inexistente_da_404
+PASSED core/tests/test_cadastro_aluno.py::test_falha_na_auditoria_desfaz_a_confirmacao
+PASSED core/tests/test_cadastro_aluno.py::test_recusa_exige_motivo
+PASSED core/tests/test_cadastro_aluno.py::test_recusa_grava_o_motivo_e_mantem_o_cadastro_pendente
+PASSED core/tests/test_cadastro_aluno.py::test_cadastro_ja_confirmado_nao_pode_ser_recusado
+PASSED core/tests/test_cadastro_aluno.py::test_lista_filtra_cadastros_pendentes
+PASSED core/tests/test_cadastro_aluno.py::test_aluno_com_cadastro_pendente_nao_entra
+PASSED core/tests/test_cadastro_aluno.py::test_aluno_entra_depois_da_confirmacao
+PASSED core/tests/test_cadastro_aluno.py::test_senha_errada_nao_revela_o_estado_do_cadastro
+PASSED core/tests/test_cadastro_aluno.py::test_recusa_nao_libera_o_login
+PASSED core/tests/test_cadastro_aluno.py::test_outros_perfis_nao_dependem_da_confirmacao
+PASSED core/tests/test_conflito_banca.py::test_conflito_membro_sobreposicao
+PASSED core/tests/test_conflito_banca.py::test_conflito_local_presencial
+PASSED core/tests/test_conflito_banca.py::test_bancas_encostadas_sem_conflito
+PASSED core/tests/test_conflito_banca.py::test_ct_ban_01_membro_em_comum_antes_e_depois
+PASSED core/tests/test_conflito_banca.py::test_ct_ban_02_mesma_sala_recusa_e_remota_aceita
+PASSED core/tests/test_conflito_banca.py::test_ct_ban_03_valor_limite_16h00_aceita_15h59_recusa
+PASSED core/tests/test_conflito_banca.py::test_ct_ban_04_consulta_so_a_janela_de_horario
+PASSED core/tests/test_conflito_banca.py::test_mensagem_de_conflito_de_membro_cita_a_banca_existente
+PASSED core/tests/test_conflito_banca.py::test_mensagem_de_conflito_de_local_cita_a_banca_existente
+PASSED core/tests/test_conflito_banca.py::test_cadastro_de_banca_trava_a_agenda
+PASSED core/tests/test_consulta_logs.py::test_so_o_administrador_consulta_os_logs[/api/auditoria/-DOCENTE]
+PASSED core/tests/test_consulta_logs.py::test_so_o_administrador_consulta_os_logs[/api/auditoria/-SECRETARIA]
+PASSED core/tests/test_consulta_logs.py::test_so_o_administrador_consulta_os_logs[/api/auditoria/-ALUNO]
+PASSED core/tests/test_consulta_logs.py::test_so_o_administrador_consulta_os_logs[/api/auditoria/-MEMBRO_EXTERNO]
+PASSED core/tests/test_consulta_logs.py::test_so_o_administrador_consulta_os_logs[/api/acessos/-DOCENTE]
+PASSED core/tests/test_consulta_logs.py::test_so_o_administrador_consulta_os_logs[/api/acessos/-SECRETARIA]
+PASSED core/tests/test_consulta_logs.py::test_so_o_administrador_consulta_os_logs[/api/acessos/-ALUNO]
+PASSED core/tests/test_consulta_logs.py::test_so_o_administrador_consulta_os_logs[/api/acessos/-MEMBRO_EXTERNO]
+PASSED core/tests/test_consulta_logs.py::test_anonimo_nao_consulta_os_logs[/api/auditoria/]
+PASSED core/tests/test_consulta_logs.py::test_anonimo_nao_consulta_os_logs[/api/acessos/]
+PASSED core/tests/test_consulta_logs.py::test_logs_sao_somente_leitura_pela_api[/api/auditoria/]
+PASSED core/tests/test_consulta_logs.py::test_logs_sao_somente_leitura_pela_api[/api/acessos/]
+PASSED core/tests/test_consulta_logs.py::test_lista_do_mais_novo_ao_mais_antigo_com_nome_do_responsavel
+PASSED core/tests/test_consulta_logs.py::test_filtra_por_entidade_campo_registro_e_responsavel
+PASSED core/tests/test_consulta_logs.py::test_id_mal_formado_devolve_lista_vazia_e_nao_erro
+PASSED core/tests/test_consulta_logs.py::test_filtro_de_periodo_inclui_os_dois_dias
+PASSED core/tests/test_consulta_logs.py::test_data_invalida_devolve_400
+PASSED core/tests/test_consulta_logs.py::test_paginacao_limita_o_tamanho_da_resposta
+PASSED core/tests/test_consulta_logs.py::test_lista_acessos_com_nome_e_filtra_por_usuario
+PASSED core/tests/test_consulta_logs.py::test_bloqueio_da_conta_fica_na_auditoria
+PASSED core/tests/test_convites.py::test_cadastro_da_banca_envia_um_email_por_convite
+PASSED core/tests/test_convites.py::test_convite_chega_completo
+PASSED core/tests/test_convites.py::test_suplente_e_convidado_como_suplente
+PASSED core/tests/test_convites.py::test_banca_remota_leva_o_link
+PASSED core/tests/test_convites.py::test_banca_recusada_nao_envia_nada
+PASSED core/tests/test_convites.py::test_convidado_lista_e_aceita
+PASSED core/tests/test_convites.py::test_responde_uma_vez_so
+PASSED core/tests/test_convites.py::test_outro_usuario_nao_responde
+PASSED core/tests/test_convites.py::test_nao_responde_depois_da_defesa
+PASSED core/tests/test_convites.py::test_link_do_email_mostra_e_responde_sem_login
+PASSED core/tests/test_convites.py::test_link_adulterado_e_recusado[]
+PASSED core/tests/test_convites.py::test_link_adulterado_e_recusado[abc]
+PASSED core/tests/test_convites.py::test_link_adulterado_e_recusado[123:falso:assinatura]
+PASSED core/tests/test_convites.py::test_link_funciona_mesmo_com_token_vencido_no_navegador
+PASSED core/tests/test_convites.py::test_orientador_reenvia_convite_pendente
+PASSED core/tests/test_convites.py::test_quem_nao_edita_o_tcc_nao_reenvia
+PASSED core/tests/test_convites.py::test_convite_respondido_nao_e_reenviado
+PASSED core/tests/test_convites.py::test_convite_de_audiencia_por_pessoa
+PASSED core/tests/test_convites.py::test_membro_autor_e_repetido_nao_sao_convidados_para_audiencia
+PASSED core/tests/test_convites.py::test_externo_nao_e_convidado_para_audiencia
+PASSED core/tests/test_convites.py::test_membro_da_banca_que_nao_edita_nao_convida_audiencia
+PASSED core/tests/test_convites.py::test_convidado_de_audiencia_aceita_pela_tela
+PASSED core/tests/test_dashboard.py::test_dashboard_metricas_autenticado
+PASSED core/tests/test_dashboard.py::test_ct_dsh_01_numeros_batem_com_consulta_direta
+PASSED core/tests/test_dashboard.py::test_dashboard_metricas_so_para_perfis_de_gestao[ADMINISTRADOR-200]
+PASSED core/tests/test_dashboard.py::test_dashboard_metricas_so_para_perfis_de_gestao[DOCENTE-200]
+PASSED core/tests/test_dashboard.py::test_dashboard_metricas_so_para_perfis_de_gestao[SECRETARIA-200]
+PASSED core/tests/test_dashboard.py::test_dashboard_metricas_so_para_perfis_de_gestao[ALUNO-403]
+PASSED core/tests/test_dashboard.py::test_dashboard_metricas_so_para_perfis_de_gestao[MEMBRO_EXTERNO-403]
+PASSED core/tests/test_dashboard.py::test_dashboard_metricas_exige_login
+PASSED core/tests/test_docentes.py::test_admin_cadastra_docente
+PASSED core/tests/test_docentes.py::test_docente_cadastrado_consegue_entrar
+PASSED core/tests/test_docentes.py::test_so_administrador_cadastra[DOCENTE]
+PASSED core/tests/test_docentes.py::test_so_administrador_cadastra[SECRETARIA]
+PASSED core/tests/test_docentes.py::test_cpf_invalido_e_recusado
+PASSED core/tests/test_docentes.py::test_email_e_matricula_repetidos_sao_recusados[email-MARINA.LOPES@uea.edu.br]
+PASSED core/tests/test_docentes.py::test_email_e_matricula_repetidos_sao_recusados[matricula_institucional-INST-0099]
+PASSED core/tests/test_docentes.py::test_cpf_repetido_e_recusado
+PASSED core/tests/test_docentes.py::test_senha_inicial_ausente_ou_fraca_e_recusada[None]
+PASSED core/tests/test_docentes.py::test_senha_inicial_ausente_ou_fraca_e_recusada[fraca]
+PASSED core/tests/test_docentes.py::test_senha_inicial_ausente_ou_fraca_e_recusada[semnumero!A]
+PASSED core/tests/test_docentes.py::test_lista_mostra_contagens_e_mascara_cpf
+PASSED core/tests/test_docentes.py::test_filtro_por_ativo_e_busca
+PASSED core/tests/test_docentes.py::test_admin_edita_e_grava_auditoria
+PASSED core/tests/test_docentes.py::test_edicao_recusa_email_de_outra_conta
+PASSED core/tests/test_docentes.py::test_docente_nao_edita_cadastro
+PASSED core/tests/test_docentes.py::test_desativar_e_reativar
+PASSED core/tests/test_docentes.py::test_desativar_id_que_nao_e_docente_da_404
+PASSED core/tests/test_email.py::test_envio_acontece_depois_do_commit
+PASSED core/tests/test_email.py::test_rollback_nao_envia
+PASSED core/tests/test_email.py::test_sem_destinatario_nao_agenda
+PASSED core/tests/test_email.py::test_link_usa_o_endereco_da_spa
+PASSED core/tests/test_email.py::test_html_escapa_e_transforma_links
+PASSED core/tests/test_email.py::test_falha_no_envio_nao_quebra_e_nao_loga_endereco
+PASSED core/tests/test_email.py::test_comando_de_teste_envia_a_quantidade_pedida
+PASSED core/tests/test_email.py::test_comando_de_teste_recusa_quantidade_zero
+PASSED core/tests/test_fluxo_integracao.py::test_fluxo_completo_da_e1
+PASSED core/tests/test_fluxo_integracao.py::test_sessao_expirada_exige_novo_login
+PASSED core/tests/test_login.py::test_login_por_email_devolve_tokens_e_grava_acesso
+PASSED core/tests/test_login.py::test_login_por_matricula_institucional
+PASSED core/tests/test_login.py::test_email_nao_diferencia_maiusculas
+PASSED core/tests/test_login.py::test_senha_errada_devolve_401_e_conta_tentativa
+PASSED core/tests/test_login.py::test_quinta_tentativa_errada_bloqueia_por_15_minutos
+PASSED core/tests/test_login.py::test_conta_bloqueada_recusa_ate_a_senha_certa
+PASSED core/tests/test_login.py::test_bloqueio_vencido_libera_e_zera_o_contador
+PASSED core/tests/test_login.py::test_conta_inativa_e_login_inexistente_tem_a_mesma_resposta
+PASSED core/tests/test_login.py::test_login_sem_campos_devolve_400
+PASSED core/tests/test_login.py::test_token_da_acesso_a_api
+PASSED core/tests/test_login.py::test_api_sem_token_devolve_401
+PASSED core/tests/test_login.py::test_refresh_troca_o_token_e_logout_invalida
+PASSED core/tests/test_login.py::test_professor_tcc_aparece_no_me
+PASSED core/tests/test_login.py::test_senha_fraca_e_recusada[semmaiuscula1!]
+PASSED core/tests/test_login.py::test_senha_fraca_e_recusada[SemNumero!!]
+PASSED core/tests/test_login.py::test_senha_fraca_e_recusada[SemEspecial123]
+PASSED core/tests/test_login.py::test_senha_fraca_e_recusada[tudominusculo]
+PASSED core/tests/test_login.py::test_senha_forte_passa
+PASSED core/tests/test_modelo.py::test_cursos_semeados
+PASSED core/tests/test_modelo.py::test_create_superuser_define_administrador
+PASSED core/tests/test_modelo.py::test_tipo_usuario_fora_da_lista_e_recusado
+PASSED core/tests/test_modelo.py::test_um_tcc_ativo_por_aluno_e_curso
+PASSED core/tests/test_modelo.py::test_tcc_inativo_nao_conta_para_a_unicidade
+PASSED core/tests/test_modelo.py::test_coorientador_igual_ao_orientador_e_recusado
+PASSED core/tests/test_modelo.py::test_nao_apresentado_exige_motivo
+PASSED core/tests/test_modelo.py::test_motivo_outro_exige_descricao
+PASSED core/tests/test_modelo.py::test_inativar_exige_motivo
+PASSED core/tests/test_modelo.py::test_status_fora_da_lista_e_recusado
+PASSED core/tests/test_modelo.py::test_uma_banca_por_tcc
+PASSED core/tests/test_modelo.py::test_mesma_pessoa_nao_repete_na_banca
+PASSED core/tests/test_modelo.py::test_so_suplente_pode_ter_substituido_titular
+PASSED core/tests/test_modelo.py::test_um_token_por_membro_externo_e_banca
+PASSED core/tests/test_modelo.py::test_log_de_acesso_so_de_acrescimo
+PASSED core/tests/test_modelo_v2.py::test_termino_da_defesa_e_inicio_mais_duas_horas
+PASSED core/tests/test_modelo_v2.py::test_banca_presencial_sem_bloco_ou_sala_e_recusada[bloco]
+PASSED core/tests/test_modelo_v2.py::test_banca_presencial_sem_bloco_ou_sala_e_recusada[sala]
+PASSED core/tests/test_modelo_v2.py::test_banca_remota_sem_link_e_recusada
+PASSED core/tests/test_modelo_v2.py::test_banca_remota_so_com_link_e_aceita
+PASSED core/tests/test_modelo_v2.py::test_nota_fora_de_0_a_10_e_recusada[nota0]
+PASSED core/tests/test_modelo_v2.py::test_nota_fora_de_0_a_10_e_recusada[nota1]
+PASSED core/tests/test_modelo_v2.py::test_nota_de_0_a_10_com_parecer_e_aceita[nota0]
+PASSED core/tests/test_modelo_v2.py::test_nota_de_0_a_10_com_parecer_e_aceita[nota1]
+PASSED core/tests/test_modelo_v2.py::test_nota_de_0_a_10_com_parecer_e_aceita[nota2]
+PASSED core/tests/test_modelo_v2.py::test_publicacao_sem_comprovante_e_sem_link_e_recusada
+PASSED core/tests/test_modelo_v2.py::test_publicacao_com_comprovante_ou_link_e_aceita[campos0]
+PASSED core/tests/test_modelo_v2.py::test_publicacao_com_comprovante_ou_link_e_aceita[campos1]
+PASSED core/tests/test_modelo_v2.py::test_historico_guarda_quem_mudou_o_status
+PASSED core/tests/test_modelo_v2.py::test_historico_sem_autor_e_recusado
+PASSED core/tests/test_modelo_v2.py::test_solicitacao_sem_mensagem_e_recusa_sem_motivo_sao_aceitas
+PASSED core/tests/test_modelo_v2.py::test_reuniao_com_tipo_de_local_fora_da_lista_e_recusada
+PASSED core/tests/test_modelo_v2.py::test_dividir_local_antigo_em_bloco_e_sala[Sala 10, bloco NUCOMP-esperado0]
+PASSED core/tests/test_modelo_v2.py::test_dividir_local_antigo_em_bloco_e_sala[Bloco B / Sala 204-esperado1]
+PASSED core/tests/test_modelo_v2.py::test_dividir_local_antigo_em_bloco_e_sala[Sala 10, NUCOMP-esperado2]
+PASSED core/tests/test_modelo_v2.py::test_dividir_local_antigo_em_bloco_e_sala[bloco: C-esperado3]
+PASSED core/tests/test_modelo_v2.py::test_dividir_local_antigo_em_bloco_e_sala[Audit\xf3rio principal-esperado4]
+PASSED core/tests/test_modelo_v2.py::test_dividir_local_antigo_em_bloco_e_sala[-esperado5]
+PASSED core/tests/test_perfil_aluno.py::test_admin_define_a_senha_e_o_aluno_entra
+PASSED core/tests/test_perfil_aluno.py::test_redefinir_troca_a_senha_e_zera_o_bloqueio
+PASSED core/tests/test_perfil_aluno.py::test_senha_fraca_e_recusada[abc]
+PASSED core/tests/test_perfil_aluno.py::test_senha_fraca_e_recusada[12345678]
+PASSED core/tests/test_perfil_aluno.py::test_senha_fraca_e_recusada[semmaiuscula1#]
+PASSED core/tests/test_perfil_aluno.py::test_senha_fraca_e_recusada[SemNumero#abc]
+PASSED core/tests/test_perfil_aluno.py::test_senha_fraca_e_recusada[SemEspecial123]
+PASSED core/tests/test_perfil_aluno.py::test_senha_em_branco_e_recusada
+PASSED core/tests/test_perfil_aluno.py::test_log_registra_a_senha_sem_guarda_la
+PASSED core/tests/test_perfil_aluno.py::test_so_o_administrador_define_senha
+PASSED core/tests/test_perfil_aluno.py::test_definir_senha_sem_login_devolve_401
+PASSED core/tests/test_perfil_aluno.py::test_aluno_inativo_nao_recebe_senha
+PASSED core/tests/test_perfil_aluno.py::test_aluno_inexistente_da_404
+PASSED core/tests/test_perfil_aluno.py::test_falha_na_auditoria_desfaz_a_senha
+PASSED core/tests/test_perfil_aluno.py::test_aluno_ve_o_proprio_perfil
+PASSED core/tests/test_perfil_aluno.py::test_perfil_traz_o_tcc_do_aluno
+PASSED core/tests/test_perfil_aluno.py::test_perfil_ignora_tcc_inativo
+PASSED core/tests/test_perfil_aluno.py::test_perfil_nao_mostra_tcc_de_outro_aluno
+PASSED core/tests/test_perfil_aluno.py::test_aluno_escolhe_areas_de_interesse
+PASSED core/tests/test_perfil_aluno.py::test_mudar_as_areas_grava_o_antes_e_o_depois
+PASSED core/tests/test_perfil_aluno.py::test_repetir_as_mesmas_areas_nao_grava_log
+PASSED core/tests/test_perfil_aluno.py::test_lista_vazia_e_recusada_e_mantem_as_areas
+PASSED core/tests/test_perfil_aluno.py::test_area_repetida_conta_uma_vez
+PASSED core/tests/test_perfil_aluno.py::test_area_inexistente_e_recusada
+PASSED core/tests/test_perfil_aluno.py::test_patch_sem_areas_e_recusado
+PASSED core/tests/test_perfil_aluno.py::test_aluno_nao_altera_outros_dados_pelo_perfil
+PASSED core/tests/test_perfil_aluno.py::test_falha_na_auditoria_desfaz_as_areas
+PASSED core/tests/test_perfil_aluno.py::test_so_aluno_usa_o_meu_perfil
+PASSED core/tests/test_perfil_aluno.py::test_meu_perfil_sem_login_devolve_401
+PASSED core/tests/test_perfil_aluno.py::test_a_rota_meu_perfil_nao_e_confundida_com_um_id
+PASSED core/tests/test_perfis.py::test_admin_cadastra_aluno_sem_senha
+PASSED core/tests/test_perfis.py::test_aluno_cadastrado_pode_ser_autor_de_tcc
+PASSED core/tests/test_perfis.py::test_matricula_de_aluno_repetida_e_recusada
+PASSED core/tests/test_perfis.py::test_cpf_nao_repete_entre_aluno_e_docente
+PASSED core/tests/test_perfis.py::test_docente_consulta_alunos_mas_nao_cadastra
+PASSED core/tests/test_perfis.py::test_aluno_nao_ve_lista_de_alunos
+PASSED core/tests/test_perfis.py::test_admin_edita_curso_do_aluno
+PASSED core/tests/test_perfis.py::test_admin_cadastra_secretaria_que_consegue_entrar
+PASSED core/tests/test_perfis.py::test_secretaria_exige_senha
+PASSED core/tests/test_perfis.py::test_membro_externo_exige_instituicao_e_fica_sem_senha
+PASSED core/tests/test_perfis.py::test_usuarios_nao_cadastra_docente_nem_aluno[DOCENTE]
+PASSED core/tests/test_perfis.py::test_usuarios_nao_cadastra_docente_nem_aluno[ALUNO]
+PASSED core/tests/test_perfis.py::test_docente_lista_membros_externos
+PASSED core/tests/test_perfis.py::test_admin_nao_desativa_a_propria_conta
+PASSED core/tests/test_perfis.py::test_desativar_secretaria
+PASSED core/tests/test_perfis.py::test_lista_os_tres_cursos
+PASSED core/tests/test_perfis.py::test_admin_cadastra_area_sem_repetir
+PASSED core/tests/test_perfis.py::test_docente_lista_areas_mas_nao_cadastra
+PASSED core/tests/test_popular_demo.py::test_popular_demo_cria_dados_e_e_idempotente
+PASSED core/tests/test_popular_demo.py::test_aluno_da_demonstracao_consegue_entrar
+PASSED core/tests/test_publicacao.py::test_registrar_publicacao_aprova_o_tcc
+PASSED core/tests/test_publicacao.py::test_registrar_publicacao_grava_historico_e_auditoria
+PASSED core/tests/test_publicacao.py::test_espacos_das_bordas_saem_e_link_vazio_vira_nulo
+PASSED core/tests/test_publicacao.py::test_publicacao_so_com_link_e_aceita
+PASSED core/tests/test_publicacao.py::test_publicacao_so_com_comprovante_e_aceita
+PASSED core/tests/test_publicacao.py::test_publicacao_sem_comprovante_e_sem_link_e_recusada[None]
+PASSED core/tests/test_publicacao.py::test_publicacao_sem_comprovante_e_sem_link_e_recusada[]
+PASSED core/tests/test_publicacao.py::test_publicacao_sem_comprovante_e_sem_link_e_recusada[   ]
+PASSED core/tests/test_publicacao.py::test_post_publicacao_so_com_link_devolve_201
+PASSED core/tests/test_publicacao.py::test_post_publicacao_sem_comprovante_e_sem_link_devolve_400
+PASSED core/tests/test_publicacao.py::test_campo_obrigatorio_em_branco_e_recusado[None-periodico]
+PASSED core/tests/test_publicacao.py::test_campo_obrigatorio_em_branco_e_recusado[None-issn_doi]
+PASSED core/tests/test_publicacao.py::test_campo_obrigatorio_em_branco_e_recusado[None-data_publicacao]
+PASSED core/tests/test_publicacao.py::test_campo_obrigatorio_em_branco_e_recusado[-periodico]
+PASSED core/tests/test_publicacao.py::test_campo_obrigatorio_em_branco_e_recusado[-issn_doi]
+PASSED core/tests/test_publicacao.py::test_campo_obrigatorio_em_branco_e_recusado[-data_publicacao]
+PASSED core/tests/test_publicacao.py::test_campo_obrigatorio_em_branco_e_recusado[   -periodico]
+PASSED core/tests/test_publicacao.py::test_campo_obrigatorio_em_branco_e_recusado[   -issn_doi]
+PASSED core/tests/test_publicacao.py::test_campo_obrigatorio_em_branco_e_recusado[   -data_publicacao]
+PASSED core/tests/test_publicacao.py::test_data_futura_e_recusada
+PASSED core/tests/test_publicacao.py::test_data_de_hoje_e_aceita
+PASSED core/tests/test_publicacao.py::test_modalidade_defesa_nao_recebe_publicacao
+PASSED core/tests/test_publicacao.py::test_tcc_fora_de_desenvolvimento_e_recusado
+PASSED core/tests/test_publicacao.py::test_tcc_inativo_e_recusado
+PASSED core/tests/test_publicacao.py::test_segunda_publicacao_e_recusada
+PASSED core/tests/test_publicacao.py::test_registrar_duas_vezes_nao_duplica
+PASSED core/tests/test_publicacao.py::test_tcc_inexistente_da_404
+PASSED core/tests/test_publicacao.py::test_falha_na_auditoria_da_publicacao_desfaz_tudo
+PASSED core/tests/test_publicacao.py::test_falha_na_mudanca_de_situacao_desfaz_a_publicacao
+PASSED core/tests/test_publicacao.py::test_aprovar_por_publicacao_sem_publicacao_e_recusado
+PASSED core/tests/test_publicacao.py::test_mudar_situacao_aceita_quando_a_publicacao_existe
+PASSED core/tests/test_publicacao.py::test_modalidade_nao_muda_com_publicacao_registrada
+PASSED core/tests/test_publicacao.py::test_editar_outros_campos_com_publicacao_continua_valendo
+PASSED core/tests/test_publicacao.py::test_post_publicacao_devolve_201_com_o_tcc_aprovado
+PASSED core/tests/test_publicacao.py::test_detalhe_traz_a_publicacao_so_depois_de_registrada
+PASSED core/tests/test_publicacao.py::test_post_publicacao_sem_campos_devolve_400_por_campo
+PASSED core/tests/test_publicacao.py::test_post_publicacao_com_link_invalido_devolve_400
+PASSED core/tests/test_publicacao.py::test_post_publicacao_em_tcc_de_defesa_devolve_400
+PASSED core/tests/test_publicacao.py::test_post_publicacao_de_tcc_inexistente_devolve_404
+PASSED core/tests/test_publicacao.py::test_secretaria_nao_registra_publicacao
+PASSED core/tests/test_publicacao.py::test_sem_login_devolve_401
+PASSED core/tests/test_publicacao.py::test_rota_de_situacao_nao_aprova_sem_publicacao
+PASSED core/tests/test_publicacao.py::test_issn_doi_validos_sao_aceitos[10.5753/rbie.2026.1234]
+PASSED core/tests/test_publicacao.py::test_issn_doi_validos_sao_aceitos[10.1000/xyz123]
+PASSED core/tests/test_publicacao.py::test_issn_doi_validos_sao_aceitos[0378-5955]
+PASSED core/tests/test_publicacao.py::test_issn_doi_validos_sao_aceitos[2049-3630]
+PASSED core/tests/test_publicacao.py::test_issn_doi_validos_sao_aceitos[0000-006X]
+PASSED core/tests/test_publicacao.py::test_issn_doi_invalido_e_recusado[abc]
+PASSED core/tests/test_publicacao.py::test_issn_doi_invalido_e_recusado[12345]
+PASSED core/tests/test_publicacao.py::test_issn_doi_invalido_e_recusado[10.12/curto]
+PASSED core/tests/test_publicacao.py::test_issn_doi_invalido_e_recusado[10.5753/]
+PASSED core/tests/test_publicacao.py::test_issn_doi_invalido_e_recusado[10.5753/com espaco]
+PASSED core/tests/test_publicacao.py::test_issn_doi_invalido_e_recusado[0378-5956]
+PASSED core/tests/test_publicacao.py::test_issn_doi_invalido_e_recusado[03785955]
+PASSED core/tests/test_publicacao.py::test_issn_doi_invalido_e_recusado[0378-59555]
+PASSED core/tests/test_publicacao.py::test_issn_doi_invalido_e_recusado[https://example.org/artigo]
+PASSED core/tests/test_publicacao.py::test_issn_com_x_minusculo_e_normalizado
+PASSED core/tests/test_publicacao.py::test_post_com_doi_invalido_devolve_400_no_campo
+PASSED core/tests/test_publicacao.py::test_tcc_com_banca_nao_recebe_publicacao
+PASSED core/tests/test_publicacao.py::test_modalidade_nao_muda_com_banca_cadastrada
+PASSED core/tests/test_publicacao.py::test_patch_nao_troca_modalidade_de_tcc_com_banca_nem_permite_publicar
+PASSED core/tests/test_reuniao.py::test_docente_agenda_depois_do_aceite
+PASSED core/tests/test_reuniao.py::test_aluno_tambem_agenda
+PASSED core/tests/test_reuniao.py::test_agendar_de_novo_remarca_a_mesma_reuniao
+PASSED core/tests/test_reuniao.py::test_so_depois_do_aceite[PENDENTE]
+PASSED core/tests/test_reuniao.py::test_so_depois_do_aceite[RECUSADA]
+PASSED core/tests/test_reuniao.py::test_quem_nao_participa_nao_agenda
+PASSED core/tests/test_reuniao.py::test_data_passada_e_recusada
+PASSED core/tests/test_reuniao.py::test_local_invalido_e_recusado[PRESENCIAL-  -Informe o local]
+PASSED core/tests/test_reuniao.py::test_local_invalido_e_recusado[REMOTO-Sala 3-link v\xe1lido]
+PASSED core/tests/test_reuniao.py::test_conflito_com_outra_reuniao_do_docente_e_alertado
+PASSED core/tests/test_reuniao.py::test_reunioes_encostadas_nao_conflitam
+PASSED core/tests/test_reuniao.py::test_conflito_com_banca_do_docente_e_alertado
+PASSED core/tests/test_reuniao.py::test_api_agendar_devolve_201_e_depois_200
+PASSED core/tests/test_reuniao.py::test_api_reunioes_de_cada_um
+PASSED core/tests/test_reuniao.py::test_api_reunioes_futuras
+PASSED core/tests/test_situacao_tcc.py::test_transicao_permitida_muda_status_e_grava_historico[DEFESA_EM_BANCA-APRESENTADO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_permitida_muda_status_e_grava_historico[DEFESA_EM_BANCA-NAO_APRESENTADO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_permitida_muda_status_e_grava_historico[PUBLICACAO_APROVADA-NAO_APRESENTADO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_proibida_e_recusada[EM_DESENVOLVIMENTO-EM_DESENVOLVIMENTO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_proibida_e_recusada[APRESENTADO-EM_DESENVOLVIMENTO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_proibida_e_recusada[APRESENTADO-APRESENTADO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_proibida_e_recusada[APRESENTADO-NAO_APRESENTADO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_proibida_e_recusada[APRESENTADO-APROVADO_POR_PUBLICACAO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_proibida_e_recusada[NAO_APRESENTADO-EM_DESENVOLVIMENTO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_proibida_e_recusada[NAO_APRESENTADO-APRESENTADO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_proibida_e_recusada[NAO_APRESENTADO-NAO_APRESENTADO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_proibida_e_recusada[NAO_APRESENTADO-APROVADO_POR_PUBLICACAO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_proibida_e_recusada[APROVADO_POR_PUBLICACAO-EM_DESENVOLVIMENTO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_proibida_e_recusada[APROVADO_POR_PUBLICACAO-APRESENTADO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_proibida_e_recusada[APROVADO_POR_PUBLICACAO-NAO_APRESENTADO]
+PASSED core/tests/test_situacao_tcc.py::test_transicao_proibida_e_recusada[APROVADO_POR_PUBLICACAO-APROVADO_POR_PUBLICACAO]
+PASSED core/tests/test_situacao_tcc.py::test_apresentado_exige_modalidade_defesa
+PASSED core/tests/test_situacao_tcc.py::test_nao_apresentado_sem_motivo_e_recusado[None]
+PASSED core/tests/test_situacao_tcc.py::test_nao_apresentado_sem_motivo_e_recusado[]
+PASSED core/tests/test_situacao_tcc.py::test_motivo_outro_exige_descricao
+PASSED core/tests/test_situacao_tcc.py::test_motivo_outro_com_descricao_e_gravado
+PASSED core/tests/test_situacao_tcc.py::test_tcc_inativo_nao_muda_de_situacao
+PASSED core/tests/test_situacao_tcc.py::test_tcc_inexistente_da_404
+PASSED core/tests/test_situacao_tcc.py::test_falha_na_auditoria_desfaz_a_mudanca
+PASSED core/tests/test_situacao_tcc.py::test_post_situacao_devolve_200
+PASSED core/tests/test_situacao_tcc.py::test_post_situacao_invalida_devolve_400
+PASSED core/tests/test_solicitacao.py::test_aluno_sem_tcc_envia_solicitacao
+PASSED core/tests/test_solicitacao.py::test_mensagem_e_opcional
+PASSED core/tests/test_solicitacao.py::test_aluno_com_tcc_ativo_nao_solicita
+PASSED core/tests/test_solicitacao.py::test_docente_que_nao_aceita_orientacoes_nao_recebe
+PASSED core/tests/test_solicitacao.py::test_docente_inativo_nao_recebe
+PASSED core/tests/test_solicitacao.py::test_segunda_pendente_para_o_mesmo_docente_e_recusada
+PASSED core/tests/test_solicitacao.py::test_pode_solicitar_a_docentes_diferentes
+PASSED core/tests/test_solicitacao.py::test_com_orientacao_aceita_nao_solicita_de_novo
+PASSED core/tests/test_solicitacao.py::test_docente_aceita_uma_unica_vez
+PASSED core/tests/test_solicitacao.py::test_recusa_com_ou_sem_motivo[None-None]
+PASSED core/tests/test_solicitacao.py::test_recusa_com_ou_sem_motivo[ Sem vaga -Sem vaga]
+PASSED core/tests/test_solicitacao.py::test_aceite_descarta_motivo
+PASSED core/tests/test_solicitacao.py::test_outro_docente_nao_responde
+PASSED core/tests/test_solicitacao.py::test_resposta_invalida_e_recusada
+PASSED core/tests/test_solicitacao.py::test_api_aluno_envia_e_ve_so_as_suas
+PASSED core/tests/test_solicitacao.py::test_api_docente_nao_envia
+PASSED core/tests/test_solicitacao.py::test_api_docente_ve_as_recebidas_e_responde
+PASSED core/tests/test_solicitacao.py::test_api_outro_docente_nao_responde
+PASSED core/tests/test_solicitacao.py::test_api_aluno_com_tcc_recebe_400_no_campo
+PASSED core/tests/test_solicitacao.py::test_api_professor_tcc_ve_todas
+PASSED core/tests/test_solicitacao.py::test_api_filtro_por_status
+PASSED core/tests/test_solicitacao.py::test_api_sem_login_devolve_401
+PASSED core/tests/test_solicitacao.py::test_busca_de_orientador_mostra_carga_e_areas
+PASSED core/tests/test_solicitacao.py::test_busca_de_orientador_filtra_por_area_e_nome
+PASSED core/tests/test_solicitacao.py::test_busca_de_orientador_esconde_docente_inativo
+PASSED core/tests/test_solicitacao.py::test_solicitacao_guarda_quem_procurou_quem
+PASSED core/tests/test_tcc.py::test_cadastro_grava_tcc_historico_e_auditoria
+PASSED core/tests/test_tcc.py::test_orientador_inativo_e_recusado
+PASSED core/tests/test_tcc.py::test_coorientador_igual_ao_orientador_e_recusado
+PASSED core/tests/test_tcc.py::test_coorientador_inativo_e_recusado
+PASSED core/tests/test_tcc.py::test_coorientador_diferente_e_aceito
+PASSED core/tests/test_tcc.py::test_segundo_tcc_ativo_do_mesmo_aluno_e_recusado
+PASSED core/tests/test_tcc.py::test_tcc_inativo_nao_impede_novo_cadastro
+PASSED core/tests/test_tcc.py::test_falha_na_auditoria_desfaz_o_cadastro
+PASSED core/tests/test_tcc.py::test_edicao_grava_um_log_por_campo_alterado
+PASSED core/tests/test_tcc.py::test_edicao_nao_troca_o_autor
+PASSED core/tests/test_tcc.py::test_edicao_aplica_regra_do_coorientador
+PASSED core/tests/test_tcc.py::test_post_cria_tcc_e_devolve_201
+PASSED core/tests/test_tcc.py::test_post_com_regra_quebrada_devolve_400
+PASSED core/tests/test_tcc.py::test_sem_login_nao_cria
+PASSED core/tests/test_tcc.py::test_secretaria_lista_mas_nao_cria
+PASSED core/tests/test_tcc.py::test_patch_nao_altera_status
+PASSED core/tests/test_tcc.py::test_patch_altera_titulo
+PASSED core/tests/test_tcc.py::test_delete_nao_existe
+PASSED core/tests/test_tcc_listagem.py::test_listagem_traz_nomes_para_a_tela
+PASSED core/tests/test_tcc_listagem.py::test_filtros_da_listagem[params0-Jogos no ensino de l\xf3gica]
+PASSED core/tests/test_tcc_listagem.py::test_filtros_da_listagem[params1-Jogos no ensino de l\xf3gica]
+PASSED core/tests/test_tcc_listagem.py::test_filtros_da_listagem[params2-Sistema de gestao de TCC]
+PASSED core/tests/test_tcc_listagem.py::test_filtros_da_listagem[params3-Jogos no ensino de l\xf3gica]
+PASSED core/tests/test_tcc_listagem.py::test_filtro_por_curso_e_id_invalido
+PASSED core/tests/test_tcc_listagem.py::test_filtro_ativo
+PASSED core/tests/test_tcc_listagem.py::test_detalhe_traz_historico
+PASSED core/tests/test_tcc_listagem.py::test_mudar_situacao_responde_com_historico
+PASSED core/tests/test_visao_aluno.py::test_aluno_lista_so_o_proprio_tcc
+PASSED core/tests/test_visao_aluno.py::test_aluno_abre_o_proprio_tcc
+PASSED core/tests/test_visao_aluno.py::test_aluno_nao_abre_o_tcc_de_outra_pessoa
+PASSED core/tests/test_visao_aluno.py::test_busca_do_aluno_nao_vaza_tcc_de_outro
+PASSED core/tests/test_visao_aluno.py::test_aluno_sem_tcc_ve_lista_vazia
+PASSED core/tests/test_visao_aluno.py::test_docente_e_secretaria_continuam_vendo_todos
+PASSED core/tests/test_visao_aluno.py::test_aluno_nao_escreve_em_tcc
+PASSED core/tests/test_visao_aluno.py::test_aluno_nao_acessa_docentes
+PASSED core/tests/test_visao_aluno.py::test_aluno_ve_so_bancas_do_proprio_tcc
+PASSED core/tests/test_visao_aluno.py::test_docente_e_secretaria_continuam_acessando_bancas_e_docentes
+PASSED core/tests/test_visao_aluno.py::test_areas_continuam_abertas_ao_aluno
+PASSED core/tests/test_visao_por_perfil.py::test_orientador_lista_so_os_tccs_que_orienta
+PASSED core/tests/test_visao_por_perfil.py::test_coorientador_tambem_ve_o_tcc
+PASSED core/tests/test_visao_por_perfil.py::test_perfis_que_veem_todos[professor_tcc]
+PASSED core/tests/test_visao_por_perfil.py::test_perfis_que_veem_todos[ADMINISTRADOR]
+PASSED core/tests/test_visao_por_perfil.py::test_perfis_que_veem_todos[SECRETARIA]
+PASSED core/tests/test_visao_por_perfil.py::test_secretaria_ve_tcc_restrito
+PASSED core/tests/test_visao_por_perfil.py::test_aluno_ve_so_o_proprio_tcc
+PASSED core/tests/test_visao_por_perfil.py::test_membro_externo_nao_lista_tccs
+PASSED core/tests/test_visao_por_perfil.py::test_orientador_nao_abre_tcc_alheio_e_a_tentativa_fica_registrada
+PASSED core/tests/test_visao_por_perfil.py::test_tcc_inexistente_continua_404
+PASSED core/tests/test_visao_por_perfil.py::test_orientador_nao_edita_tcc_alheio
+PASSED core/tests/test_visao_por_perfil.py::test_orientador_nao_muda_situacao_de_tcc_alheio
+PASSED core/tests/test_visao_por_perfil.py::test_orientador_nao_registra_publicacao_de_tcc_alheio
+PASSED core/tests/test_visao_por_perfil.py::test_professor_tcc_edita_qualquer_tcc
+PASSED core/tests/test_visao_por_perfil.py::test_coorientador_edita_o_tcc
+PASSED core/tests/test_visao_por_perfil.py::test_detalhe_informa_se_o_usuario_pode_editar
+PASSED core/tests/test_visao_por_perfil.py::test_orientador_nao_cadastra_tcc_para_outro_docente
+PASSED core/tests/test_visao_por_perfil.py::test_orientador_cadastra_tcc_que_orienta
+PASSED core/tests/test_visao_por_perfil.py::test_professor_tcc_cadastra_para_qualquer_docente
+PASSED core/tests/test_visao_por_perfil.py::test_orientador_nao_cadastra_banca_de_tcc_alheio
+PASSED core/tests/test_visao_por_perfil.py::test_bancas_visiveis_sao_as_do_escopo_e_as_de_que_participa
+PASSED core/tests/test_conflito_banca.py::test_cadastros_simultaneos_conflitantes_so_um_passa
+PASSED core/tests/test_saude.py::test_endpoint_saude
+454 passed, 21 warnings in 255.54s (0:04:15)
