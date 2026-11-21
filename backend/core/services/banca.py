@@ -44,7 +44,7 @@ def _travar_agenda_de_bancas():
 def _descrever_banca(banca):
     """Identifica a banca existente na mensagem de conflito (CT-BAN-01)."""
     quando = timezone.localtime(banca.data_hora_inicio).strftime("%d/%m às %Hh%M")
-    return f'a banca do TCC "{banca.tcc.titulo}" ({quando})'
+    return f'banca do TCC "{banca.tcc.titulo}" ({quando})'
 
 
 def validar_conflito_banca(
@@ -93,7 +93,7 @@ def validar_conflito_banca(
                     {
                         "local": (
                             f"Conflito de local: a sala {sala} do bloco {bloco} "
-                            f"já está reservada para {_descrever_banca(banca)}."
+                            f"já está reservada para a {_descrever_banca(banca)}."
                         )
                     }
                 )
@@ -108,7 +108,7 @@ def validar_conflito_banca(
                     {
                         "link_remoto": (
                             "Conflito de local remoto: este link de reunião já "
-                            f"está em uso por {_descrever_banca(banca)}."
+                            f"está em uso pela {_descrever_banca(banca)}."
                         )
                     }
                 )
@@ -125,7 +125,7 @@ def validar_conflito_banca(
                     raise ValidationError(
                         {
                             "membros": (
-                                f"Conflito de agenda: {nome_membro} já está em "
+                                f"Conflito de agenda: {nome_membro} já está na "
                                 f"{_descrever_banca(banca)}."
                             )
                         }
