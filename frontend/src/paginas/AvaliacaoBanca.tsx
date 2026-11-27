@@ -79,9 +79,10 @@ export default function AvaliacaoBanca() {
     return <div className="container">Carregando dados da banca...</div>;
   }
 
-  const mensagemErroCarregamento = typeof erroCarregamento === 'string'
-    ? erroCarregamento
-    : erroCarregamento
+  const mensagemErroCarregamento =
+    typeof erroCarregamento === 'string'
+      ? erroCarregamento
+      : erroCarregamento
       ? JSON.stringify(erroCarregamento)
       : null;
 
