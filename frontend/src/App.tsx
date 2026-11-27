@@ -1,22 +1,22 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-import DashboardCoordenador from './pages/DashboardCoordenador';
-import DashboardDocente from './pages/DashboardDocente';
-import DashboardAluno from './pages/DashboardAluno';
-import FormularioTcc from './pages/FormularioTcc';
-import DetalheTcc from './pages/DetalheTcc';
-import BancasRelatorio from './pages/BancasRelatorio';
-import FormularioBanca from './pages/FormularioBanca';
-import MinhasBancasDocente from './pages/MinhasBancasDocente';
-import { Convites } from './pages/Convites';
-import { Login } from './pages/Login';
-import Solicitacoes from './pages/Solicitacoes';
-import Perfil from './pages/Perfil';
-import { ResponderConvite } from './pages/ResponderConvite';
-import { NaoEncontrada } from './pages/NaoEncontrada';
-import Relatorios from './pages/Relatorios';
-import { Auditoria } from './pages/Auditoria';
-import AvaliacaoBanca from './pages/AvaliacaoBanca';
+import DashboardCoordenador from './paginas/DashboardCoordenador';
+import DashboardDocente from './paginas/DashboardDocente';
+import DashboardAluno from './paginas/DashboardAluno';
+import FormularioTcc from './paginas/FormularioTcc';
+import DetalheTcc from './paginas/DetalheTcc';
+import BancasRelatorio from './paginas/BancasRelatorio';
+import FormularioBanca from './paginas/FormularioBanca';
+import MinhasBancasDocente from './paginas/MinhasBancasDocente';
+import { Convites } from './paginas/Convites';
+import { Login } from './paginas/Login';
+import Solicitacoes from './paginas/Solicitacoes';
+import Perfil from './paginas/Perfil';
+import { ResponderConvite } from './paginas/ResponderConvite';
+import { NaoEncontrada } from './paginas/NaoEncontrada';
+import Relatorios from './paginas/Relatorios';
+import { Auditoria } from './paginas/Auditoria';
+import AvaliacaoBanca from './paginas/AvaliacaoBanca';
 
 import { useAuth } from './contextos/AuthContexto';
 
