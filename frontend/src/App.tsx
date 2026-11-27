@@ -18,6 +18,7 @@ import { TccDetalhe } from "./paginas/TccDetalhe";
 import { TccFormulario } from "./paginas/TccFormulario";
 import { TccLista } from "./paginas/TccLista";
 import { rotaInicial } from "./util/rotas";
+import AvaliacaoBanca from './paginas/AvaliacaoBanca';
 
 /** Pagina inicial depende do perfil: o aluno abre o proprio perfil (C2a). */
 function Inicio() {
