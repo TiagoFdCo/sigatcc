@@ -10,7 +10,7 @@ import FormularioBanca from './paginas/FormularioBanca';
 import MinhasBancasDocente from './paginas/MinhasBancasDocente';
 import { Convites } from './paginas/Convites';
 import { Login } from './paginas/Login';
-import Solicitacoes from './paginas/Solicitacoes';
+import { Solicitacoes } from './paginas/Solicitacoes';
 import Perfil from './paginas/Perfil';
 import { ResponderConvite } from './paginas/ResponderConvite';
 import { NaoEncontrada } from './paginas/NaoEncontrada';
@@ -18,7 +18,7 @@ import Relatorios from './paginas/Relatorios';
 import { Auditoria } from './paginas/Auditoria';
 import AvaliacaoBanca from './paginas/AvaliacaoBanca';
 
-import { useAuth } from './contextos/AuthContexto';
+import { useAuth } from './contexto/AuthContexto';
 
 function RedirecionarInicio() {
   const { usuario } = useAuth();
