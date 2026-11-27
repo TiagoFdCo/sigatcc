@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import Alerta from '../componentes/Alerta';
+import { Alerta } from '../componentes/Alerta';
 import { useCarregar } from '../hooks/useCarregar';
-import { clienteApi } from '../servicos/api';
 
 export interface DadosBancaAvaliacao {
   bancaId: number;
@@ -21,7 +20,6 @@ export interface AvaliacaoMembroPayload {
   isRascunho: boolean;
 }
 
-// Mock inicial até a integração final da rota de detalhe da banca
 const BANCA_MOCK: DadosBancaAvaliacao = {
   bancaId: 1,
   tituloTcc: 'Desenvolvimento e Validação do Sistema SIGATCC',
@@ -39,7 +37,6 @@ export default function AvaliacaoBanca() {
   const [erroForm, setErroForm] = useState<string | null>(null);
 
   const { carregando, erro: erroCarregamento } = useCarregar(async () => {
-    // Futuro: const resposta = await clienteApi.get(`/bancas/${id}`);
     return BANCA_MOCK;
   }, []);
 
@@ -66,7 +63,6 @@ export default function AvaliacaoBanca() {
     };
 
     try {
-      // Futuro: await clienteApi.post(`/bancas/${BANCA_MOCK.bancaId}/avaliacoes`, payload);
       console.log('Submetendo avaliação:', payload);
 
       setMensagemSucesso(
