@@ -79,7 +79,6 @@ export default function AvaliacaoBanca() {
     return <div className="container">Carregando dados da banca...</div>;
   }
 
-  // Tratamento da mensagem de erro de carregamento (converte ErroApi para string se necessário)
   const mensagemErroCarregamento = typeof erroCarregamento === 'string'
     ? erroCarregamento
     : erroCarregamento
@@ -94,7 +93,6 @@ export default function AvaliacaoBanca() {
       {erroForm && <Alerta tom="erro">{erroForm}</Alerta>}
       {mensagemSucesso && <Alerta tom="sucesso">{mensagemSucesso}</Alerta>}
 
-      {/* Resumo do TCC e da Banca */}
       <div className="card">
         <h2>{BANCA_MOCK.tituloTcc}</h2>
         <div className="grid-2-col">
@@ -114,7 +112,6 @@ export default function AvaliacaoBanca() {
         </div>
       </div>
 
-      {/* Formulário de Avaliação */}
       <div className="card">
         <h3>Formulário de Lançamento de Nota</h3>
 
