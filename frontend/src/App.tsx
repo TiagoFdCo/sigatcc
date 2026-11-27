@@ -8,17 +8,17 @@ import DetalheTcc from './paginas/DetalheTcc';
 import BancasRelatorio from './paginas/BancasRelatorio';
 import FormularioBanca from './paginas/FormularioBanca';
 import MinhasBancasDocente from './paginas/MinhasBancasDocente';
-import { Convites } from './paginas/Convites';
-import { Login } from './paginas/Login';
-import { Solicitacoes } from './paginas/Solicitacoes';
+import Convites from './paginas/Convites';
+import Login from './paginas/Login';
+import Solicitacoes from './paginas/Solicitacoes';
 import Perfil from './paginas/Perfil';
-import { ResponderConvite } from './paginas/ResponderConvite';
-import { NaoEncontrada } from './paginas/NaoEncontrada';
+import ResponderConvite from './paginas/ResponderConvite';
+import NaoEncontrada from './paginas/NaoEncontrada';
 import Relatorios from './paginas/Relatorios';
-import { Auditoria } from './paginas/Auditoria';
+import Auditoria from './paginas/Auditoria';
 import AvaliacaoBanca from './paginas/AvaliacaoBanca';
 
-import { useAuth } from './contexto/AuthContexto';
+import { useAuth } from './contextos/AuthContexto';
 
 function RedirecionarInicio() {
   const { usuario } = useAuth();
