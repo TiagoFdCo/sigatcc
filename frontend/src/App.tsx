@@ -1,60 +1,57 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-import { ProvedorAuth, useAuth } from "./auth/AuthContext";
-import { RotaProtegida } from "./auth/RotaProtegida";
-import { Layout } from "./componentes/Layout";
-import { AcessoExterno } from "./paginas/AcessoExterno";
-import { Auditoria } from "./paginas/Auditoria";
-import { BancaFormulario } from "./paginas/BancaFormulario";
-import { BuscarOrientador } from "./paginas/BuscarOrientador";
-import { Convites } from "./paginas/Convites";
-import { DashboardIndicadoresView } from "./paginas/DashboardIndicadoresView";
-import { Login } from "./paginas/Login";
-import { NaoEncontrada } from "./paginas/NaoEncontrada";
-import { PerfilAluno } from "./paginas/PerfilAluno";
-import { ResponderConvite } from "./paginas/ResponderConvite";
-import { Solicitacoes } from "./paginas/Solicitacoes";
-import { TccDetalhe } from "./paginas/TccDetalhe";
-import { TccFormulario } from "./paginas/TccFormulario";
-import { TccLista } from "./paginas/TccLista";
-import { rotaInicial } from "./util/rotas";
+import DashboardCoordenador from './paginas/DashboardCoordenador';
+import DashboardDocente from './paginas/DashboardDocente';
+import DashboardAluno from './paginas/DashboardAluno';
+import FormularioTcc from './paginas/FormularioTcc';
+import DetalheTcc from './paginas/DetalheTcc';
+import BancasRelatorio from './paginas/BancasRelatorio';
+import FormularioBanca from './paginas/FormularioBanca';
+import MinhasBancasDocente from './paginas/MinhasBancasDocente';
+import Convites from './paginas/Convites';
+import Login from './paginas/Login';
+import Solicitações from './paginas/Solicitacoes';
+import Perfil from './paginas/Perfil';
+import ResponderConvite from './paginas/ResponderConvite';
+import NaoEncontrada from './paginas/NaoEncontrada';
+import Relatorios from './paginas/Relatorios';
+import Auditoria from './paginas/Auditoria';
 import AvaliacaoBanca from './paginas/AvaliacaoBanca';
 
-/** Pagina inicial depende do perfil: o aluno abre o proprio perfil (C2a). */
-function Inicio() {
+import { useAuth } from './contextos/AuthContexto';
+
+// Páginas inicial depende do perfil; tudo abre o próprio perfil (/).
+function RedirecionarInicio() {
   const { usuario } = useAuth();
-  return <Navigate to={rotaInicial(usuario?.tipo_usuario)} replace />;
+  return <Navigate to={usuario?.perfil ? `/${usuario.perfil}` : '/login'} replace />;
 }
 
 export function App() {
   return (
-    <ProvedorAuth>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          {/* C6: rota publica do link do convite (o membro externo nao tem login) */}
-          <Route path="/convites/responder" element={<ResponderConvite />} />
-          {/* C16: leitura do TCC pelo membro externo, pelo token do e-mail */}
-          <Route path="/acesso-externo/:token" element={<AcessoExterno />} />
-          <Route element={<RotaProtegida />}>
-            <Route element={<Layout />}>
-              <Route index element={<Inicio />} />
-              <Route path="/meu-perfil" element={<PerfilAluno />} />
-              <Route path="/tccs" element={<TccLista />} />
-              <Route path="/indicadores" element={<DashboardIndicadoresView />} />
-              <Route path="/tccs/novo" element={<TccFormulario />} />
-              <Route path="/tccs/:id" element={<TccDetalhe />} />
-              <Route path="/tccs/:id/editar" element={<TccFormulario />} />
-              <Route path="/tccs/:id/banca/nova" element={<BancaFormulario />} />
-              <Route path="/orientadores" element={<BuscarOrientador />} />
-              <Route path="/solicitacoes" element={<Solicitacoes />} />
-              <Route path="/convites" element={<Convites />} />
-              <Route path="/auditoria" element={<Auditoria />} />
-              <Route path="*" element={<NaoEncontrada />} />
-            </Route>
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </ProvedorAuth>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        {/* Rota pública do convite (não exige login nem estar logado) */}
+        <Route path="/convites/responder" element={<ResponderConvite />} />
+
+        {/* Rotas protegidas (exigem estar logado) */}
+        <Route path="/" element={<RedirecionarInicio />} />
+        <Route path="/aluno" element={<DashboardAluno />} />
+        <Route path="/docente" element={<DashboardDocente />} />
+        <Route path="/coordenador" element={<DashboardCoordenador />} />
+        <Route path="/solicitacoes" element={<Solicitacoes />} />
+        <Route path="/tccs/novo" element={<FormularioTcc />} />
+        <Route path="/tccs/:id" element={<DetalheTcc />} />
+        <Route path="/bancas" element={<BancasRelatorio />} />
+        <Route path="/bancas/nova" element={<FormularioBanca />} />
+        <Route path="/bancas/minhas" element={<MinhasBancasDocente />} />
+        <Route path="/bancas/avaliacao" element={<AvaliacaoBanca />} />
+        <Route path="/convites" element={<Convites />} />
+        <Route path="/perfil" element={<Perfil />} />
+        <Route path="/relatorios" element={<Relatorios />} />
+        <Route path="/auditoria" element={<Auditoria />} />
+        <Route path="*" element={<NaoEncontrada />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
