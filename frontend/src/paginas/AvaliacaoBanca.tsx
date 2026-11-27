@@ -79,13 +79,20 @@ export default function AvaliacaoBanca() {
     return <div className="container">Carregando dados da banca...</div>;
   }
 
+  // Tratamento da mensagem de erro de carregamento (converte ErroApi para string se necessário)
+  const mensagemErroCarregamento = typeof erroCarregamento === 'string'
+    ? erroCarregamento
+    : erroCarregamento
+      ? JSON.stringify(erroCarregamento)
+      : null;
+
   return (
     <div className="container">
       <h1>Avaliação da Banca Examinadora</h1>
 
-      {erroCarregamento && <Alerta tipo="erro" mensagem={erroCarregamento} />}
-      {erroForm && <Alerta tipo="erro" mensagem={erroForm} />}
-      {mensagemSucesso && <Alerta tipo="sucesso" mensagem={mensagemSucesso} />}
+      {mensagemErroCarregamento && <Alerta tom="erro">{mensagemErroCarregamento}</Alerta>}
+      {erroForm && <Alerta tom="erro">{erroForm}</Alerta>}
+      {mensagemSucesso && <Alerta tom="sucesso">{mensagemSucesso}</Alerta>}
 
       {/* Resumo do TCC e da Banca */}
       <div className="card">
