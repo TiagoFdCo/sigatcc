@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import Alerta from '../components/Alerta';
-import { clienteApi } from '../services/api';
+import Alerta from '../componentes/Alerta';
 import { useCarregar } from '../hooks/useCarregar';
+import { clienteApi } from '../servicos/api';
 
 export interface DadosBancaAvaliacao {
   bancaId: number;
@@ -21,7 +21,7 @@ export interface AvaliacaoMembroPayload {
   isRascunho: boolean;
 }
 
-// Mock inicial mantido temporariamente até a integração da rota com ID da banca
+// Mock inicial até a integração final da rota de detalhe da banca
 const BANCA_MOCK: DadosBancaAvaliacao = {
   bancaId: 1,
   tituloTcc: 'Desenvolvimento e Validação do Sistema SIGATCC',
@@ -38,7 +38,6 @@ export default function AvaliacaoBanca() {
   const [mensagemSucesso, setMensagemSucesso] = useState<string | null>(null);
   const [erroForm, setErroForm] = useState<string | null>(null);
 
-  // Hook padrão do projeto para carregamento dos dados da banca
   const { carregando, erro: erroCarregamento } = useCarregar(async () => {
     // Futuro: const resposta = await clienteApi.get(`/bancas/${id}`);
     return BANCA_MOCK;
@@ -67,8 +66,7 @@ export default function AvaliacaoBanca() {
     };
 
     try {
-      // Futura chamada de API:
-      // await clienteApi.post(`/bancas/${BANCA_MOCK.bancaId}/avaliacoes`, payload);
+      // Futuro: await clienteApi.post(`/bancas/${BANCA_MOCK.bancaId}/avaliacoes`, payload);
       console.log('Submetendo avaliação:', payload);
 
       setMensagemSucesso(
@@ -97,13 +95,19 @@ export default function AvaliacaoBanca() {
       <div className="card">
         <h2>{BANCA_MOCK.tituloTcc}</h2>
         <div className="grid-2-col">
-          <p><strong>Autor(a):</strong> {BANCA_MOCK.autorNome}</p>
-          <p><strong>Orientador(a):</strong> {BANCA_MOCK.orientadorNome}</p>
+          <p>
+            <strong>Autor(a):</strong> {BANCA_MOCK.autorNome}
+          </p>
+          <p>
+            <strong>Orientador(a):</strong> {BANCA_MOCK.orientadorNome}
+          </p>
           <p>
             <strong>Data/Hora:</strong>{' '}
             {new Date(BANCA_MOCK.dataHoraInicio).toLocaleString('pt-BR')}
           </p>
-          <p><strong>Local:</strong> {BANCA_MOCK.localInfo}</p>
+          <p>
+            <strong>Local:</strong> {BANCA_MOCK.localInfo}
+          </p>
         </div>
       </div>
 
@@ -152,3 +156,11 @@ export default function AvaliacaoBanca() {
               Salvar Rascunho
             </button>
             <button type="submit" className="btn-primario">
+              Finalizar Avaliação
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
